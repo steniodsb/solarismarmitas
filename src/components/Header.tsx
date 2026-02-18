@@ -1,38 +1,45 @@
 import { useState } from "react";
 import { ShoppingCart, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import logoSolaris from "@/assets/logo-solaris.webp";
 
 const navLinks = [
-  { label: "Início", href: "#inicio" },
-  { label: "Quem Somos", href: "#quem-somos" },
-  { label: "Cardápio", href: "#cardapio" },
-  { label: "Como Funciona", href: "#como-funciona" },
-  { label: "Contato", href: "#contato" },
+  { label: "Início", href: "/" },
+  { label: "Cardápio", href: "/cardapio" },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Como Funciona", href: "/como-funciona" },
+  { label: "Contato", href: "/contato" },
 ];
 
 export default function Header() {
   const { totalItems, toggleCart } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-red">
       <div className="container flex h-16 items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2">
           <img src={logoSolaris} alt="Solaris Restaurante" className="h-10" />
-        </a>
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+              to={link.href}
+              className={`text-sm font-medium transition-colors ${
+                location.pathname === link.href
+                  ? "text-secondary"
+                  : "text-primary-foreground/80 hover:text-primary-foreground"
+              }`}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -54,7 +61,7 @@ export default function Header() {
             variant="cta"
             size="sm"
             className="hidden sm:inline-flex"
-            onClick={() => document.getElementById("cardapio")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => navigate("/cardapio")}
           >
             Pedir Agora
           </Button>
@@ -74,14 +81,18 @@ export default function Header() {
       {mobileOpen && (
         <nav className="md:hidden gradient-hero border-t border-primary-foreground/10 pb-4">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
-              href={link.href}
-              className="block px-6 py-3 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/5 transition-colors"
+              to={link.href}
+              className={`block px-6 py-3 transition-colors ${
+                location.pathname === link.href
+                  ? "text-secondary bg-primary-foreground/5"
+                  : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/5"
+              }`}
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
       )}
