@@ -1,4 +1,5 @@
 import { CheckCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import type { Product } from "@/types";
@@ -47,6 +48,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             R$ {product.price.toFixed(2).replace(".", ",")}
           </span>
           <div className="flex gap-2">
+            <Button variant="ctaOutline" size="sm" asChild>
+              <Link to={`/produto/${product.id}`}>Ver Mais</Link>
+            </Button>
             <Button variant="cta" size="sm" onClick={handleAdd}>
               Pedir
             </Button>
