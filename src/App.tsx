@@ -9,6 +9,7 @@ import CardapioPage from "./pages/CardapioPage";
 import SobrePage from "./pages/SobrePage";
 import ComoFuncionaPage from "./pages/ComoFuncionaPage";
 import ContatoPage from "./pages/ContatoPage";
+import ProductPage from "./pages/ProductPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/sobre" element={<SobrePage />} />
             <Route path="/como-funciona" element={<ComoFuncionaPage />} />
             <Route path="/contato" element={<ContatoPage />} />
+            <Route path="/produto/:id" element={<ProductPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
