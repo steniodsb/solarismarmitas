@@ -1,16 +1,38 @@
 import { Instagram, Facebook } from "lucide-react";
+import { Link } from "react-router-dom";
 import logoSolaris from "@/assets/logo-solaris.webp";
+
+const footerLinks = [
+  { label: "Cardápio", href: "/cardapio" },
+  { label: "Sobre", href: "/sobre" },
+  { label: "Como Funciona", href: "/como-funciona" },
+  { label: "Contato", href: "/contato" },
+];
 
 export default function Footer() {
   return (
     <footer className="gradient-hero py-12">
       <div className="container">
-        <div className="grid sm:grid-cols-2 gap-8 items-center">
+        <div className="grid sm:grid-cols-3 gap-8">
           <div className="space-y-4">
             <img src={logoSolaris} alt="Solaris Restaurante" className="h-12" />
             <p className="text-primary-foreground/60 text-sm max-w-sm">
               Marmitas saudáveis e deliciosas para sua rotina. Qualidade e sabor em cada refeição.
             </p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="font-display text-lg font-bold text-primary-foreground">NAVEGAÇÃO</h4>
+            <nav className="flex flex-col gap-2">
+              {footerLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="text-primary-foreground/70 hover:text-secondary text-sm transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
           </div>
           <div className="space-y-4 sm:text-right">
             <h4 className="font-display text-lg font-bold text-primary-foreground">FALE CONOSCO</h4>
