@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/CartContext";
+import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import logoSolaris from "@/assets/logo-solaris.webp";
 
 const navLinks = [
   { label: "Início", href: "/" },
-  { label: "Cardápio", href: "/cardapio" },
   { label: "Sobre", href: "/sobre" },
-  { label: "Como Funciona", href: "/como-funciona" },
   { label: "Contato", href: "/contato" },
 ];
 
 export default function Header() {
-  const { totalItems, toggleCart } = useCart();
+  const { totalItems, toggleCart } = useFrozenCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,15 +53,6 @@ export default function Header() {
               </span>
             )}
           </button>
-
-          <Button
-            variant="cta"
-            size="sm"
-            className="hidden sm:inline-flex"
-            onClick={() => navigate("/cardapio")}
-          >
-            Pedir Agora
-          </Button>
 
           {/* Mobile menu button */}
           <button

@@ -1,17 +1,14 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CartSidebar from "@/components/CartSidebar";
-import CheckoutModal from "@/components/CheckoutModal";
-import UpsellModal from "@/components/UpsellModal";
+import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
+import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import StoreStatusBanner from "@/components/StoreStatusBanner";
 import AboutSection from "@/components/AboutSection";
 import Testimonials from "@/components/Testimonials";
 
 export default function SobrePage() {
   return (
     <div className="min-h-screen bg-background">
-      <StoreStatusBanner />
       <Header />
       <main className="pt-16">
         <section className="gradient-hero py-12">
@@ -28,9 +25,8 @@ export default function SobrePage() {
         <Testimonials />
       </main>
       <Footer />
-      <CartSidebar />
-      <UpsellModal />
-      <CheckoutModal />
+      <FrozenCartSidebar />
+      <FrozenCheckoutModal />
       <WhatsAppButton />
     </div>
   );

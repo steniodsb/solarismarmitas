@@ -3,13 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { CartProvider } from "@/contexts/CartContext";
-import Index from "./pages/Index";
-import CardapioPage from "./pages/CardapioPage";
+import { FrozenCartProvider } from "@/contexts/FrozenCartContext";
+import HomePage from "./pages/HomePage";
+import SizeSelectionPage from "./pages/SizeSelectionPage";
+import FlavorSelectionPage from "./pages/FlavorSelectionPage";
 import SobrePage from "./pages/SobrePage";
-import ComoFuncionaPage from "./pages/ComoFuncionaPage";
 import ContatoPage from "./pages/ContatoPage";
-import ProductPage from "./pages/ProductPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
@@ -19,23 +18,22 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CartProvider>
+      <FrozenCartProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/cardapio" element={<CardapioPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
+            <Route path="/montar/:categorySlug/sabores" element={<FlavorSelectionPage />} />
             <Route path="/sobre" element={<SobrePage />} />
-            <Route path="/como-funciona" element={<ComoFuncionaPage />} />
             <Route path="/contato" element={<ContatoPage />} />
-            <Route path="/produto/:id" element={<ProductPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
-      </CartProvider>
+      </FrozenCartProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
