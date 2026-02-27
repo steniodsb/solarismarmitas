@@ -1,9 +1,9 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, Minus, Plus, ShoppingCart } from "lucide-react";
+import { ArrowLeft, CheckCircle, Minus, Plus, ShoppingCart, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { products } from "@/data/products";
+import { useProduct, useProducts } from "@/hooks/useProducts";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
@@ -18,13 +18,33 @@ import { toast } from "sonner";
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const { addItem } = useCart();
+  const { data: product, isLoading } = useProduct(id);
+  const { data: allProducts } = useProducts();
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<ProductSize | undefined>(undefined);
+  const [selectedFlavor, setSelectedFlavor] = useState<ProductFlavor | undefined>(undefined);
+  const [initialized, setInitialized] = useState(false);
 
-  const product = products.find((p) => p.id === id);
-  const related = products.filter((p) => p.id !== id && p.active).slice(0, 3);
+  // Initialize selections once product loads
+  if (product && !initialized) {
+    setSelectedSize(product.sizes?.[0]);
+    setSelectedFlavor(product.flavors?.[0]);
+    setInitialized(true);
+  }
 
-  const [selectedSize, setSelectedSize] = useState<ProductSize | undefined>(product?.sizes?.[0]);
-  const [selectedFlavor, setSelectedFlavor] = useState<ProductFlavor | undefined>(product?.flavors?.[0]);
+  const related = (allProducts || []).filter((p) => p.id !== id && p.active).slice(0, 3);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="pt-16 flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -92,7 +112,7 @@ export default function ProductPage() {
                 <div>
                   <h3 className="font-semibold text-foreground mb-3">Ingredientes</h3>
                   <ul className="space-y-2">
-                    {product.ingredients.map((ing) => (
+                    {product.ingredients.map((ing: string) => (
                       <li key={ing} className="flex items-center gap-3 text-foreground">
                         <CheckCircle className="h-5 w-5 text-secondary flex-shrink-0" />{ing}
                       </li>
@@ -100,22 +120,15 @@ export default function ProductPage() {
                   </ul>
                 </div>
 
-                {/* Size selector */}
                 {product.sizes && product.sizes.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Tamanho</h3>
                     <div className="flex flex-wrap gap-2">
-                      {product.sizes.map((size) => (
-                        <button
-                          key={size.id}
-                          onClick={() => setSelectedSize(size)}
-                          disabled={isSoldOut}
+                      {product.sizes.map((size: ProductSize) => (
+                        <button key={size.id} onClick={() => setSelectedSize(size)} disabled={isSoldOut}
                           className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-                            selectedSize?.id === size.id
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                          }`}
-                        >
+                            selectedSize?.id === size.id ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                          }`}>
                           {size.label} {size.priceModifier > 0 && `(+R$ ${size.priceModifier.toFixed(2).replace(".", ",")})`}
                         </button>
                       ))}
@@ -123,22 +136,15 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Flavor selector */}
                 {product.flavors && product.flavors.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-foreground mb-2">Sabor</h3>
                     <div className="flex flex-wrap gap-2">
-                      {product.flavors.map((flavor) => (
-                        <button
-                          key={flavor.id}
-                          onClick={() => setSelectedFlavor(flavor)}
-                          disabled={isSoldOut}
+                      {product.flavors.map((flavor: ProductFlavor) => (
+                        <button key={flavor.id} onClick={() => setSelectedFlavor(flavor)} disabled={isSoldOut}
                           className={`px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-                            selectedFlavor?.id === flavor.id
-                              ? "bg-secondary text-secondary-foreground border-secondary"
-                              : "bg-card text-muted-foreground border-border hover:border-secondary/50"
-                          }`}
-                        >
+                            selectedFlavor?.id === flavor.id ? "bg-secondary text-secondary-foreground border-secondary" : "bg-card text-muted-foreground border-border hover:border-secondary/50"
+                          }`}>
                           {flavor.label}
                         </button>
                       ))}
