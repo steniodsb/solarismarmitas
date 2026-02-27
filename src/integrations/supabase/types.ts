@@ -14,6 +14,115 @@ export type Database = {
   }
   public: {
     Tables: {
+      frozen_categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      frozen_flavors: {
+        Row: {
+          active: boolean
+          category_id: string
+          description: string
+          id: string
+          image_url: string | null
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          category_id: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          category_id?: string
+          description?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "frozen_flavors_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "frozen_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      frozen_sizes: {
+        Row: {
+          active: boolean
+          category_id: string
+          id: string
+          label: string
+          ml: number
+          price: number
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          category_id: string
+          id?: string
+          label: string
+          ml: number
+          price?: number
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          category_id?: string
+          id?: string
+          label?: string
+          ml?: number
+          price?: number
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "frozen_sizes_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "frozen_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           active: boolean
