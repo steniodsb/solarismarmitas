@@ -8,11 +8,14 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
+import UpsellModal from "@/components/UpsellModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import StoreStatusBanner from "@/components/StoreStatusBanner";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <StoreStatusBanner />
       <Header />
       <main>
         {/* Hero */}
@@ -55,7 +58,7 @@ const Index = () => {
               </Button>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.slice(0, 4).map((product) => (
+              {products.filter(p => p.active).slice(0, 4).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
@@ -66,6 +69,7 @@ const Index = () => {
       </main>
       <Footer />
       <CartSidebar />
+      <UpsellModal />
       <CheckoutModal />
       <WhatsAppButton />
     </div>
