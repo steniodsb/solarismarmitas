@@ -1,0 +1,26 @@
+
+UPDATE frozen_flavors SET image_url = '/products/frango-batata-doce.jpg' WHERE id = 'ba46df6d-65ed-47e0-a7ef-10034e32bb1d';
+UPDATE frozen_flavors SET image_url = '/products/tilapia-legumes.jpg' WHERE id = 'afca2f3b-cf58-401c-874b-9a1e975ee211';
+UPDATE frozen_flavors SET image_url = '/products/carne-quinoa.jpg' WHERE id = 'adbd0db9-b6b7-488f-8f68-ef48108b5331';
+UPDATE frozen_flavors SET image_url = '/products/frango-grao-bico.jpg' WHERE id = '5d36b747-a4c9-465f-9a38-cd39efd1e3d7';
+UPDATE frozen_flavors SET image_url = '/products/omelete-proteico.jpg' WHERE id = '8a041501-7c2d-418e-bc55-c0949b8b1d7a';
+UPDATE frozen_flavors SET image_url = '/products/frango-abobrinha.jpg' WHERE id = '76b34a24-796a-44b1-9431-7c5cb72620af';
+UPDATE frozen_flavors SET image_url = '/products/carne-berinjela.jpg' WHERE id = 'c8cc763e-1ca9-44ec-ab00-8c0d3448a9ea';
+UPDATE frozen_flavors SET image_url = '/products/salmao-aspargos.jpg' WHERE id = '0f332184-fdba-4631-b7c3-57ce0bfc849f';
+UPDATE frozen_flavors SET image_url = '/products/lombo-brocolis.jpg' WHERE id = 'dbd997e2-20d5-4bcf-b52d-91ca0d9b9572';
+UPDATE frozen_flavors SET image_url = '/products/arroz-feijao-bife.jpg' WHERE id = '6d3c3120-b8ad-4164-9ee7-37f0fa66c7dd';
+UPDATE frozen_flavors SET image_url = '/products/strogonoff-frango.jpg' WHERE id = 'e1780bc2-10bc-493e-b20e-2b3103ae0ee8';
+UPDATE frozen_flavors SET image_url = '/products/carne-panela.jpg' WHERE id = '0032a452-1f04-45ae-81df-6e2732cade43';
+UPDATE frozen_flavors SET image_url = '/products/frango-parmegiana.jpg' WHERE id = '32990e5b-e301-4076-b19a-6bd69c857c62';
+UPDATE frozen_flavors SET image_url = '/products/feijoada-light.jpg' WHERE id = 'fd2736bb-97df-4fdd-82f9-fb2948dfcdd9';
+UPDATE frozen_flavors SET image_url = '/products/escondidinho-carne.jpg' WHERE id = 'b2201b56-bdf3-4430-a8a1-b4b7d01cb5bc';
+UPDATE frozen_flavors SET image_url = '/products/grao-bico-curry.jpg' WHERE id = '874c38cf-8fdb-4658-9852-01ba713b206c';
+UPDATE frozen_flavors SET image_url = '/products/lasanha-berinjela.jpg' WHERE id = '2960c6cf-6b26-4e19-8f18-b9e79ac9749c';
+UPDATE frozen_flavors SET image_url = '/products/bowl-quinoa.jpg' WHERE id = '93a671ec-f40c-4c10-89f8-6b6c6756daf5';
+UPDATE frozen_flavors SET image_url = '/products/risoto-cogumelos.jpg' WHERE id = '99558a73-ca0e-4c57-8179-d9f88124ea1b';
+UPDATE frozen_flavors SET image_url = '/products/suco-laranja.jpg' WHERE id = '431ccdc9-da8d-4c53-8043-d47b574ad787';
+UPDATE frozen_flavors SET image_url = '/products/suco-mamao-laranja.jpg' WHERE id = 'bcd226aa-b28c-48fb-bd08-aa3721782852';
+UPDATE frozen_flavors SET image_url = '/products/suco-abacaxi-hortela.jpg' WHERE id = 'e8444045-2fb9-4302-b7a3-f151b8eefe02';
+UPDATE frozen_flavors SET image_url = '/products/suco-morango.jpg' WHERE id = '78fb1e6e-67c6-47e7-b57e-76a12c75ab19';
+UPDATE frozen_flavors SET image_url = '/products/suco-detox-verde.jpg' WHERE id = 'f6244824-ac12-4689-9ce2-e5962cb349d1';
+UPDATE frozen_flavors SET image_url = '/products/suco-maracuja.jpg' WHERE id = 'ade42e43-63ce-4997-9527-223cf7f473ce';
