@@ -31,32 +31,36 @@ export default function ProductCatalog() {
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
-          <div className="flex flex-wrap gap-2 justify-center">
+        {/* Search */}
+        <div className="flex justify-center">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Buscar por nome ou ingrediente..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-xl border border-border bg-card pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary shadow-sm transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Category tabs */}
+        <div className="relative">
+          <div className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide justify-start sm:justify-center snap-x snap-mandatory px-1">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`shrink-0 snap-start px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   activeCategory === cat
-                    ? "bg-primary text-primary-foreground shadow-red"
-                    : "bg-card text-muted-foreground hover:bg-accent border border-border"
+                    ? "bg-primary text-primary-foreground shadow-red scale-[1.02]"
+                    : "bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground border border-border/60 hover:border-primary/30"
                 }`}
               >
                 {cat}
               </button>
             ))}
-          </div>
-          <div className="relative w-full max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar marmita..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-full border border-border bg-card pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
           </div>
         </div>
 
