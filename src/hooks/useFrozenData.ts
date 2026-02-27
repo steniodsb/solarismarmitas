@@ -73,3 +73,30 @@ export function useFrozenFlavors(categoryId: string | undefined) {
     enabled: !!categoryId,
   });
 }
+
+export function useAllFrozenFlavors() {
+  return useQuery({
+    queryKey: ["frozen-flavors-all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("frozen_flavors")
+        .select("*")
+        .eq("active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as FrozenFlavor[];
+    },
+  });
+}
+
+export function useFrozenFlavorBySlug(categorySlug: string | undefined, flavorId: string | undefined) {
+  const { data: categories } = useFrozenCategories();
+  const category = categories?.find((c) => c.slug === categorySlug);
+
+  const { data: flavors, isLoading } = useFrozenFlavors(category?.id);
+  const flavor = flavors?.find((f) => f.id === flavorId);
+
+  const { data: sizes } = useFrozenSizes(category?.id);
+
+  return { category, flavor, sizes, flavors, isLoading };
+}

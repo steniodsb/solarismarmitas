@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { ShoppingCart, Menu, X } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import logoSolaris from "@/assets/logo-solaris.webp";
 
 const navLinks = [
   { label: "Início", href: "/" },
+  { label: "Pedir", href: "/pedir" },
   { label: "Sobre", href: "/sobre" },
   { label: "Contato", href: "/contato" },
 ];
@@ -14,7 +15,6 @@ export default function Header() {
   const { totalItems, toggleCart } = useFrozenCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-red">
@@ -23,7 +23,6 @@ export default function Header() {
           <img src={logoSolaris} alt="Solaris Restaurante" className="h-10" />
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -54,7 +53,6 @@ export default function Header() {
             )}
           </button>
 
-          {/* Mobile menu button */}
           <button
             className="md:hidden p-2 text-primary-foreground"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -65,7 +63,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile nav */}
       {mobileOpen && (
         <nav className="md:hidden gradient-hero border-t border-primary-foreground/10 pb-4">
           {navLinks.map((link) => (

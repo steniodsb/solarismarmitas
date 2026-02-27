@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { FrozenCartProvider } from "@/contexts/FrozenCartContext";
 import HomePage from "./pages/HomePage";
+import OrderCategoriesPage from "./pages/OrderCategoriesPage";
+import CategoryPage from "./pages/CategoryPage";
+import FlavorDetailPage from "./pages/FlavorDetailPage";
 import SizeSelectionPage from "./pages/SizeSelectionPage";
 import FlavorSelectionPage from "./pages/FlavorSelectionPage";
 import SobrePage from "./pages/SobrePage";
@@ -22,6 +25,9 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/pedir" element={<OrderCategoriesPage />} />
+            <Route path="/categoria/:categorySlug" element={<CategoryPage />} />
+            <Route path="/categoria/:categorySlug/sabor/:flavorId" element={<FlavorDetailPage />} />
             <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
             <Route path="/montar/:categorySlug/sabores" element={<FlavorSelectionPage />} />
             <Route path="/sobre" element={<SobrePage />} />
