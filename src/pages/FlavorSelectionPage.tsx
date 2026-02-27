@@ -1,65 +1,73 @@
 import { useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFrozenCategories, useFrozenSizes, useFrozenFlavors } from "@/hooks/useFrozenData";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Minus, ShoppingCart, Check } from "lucide-react";
+import { ArrowLeft, Plus, Minus, ShoppingCart, Check, X } from "lucide-react";
 import { toast } from "sonner";
+
+interface FlavorSelection {
+  sizeId: string;
+  quantity: number;
+}
 
 export default function FlavorSelectionPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
-  const [searchParams] = useSearchParams();
-  const sizeId = searchParams.get("size");
   const navigate = useNavigate();
   const { addItem, toggleCart } = useFrozenCart();
 
   const { data: categories } = useFrozenCategories();
   const category = categories?.find((c) => c.slug === categorySlug);
   const { data: sizes } = useFrozenSizes(category?.id);
-  const selectedSize = sizes?.find((s) => s.id === sizeId) || sizes?.[0];
   const { data: flavors, isLoading } = useFrozenFlavors(category?.id);
 
   const isJuice = categorySlug === "sucos";
 
-  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  // Track which flavor has the size picker open
+  const [activeFlavor, setActiveFlavor] = useState<string | null>(null);
+  // Track selections per flavor: { flavorId: { sizeId, quantity } }
+  const [selections, setSelections] = useState<Record<string, FlavorSelection>>({});
 
-  const totalSelected = Object.values(quantities).reduce((a, b) => a + b, 0);
+  const selectSize = (flavorId: string, sizeId: string) => {
+    setSelections((prev) => ({
+      ...prev,
+      [flavorId]: { sizeId, quantity: prev[flavorId]?.quantity || 1 },
+    }));
+  };
 
   const updateQty = (flavorId: string, delta: number) => {
-    setQuantities((prev) => {
-      const current = prev[flavorId] || 0;
-      const next = Math.max(0, current + delta);
-      if (next === 0) {
-        const { [flavorId]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [flavorId]: next };
+    setSelections((prev) => {
+      const current = prev[flavorId];
+      if (!current) return prev;
+      const next = Math.max(1, current.quantity + delta);
+      return { ...prev, [flavorId]: { ...current, quantity: next } };
     });
   };
 
-  const handleAddToCart = () => {
-    if (!category || !selectedSize) return;
-    let added = 0;
-    Object.entries(quantities).forEach(([flavorId, qty]) => {
-      if (qty <= 0) return;
-      const flavor = flavors?.find((f) => f.id === flavorId);
-      if (!flavor) return;
-      addItem({
-        category,
-        size: selectedSize,
-        flavor,
-        quantity: qty,
-        unitPrice: selectedSize.price,
-      });
-      added += qty;
+  const addFlavorToCart = (flavorId: string) => {
+    const sel = selections[flavorId];
+    if (!sel || !category) return;
+    const size = sizes?.find((s) => s.id === sel.sizeId);
+    const flavor = flavors?.find((f) => f.id === flavorId);
+    if (!size || !flavor) return;
+
+    addItem({
+      category,
+      size,
+      flavor,
+      quantity: sel.quantity,
+      unitPrice: size.price,
     });
-    if (added > 0) {
-      toast.success(`${added} ${added === 1 ? "item adicionado" : "itens adicionados"} ao carrinho!`);
-      setQuantities({});
-    }
+    toast.success(`${sel.quantity}x ${flavor.name} (${size.label}) adicionado!`);
+    // Reset this flavor
+    setSelections((prev) => {
+      const { [flavorId]: _, ...rest } = prev;
+      return rest;
+    });
+    setActiveFlavor(null);
   };
 
   return (
@@ -72,10 +80,7 @@ export default function FlavorSelectionPage() {
         <div className="gradient-hero py-8">
           <div className="container">
             <button
-              onClick={() => {
-                if (isJuice) navigate("/");
-                else navigate(`/montar/${categorySlug}/tamanho`);
-              }}
+              onClick={() => navigate(isJuice ? "/" : "/pedir")}
               className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground text-sm mb-4 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" /> Voltar
@@ -83,14 +88,9 @@ export default function FlavorSelectionPage() {
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-primary-foreground">
               {category?.name || "..."}
             </h1>
-            <div className="flex items-center gap-3 mt-1">
-              {selectedSize && (
-                <span className="bg-primary-foreground/10 text-primary-foreground text-sm px-3 py-1 rounded-full">
-                  {selectedSize.label} — R$ {selectedSize.price.toFixed(2).replace(".", ",")} / un
-                </span>
-              )}
-            </div>
-            <p className="text-primary-foreground/70 mt-2">Escolha os sabores e quantidades</p>
+            <p className="text-primary-foreground/70 mt-2">
+              Escolha o sabor, o tamanho e adicione ao carrinho
+            </p>
           </div>
         </div>
 
@@ -98,59 +98,129 @@ export default function FlavorSelectionPage() {
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />
+                <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
               ))}
             </div>
           ) : (
-            <div className="max-w-2xl mx-auto space-y-3">
+            <div className="max-w-2xl mx-auto space-y-4">
               {flavors?.map((flavor) => {
-                const qty = quantities[flavor.id] || 0;
-                const isSelected = qty > 0;
+                const isOpen = activeFlavor === flavor.id;
+                const sel = selections[flavor.id];
+                const selectedSize = sel ? sizes?.find((s) => s.id === sel.sizeId) : null;
+
                 return (
                   <div
                     key={flavor.id}
-                    className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
-                      isSelected
-                        ? "border-primary bg-accent"
+                    className={`rounded-xl border-2 transition-all overflow-hidden ${
+                      isOpen
+                        ? "border-primary bg-card shadow-lg"
                         : "border-border bg-card hover:border-primary/30"
                     }`}
                   >
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                      {flavor.image_url ? (
-                        <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="flex items-center justify-center w-full h-full text-2xl opacity-30">🍱</span>
-                      )}
-                      {isSelected && (
-                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                          <Check className="h-5 w-5 text-primary drop-shadow" />
+                    {/* Flavor row */}
+                    <button
+                      onClick={() => setActiveFlavor(isOpen ? null : flavor.id)}
+                      className="flex items-center gap-4 p-4 w-full text-left"
+                    >
+                      <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                        {flavor.image_url ? (
+                          <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="flex items-center justify-center w-full h-full text-2xl opacity-30">🍱</span>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-foreground text-sm sm:text-base">{flavor.name}</h3>
+                        {flavor.description && (
+                          <p className="text-muted-foreground text-xs sm:text-sm mt-0.5 line-clamp-1">{flavor.description}</p>
+                        )}
+                        {sizes && sizes.length > 0 && (
+                          <p className="text-primary text-xs font-semibold mt-1">
+                            A partir de R$ {Math.min(...sizes.map((s) => s.price)).toFixed(2).replace(".", ",")}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0">
+                        {isOpen ? (
+                          <X className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <Plus className="h-5 w-5 text-primary" />
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Size picker (expanded) */}
+                    {isOpen && sizes && sizes.length > 0 && (
+                      <div className="px-4 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                        <div className="border-t border-border pt-4">
+                          <p className="text-sm font-semibold text-foreground mb-3">Escolha o tamanho:</p>
+                          <div className="grid grid-cols-3 gap-3">
+                            {sizes.map((size, idx) => {
+                              const isPopular = idx === 1 && sizes.length > 2;
+                              const isSelected = sel?.sizeId === size.id;
+                              return (
+                                <button
+                                  key={size.id}
+                                  onClick={() => selectSize(flavor.id, size.id)}
+                                  className={`relative rounded-xl border-2 p-4 text-center transition-all ${
+                                    isSelected
+                                      ? "border-primary bg-accent shadow-md"
+                                      : "border-border bg-card hover:border-primary/40"
+                                  }`}
+                                >
+                                  {isPopular && (
+                                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 gradient-gold text-secondary-foreground text-[10px] font-bold px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                      Mais vendido
+                                    </span>
+                                  )}
+                                  <div className="font-display text-2xl sm:text-3xl font-black text-foreground">
+                                    {size.ml}
+                                    <span className="text-xs text-muted-foreground font-normal">ml</span>
+                                  </div>
+                                  <div className="text-muted-foreground text-[10px] mb-2">{size.label}</div>
+                                  <div className="font-display text-lg sm:text-xl font-bold text-primary">
+                                    R$ {size.price.toFixed(2).replace(".", ",")}
+                                  </div>
+                                  <p className="text-muted-foreground text-[10px]">por unidade</p>
+                                  {isSelected && (
+                                    <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />
+                                  )}
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground text-sm sm:text-base">{flavor.name}</h3>
-                      {flavor.description && (
-                        <p className="text-muted-foreground text-xs sm:text-sm mt-0.5 line-clamp-1">{flavor.description}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => updateQty(flavor.id, -1)}
-                        disabled={qty === 0}
-                        className="w-8 h-8 rounded-full border border-border bg-card flex items-center justify-center hover:bg-muted disabled:opacity-30 transition-colors"
-                        aria-label="Diminuir"
-                      >
-                        <Minus className="h-3 w-3" />
-                      </button>
-                      <span className="w-8 text-center font-bold text-foreground">{qty}</span>
-                      <button
-                        onClick={() => updateQty(flavor.id, 1)}
-                        className="w-8 h-8 rounded-full border border-primary bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-colors"
-                        aria-label="Aumentar"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </button>
-                    </div>
+
+                        {/* Quantity + Add to cart */}
+                        {sel && selectedSize && (
+                          <div className="flex items-center justify-between pt-2 border-t border-border">
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-muted-foreground">Qtd:</span>
+                              <button
+                                onClick={() => updateQty(flavor.id, -1)}
+                                className="w-8 h-8 rounded-full border border-border bg-card flex items-center justify-center hover:bg-muted transition-colors"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="w-6 text-center font-bold text-foreground">{sel.quantity}</span>
+                              <button
+                                onClick={() => updateQty(flavor.id, 1)}
+                                className="w-8 h-8 rounded-full border border-primary bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 transition-colors"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                            <Button
+                              variant="cta"
+                              onClick={() => addFlavorToCart(flavor.id)}
+                            >
+                              <ShoppingCart className="h-4 w-4" />
+                              Adicionar — R$ {(selectedSize.price * sel.quantity).toFixed(2).replace(".", ",")}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -158,30 +228,6 @@ export default function FlavorSelectionPage() {
           )}
         </div>
       </main>
-
-      {/* Floating add-to-cart bar */}
-      {totalSelected > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border shadow-2xl p-4">
-          <div className="container flex items-center justify-between gap-4 max-w-2xl mx-auto">
-            <div>
-              <p className="font-semibold text-foreground text-sm">
-                {totalSelected} {totalSelected === 1 ? "item" : "itens"}
-              </p>
-              {selectedSize && (
-                <p className="text-primary font-display font-bold text-lg">
-                  R$ {(totalSelected * selectedSize.price).toFixed(2).replace(".", ",")}
-                </p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button variant="cta" size="lg" onClick={handleAddToCart}>
-                <ShoppingCart className="h-5 w-5" />
-                Adicionar ao Carrinho
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
