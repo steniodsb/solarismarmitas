@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import InfoSection from "@/components/InfoSection";
 
 export default function ContatoPage() {
   return (
@@ -20,7 +19,15 @@ export default function ContatoPage() {
             </p>
           </div>
         </section>
-        <InfoSection />
+        <section className="py-16">
+          <div className="container max-w-md text-center space-y-4">
+            <p className="text-muted-foreground">Fale conosco pelo WhatsApp ou redes sociais.</p>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors">
+              WhatsApp
+            </a>
+          </div>
+        </section>
       </main>
       <Footer />
       <FrozenCartSidebar />

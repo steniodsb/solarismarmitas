@@ -1,16 +1,11 @@
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
-import { useStoreConfig } from "@/hooks/useStoreConfig";
 
 export default function FrozenCartSidebar() {
   const { items, isOpen, setCartOpen, totalPrice, updateQuantity, removeItem, setCheckoutOpen } = useFrozenCart();
-  const { data: config } = useStoreConfig();
 
   if (!isOpen) return null;
-
-  const minOrderValue = config?.minOrderValue || 0;
-  const isBelowMin = totalPrice > 0 && totalPrice < minOrderValue;
 
   const handleCheckout = () => {
     setCartOpen(false);
@@ -71,18 +66,13 @@ export default function FrozenCartSidebar() {
 
         {items.length > 0 && (
           <div className="p-4 border-t border-border space-y-3">
-            {isBelowMin && (
-              <div className="bg-secondary/10 text-secondary-foreground text-sm px-3 py-2 rounded-lg text-center">
-                ⚠️ Pedido mínimo: R$ {minOrderValue.toFixed(2).replace(".", ",")}
-              </div>
-            )}
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-medium">Total:</span>
               <span className="font-display text-2xl font-black text-primary">
                 R$ {totalPrice.toFixed(2).replace(".", ",")}
               </span>
             </div>
-            <Button variant="cta" size="lg" className="w-full" disabled={isBelowMin} onClick={handleCheckout}>
+            <Button variant="cta" size="lg" className="w-full" onClick={handleCheckout}>
               Finalizar Pedido
             </Button>
           </div>
