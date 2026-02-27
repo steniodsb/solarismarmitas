@@ -2,12 +2,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartSidebar from "@/components/CartSidebar";
 import CheckoutModal from "@/components/CheckoutModal";
+import UpsellModal from "@/components/UpsellModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import StoreStatusBanner from "@/components/StoreStatusBanner";
 import InfoSection from "@/components/InfoSection";
 
 export default function ContatoPage() {
   return (
     <div className="min-h-screen bg-background">
+      <StoreStatusBanner />
       <Header />
       <main className="pt-16">
         <section className="gradient-hero py-12">
@@ -24,6 +27,7 @@ export default function ContatoPage() {
       </main>
       <Footer />
       <CartSidebar />
+      <UpsellModal />
       <CheckoutModal />
       <WhatsAppButton />
     </div>
