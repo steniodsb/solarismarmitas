@@ -67,31 +67,46 @@ export type Database = {
       }
       store_config: {
         Row: {
+          address: string
+          city: string
           closed_message: string
+          cnpj: string
           created_at: string
           id: string
           min_order_value: number
           opening_hours: Json
+          state: string
           updated_at: string
           whatsapp_number: string
+          zip_code: string
         }
         Insert: {
+          address?: string
+          city?: string
           closed_message?: string
+          cnpj?: string
           created_at?: string
           id?: string
           min_order_value?: number
           opening_hours?: Json
+          state?: string
           updated_at?: string
           whatsapp_number?: string
+          zip_code?: string
         }
         Update: {
+          address?: string
+          city?: string
           closed_message?: string
+          cnpj?: string
           created_at?: string
           id?: string
           min_order_value?: number
           opening_hours?: Json
+          state?: string
           updated_at?: string
           whatsapp_number?: string
+          zip_code?: string
         }
         Relationships: []
       }

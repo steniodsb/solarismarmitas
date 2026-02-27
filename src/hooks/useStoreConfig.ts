@@ -8,15 +8,25 @@ interface DbStoreConfig {
   min_order_value: number;
   opening_hours: any;
   closed_message: string;
+  address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  cnpj: string;
 }
 
-function mapDbConfig(row: DbStoreConfig): StoreConfig & { id: string } {
+function mapDbConfig(row: DbStoreConfig): StoreConfig & { id: string; address: string; city: string; state: string; zipCode: string; cnpj: string } {
   return {
     id: row.id,
     whatsappNumber: row.whatsapp_number,
     minOrderValue: Number(row.min_order_value),
     openingHours: Array.isArray(row.opening_hours) ? row.opening_hours : [],
     closedMessage: row.closed_message,
+    address: row.address,
+    city: row.city,
+    state: row.state,
+    zipCode: row.zip_code,
+    cnpj: row.cnpj,
   };
 }
 
