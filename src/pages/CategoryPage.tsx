@@ -69,7 +69,7 @@ export default function CategoryPage() {
               Sabores disponíveis
             </h2>
             <Button variant="cta" size="sm" asChild>
-              <Link to={categorySlug === "sucos" ? `/montar/${categorySlug}/sabores` : `/montar/${categorySlug}/tamanho`}>
+              <Link to={`/montar/${categorySlug}`}>
                 Pedir Agora <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </Button>

@@ -65,13 +65,7 @@ export default function OrderCategoriesPage() {
               {categories?.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => {
-                    if (cat.slug === "sucos") {
-                      navigate(`/montar/${cat.slug}/sabores`);
-                    } else {
-                      navigate(`/montar/${cat.slug}/tamanho`);
-                    }
-                  }}
+                  onClick={() => navigate(`/montar/${cat.slug}`)}
                   className="group relative overflow-hidden rounded-2xl h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <img

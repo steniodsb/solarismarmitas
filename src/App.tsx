@@ -29,7 +29,7 @@ const App = () => (
             <Route path="/categoria/:categorySlug" element={<CategoryPage />} />
             <Route path="/categoria/:categorySlug/sabor/:flavorId" element={<FlavorDetailPage />} />
             <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
-            <Route path="/montar/:categorySlug/sabores" element={<FlavorSelectionPage />} />
+            <Route path="/montar/:categorySlug" element={<FlavorSelectionPage />} />
             <Route path="/sobre" element={<SobrePage />} />
             <Route path="/contato" element={<ContatoPage />} />
             <Route path="*" element={<NotFound />} />
