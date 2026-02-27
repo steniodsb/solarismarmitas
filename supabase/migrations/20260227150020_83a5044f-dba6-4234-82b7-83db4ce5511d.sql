@@ -1,0 +1,1 @@
+UPDATE public.store_config SET whatsapp_number = '5551989173813' WHERE id = '4c5ed617-d177-4399-9f7e-7a3cd78f2699';
