@@ -3,8 +3,6 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import AboutSection from "@/components/AboutSection";
-import Testimonials from "@/components/Testimonials";
 
 export default function SobrePage() {
   return (
@@ -21,8 +19,12 @@ export default function SobrePage() {
             </p>
           </div>
         </section>
-        <AboutSection />
-        <Testimonials />
+        <section className="py-16">
+          <div className="container max-w-2xl space-y-6 text-muted-foreground">
+            <p>A Solaris nasceu da vontade de levar alimentação saudável, prática e acessível para o dia a dia. Nossas marmitas congeladas são preparadas com ingredientes frescos e selecionados.</p>
+            <p>Cada refeição é pensada para equilibrar sabor e nutrição, atendendo diferentes estilos de vida — do fitness ao tradicional.</p>
+          </div>
+        </section>
       </main>
       <Footer />
       <FrozenCartSidebar />
