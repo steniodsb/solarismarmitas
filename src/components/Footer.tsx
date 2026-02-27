@@ -1,6 +1,7 @@
-import { Instagram, Facebook } from "lucide-react";
+import { Instagram, Facebook, MapPin, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import logoSolaris from "@/assets/logo-solaris.webp";
+import { useStoreConfig } from "@/hooks/useStoreConfig";
 
 const footerLinks = [
   { label: "Cardápio", href: "/cardapio" },
@@ -10,6 +11,12 @@ const footerLinks = [
 ];
 
 export default function Footer() {
+  const { data: config } = useStoreConfig();
+
+  const phone = config?.whatsappNumber
+    ? `(${config.whatsappNumber.slice(2, 4)}) ${config.whatsappNumber.slice(4, 9)}-${config.whatsappNumber.slice(9)}`
+    : "";
+
   return (
     <footer className="gradient-hero py-12">
       <div className="container">
@@ -19,6 +26,9 @@ export default function Footer() {
             <p className="text-primary-foreground/60 text-sm max-w-sm">
               Marmitas saudáveis e deliciosas para sua rotina. Qualidade e sabor em cada refeição.
             </p>
+            {config?.cnpj && (
+              <p className="text-primary-foreground/40 text-xs">CNPJ: {config.cnpj}</p>
+            )}
           </div>
           <div className="space-y-4">
             <h4 className="font-display text-lg font-bold text-primary-foreground">NAVEGAÇÃO</h4>
@@ -36,9 +46,17 @@ export default function Footer() {
           </div>
           <div className="space-y-4 sm:text-right">
             <h4 className="font-display text-lg font-bold text-primary-foreground">FALE CONOSCO</h4>
-            <p className="text-primary-foreground/70 text-sm">(11) 99999-9999</p>
-            <p className="text-primary-foreground/70 text-sm">contato@solaris.com.br</p>
-            <p className="text-primary-foreground/70 text-sm">Rua Exemplo, 123 - Centro</p>
+            {phone && (
+              <p className="text-primary-foreground/70 text-sm flex items-center gap-2 sm:justify-end">
+                <Phone className="h-4 w-4" /> {phone}
+              </p>
+            )}
+            {config?.address && (
+              <p className="text-primary-foreground/70 text-sm flex items-center gap-2 sm:justify-end">
+                <MapPin className="h-4 w-4 flex-shrink-0" />
+                <span>{config.address}<br />{config.city} - {config.state}<br />CEP: {config.zipCode}</span>
+              </p>
+            )}
             <div className="flex gap-3 sm:justify-end">
               <a href="#" className="text-primary-foreground/60 hover:text-secondary transition-colors" aria-label="Instagram">
                 <Instagram className="h-5 w-5" />
