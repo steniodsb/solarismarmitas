@@ -115,7 +115,18 @@ export default function FlavorSelectionPage() {
                         : "border-border bg-card hover:border-primary/30"
                     }`}
                   >
-                    {isSelected && <Check className="h-5 w-5 text-primary flex-shrink-0" />}
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                      {flavor.image_url ? (
+                        <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="flex items-center justify-center w-full h-full text-2xl opacity-30">🍱</span>
+                      )}
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                          <Check className="h-5 w-5 text-primary drop-shadow" />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-foreground text-sm sm:text-base">{flavor.name}</h3>
                       {flavor.description && (
