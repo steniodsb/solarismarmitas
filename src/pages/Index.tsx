@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import heroMeals from "@/assets/hero-meals.jpg";
-import { products } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 import ProductCard from "@/components/ProductCard";
 import HowItWorks from "@/components/HowItWorks";
 import Header from "@/components/Header";
@@ -13,6 +14,9 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import StoreStatusBanner from "@/components/StoreStatusBanner";
 
 const Index = () => {
+  const { data: products, isLoading } = useProducts();
+  const featured = (products || []).filter(p => p.active).slice(0, 4);
+
   return (
     <div className="min-h-screen bg-background">
       <StoreStatusBanner />
@@ -57,11 +61,15 @@ const Index = () => {
                 <Link to="/cardapio">Ver Tudo</Link>
               </Button>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.filter(p => p.active).slice(0, 4).map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {featured.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
 

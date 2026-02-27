@@ -2,13 +2,14 @@ import { useState } from "react";
 import { X, MessageCircle, ArrowLeft, MapPin, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { storeConfig } from "@/data/products";
+import { useStoreConfig } from "@/hooks/useStoreConfig";
 import type { CustomerData } from "@/types";
 
 type Step = "form" | "summary";
 
 export default function CheckoutModal() {
   const { items, totalPrice, isCheckoutOpen, setCheckoutOpen, clearCart, getItemPrice } = useCart();
+  const { data: config } = useStoreConfig();
   const [step, setStep] = useState<Step>("form");
   const [form, setForm] = useState<CustomerData>({
     name: "",
@@ -19,6 +20,8 @@ export default function CheckoutModal() {
   });
 
   if (!isCheckoutOpen) return null;
+
+  const whatsappNumber = config?.whatsappNumber || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -58,7 +61,7 @@ export default function CheckoutModal() {
       `💰 *Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}*\n` +
       (form.notes.trim() ? `\n📝 *Observações:* ${form.notes.trim()}` : "");
 
-    const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(storeConfig.whatsappNumber)}&text=${encodeURIComponent(message)}`;
+    const url = `https://api.whatsapp.com/send?phone=${encodeURIComponent(whatsappNumber)}&text=${encodeURIComponent(message)}`;
     window.open(url, "_blank");
     clearCart();
     handleClose();
@@ -69,7 +72,6 @@ export default function CheckoutModal() {
       <div className="fixed inset-0 bg-foreground/40 z-50" onClick={handleClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="bg-card rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-bounce-in">
-          {/* Header */}
           <div className="flex items-center justify-between p-5 border-b border-border">
             {step === "summary" ? (
               <button onClick={() => setStep("form")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
@@ -86,33 +88,20 @@ export default function CheckoutModal() {
           {step === "form" ? (
             <form onSubmit={handleReview} className="p-5 space-y-4">
               <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Dados de Entrega</h3>
-
-              {/* Delivery mode */}
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setForm({ ...form, deliveryMode: "delivery" })}
+                <button type="button" onClick={() => setForm({ ...form, deliveryMode: "delivery" })}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all ${
-                    form.deliveryMode === "delivery"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                  }`}
-                >
+                    form.deliveryMode === "delivery" ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                  }`}>
                   <MapPin className="h-4 w-4" /> Entrega
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setForm({ ...form, deliveryMode: "pickup" })}
+                <button type="button" onClick={() => setForm({ ...form, deliveryMode: "pickup" })}
                   className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all ${
-                    form.deliveryMode === "pickup"
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                  }`}
-                >
+                    form.deliveryMode === "pickup" ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                  }`}>
                   <Store className="h-4 w-4" /> Retirada
                 </button>
               </div>
-
               <div className="space-y-3">
                 <input name="name" type="text" required placeholder="Nome completo *" value={form.name} onChange={handleChange}
                   className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
@@ -125,16 +114,11 @@ export default function CheckoutModal() {
                 <textarea name="notes" placeholder="Observações, alergias, preferências (opcional)" value={form.notes} onChange={handleChange} rows={3}
                   className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
-
-              <Button variant="cta" size="xl" type="submit" className="w-full">
-                Revisar Pedido
-              </Button>
+              <Button variant="cta" size="xl" type="submit" className="w-full">Revisar Pedido</Button>
             </form>
           ) : (
             <div className="p-5 space-y-4">
               <h3 className="font-display text-lg font-bold text-card-foreground text-center">📋 Resumo do Pedido</h3>
-
-              {/* Customer info */}
               <div className="bg-muted rounded-xl p-4 space-y-1 text-sm">
                 <p><span className="font-semibold">👤</span> {form.name}</p>
                 <p><span className="font-semibold">📱</span> {form.phone}</p>
@@ -142,8 +126,6 @@ export default function CheckoutModal() {
                 <p><span className="font-semibold">{form.deliveryMode === "delivery" ? "🚚" : "🏪"}</span> {form.deliveryMode === "delivery" ? "Entrega" : "Retirada no local"}</p>
                 {form.notes && <p><span className="font-semibold">📝</span> {form.notes}</p>}
               </div>
-
-              {/* Items */}
               <div className="space-y-2">
                 <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Itens</h4>
                 {items.map((item, idx) => {
@@ -164,10 +146,8 @@ export default function CheckoutModal() {
                   <span className="text-primary text-lg">R$ {totalPrice.toFixed(2).replace(".", ",")}</span>
                 </div>
               </div>
-
               <Button variant="cta" size="xl" className="w-full" onClick={handleSend}>
-                <MessageCircle className="h-5 w-5" />
-                Enviar Pedido pelo WhatsApp
+                <MessageCircle className="h-5 w-5" /> Enviar Pedido pelo WhatsApp
               </Button>
             </div>
           )}

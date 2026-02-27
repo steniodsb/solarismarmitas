@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
-import { products, categories } from "@/data/products";
+import { Search, Loader2 } from "lucide-react";
+import { useProducts, useCategories } from "@/hooks/useProducts";
 import ProductCard from "./ProductCard";
 
 export default function ProductCatalog() {
+  const { data: products, isLoading } = useProducts();
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [search, setSearch] = useState("");
 
-  const filtered = products.filter((p) => {
+  const categories = useCategories(products || []);
+
+  const filtered = (products || []).filter((p) => {
     const matchCategory = activeCategory === "Todos" || p.category === activeCategory;
     const matchSearch =
       search === "" ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.ingredients.some((i) => i.toLowerCase().includes(search.toLowerCase()));
+      p.ingredients.some((i: string) => i.toLowerCase().includes(search.toLowerCase()));
     return matchCategory && matchSearch && p.active;
   });
 
@@ -58,13 +61,17 @@ export default function ProductCatalog() {
         </div>
 
         {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
 
-        {filtered.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <p className="text-center text-muted-foreground py-12">
             Nenhuma marmita encontrada. Tente outra busca ou categoria.
           </p>

@@ -1,32 +1,30 @@
-import { Clock } from "lucide-react";
-import { storeConfig } from "@/data/products";
+import { Clock, Loader2 } from "lucide-react";
+import { useStoreConfig } from "@/hooks/useStoreConfig";
 
-function isStoreOpen(): boolean {
+export default function StoreStatusBanner() {
+  const { data: config, isLoading } = useStoreConfig();
+
+  if (isLoading || !config) return null;
+
   const now = new Date();
   const days = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
   const todayName = days[now.getDay()];
-  const todayConfig = storeConfig.openingHours.find((h) => h.day === todayName);
+  const todayConfig = config.openingHours.find((h: any) => h.day === todayName);
 
-  if (!todayConfig || !todayConfig.open || !todayConfig.close) return false;
+  let isOpen = false;
+  if (todayConfig && todayConfig.open && todayConfig.close) {
+    const [openH, openM] = todayConfig.open.split(":").map(Number);
+    const [closeH, closeM] = todayConfig.close.split(":").map(Number);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    isOpen = nowMinutes >= openH * 60 + openM && nowMinutes < closeH * 60 + closeM;
+  }
 
-  const [openH, openM] = todayConfig.open.split(":").map(Number);
-  const [closeH, closeM] = todayConfig.close.split(":").map(Number);
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  const openMinutes = openH * 60 + openM;
-  const closeMinutes = closeH * 60 + closeM;
-
-  return nowMinutes >= openMinutes && nowMinutes < closeMinutes;
-}
-
-export default function StoreStatusBanner() {
-  const open = isStoreOpen();
-
-  if (open) return null;
+  if (isOpen) return null;
 
   return (
     <div className="bg-destructive text-destructive-foreground text-center py-2.5 px-4 text-sm font-medium flex items-center justify-center gap-2">
       <Clock className="h-4 w-4" />
-      {storeConfig.closedMessage}
+      {config.closedMessage}
     </div>
   );
 }
