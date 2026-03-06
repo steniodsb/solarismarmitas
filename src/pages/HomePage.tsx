@@ -1,27 +1,13 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
-import { useFrozenCategories, useAllFrozenFlavors } from "@/hooks/useFrozenData";
+import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { Snowflake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Snowflake, ArrowRight, ChevronLeft, ChevronRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catSucos from "@/assets/cat-sucos.jpg";
-
-const categoryImages: Record<string, string> = {
-  fitness: catFitness,
-  "low-carb": catLowcarb,
-  caseira: catCaseira,
-  vegetariana: catVegetariana,
-  sucos: catSucos,
-};
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -31,58 +17,91 @@ const categoryEmojis: Record<string, string> = {
   sucos: "🧃",
 };
 
-function FlavorCarousel({ categorySlug, categoryId, flavors }: { categorySlug: string; categoryId: string; flavors: { id: string; name: string; description: string; image_url: string | null }[] }) {
+const categoryCTAs: Record<string, string> = {
+  fitness: "Monte seu combo Fitness",
+  "low-carb": "Peça Low Carb agora",
+  caseira: "Peça Caseira agora",
+  vegetariana: "Monte seu combo Vegetariano",
+  sucos: "Peça seus Sucos",
+};
+
+function FlavorCarousel({
+  categorySlug,
+  categoryId,
+  flavors,
+}: {
+  categorySlug: string;
+  categoryId: string;
+  flavors: { id: string; name: string; description: string; image_url: string | null }[];
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { data: sizes } = useFrozenSizes(categoryId);
+
+  const minPrice = sizes?.length ? Math.min(...sizes.map((s) => s.price)) : null;
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
-    const amount = 280;
-    scrollRef.current.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
+    scrollRef.current.scrollBy({ left: direction === "left" ? -280 : 280, behavior: "smooth" });
   };
 
   if (!flavors.length) return null;
 
   return (
-    <div className="relative group">
-      <button
-        onClick={() => scroll("left")}
-        className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
-        aria-label="Anterior"
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </button>
+    <div className="space-y-4">
+      <div className="relative group">
+        <button
+          onClick={() => scroll("left")}
+          className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+          aria-label="Anterior"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
 
-      <div ref={scrollRef} className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1">
-        {flavors.map((flavor) => (
-          <Link
-            key={flavor.id}
-            to={`/categoria/${categorySlug}/sabor/${flavor.id}`}
-            className="snap-start shrink-0 w-64 group/card rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300"
-          >
-            <div className="h-36 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
-              {flavor.image_url ? (
-                <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-5xl opacity-40">🍱</span>
-              )}
-            </div>
-            <div className="p-4 space-y-1">
-              <h4 className="font-display font-bold text-foreground text-sm group-hover/card:text-primary transition-colors">
-                {flavor.name}
-              </h4>
-              <p className="text-muted-foreground text-xs line-clamp-2">{flavor.description}</p>
-            </div>
-          </Link>
-        ))}
+        <div ref={scrollRef} className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1">
+          {flavors.map((flavor) => (
+            <Link
+              key={flavor.id}
+              to={`/categoria/${categorySlug}/sabor/${flavor.id}`}
+              className="snap-start shrink-0 w-64 group/card rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300"
+            >
+              <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
+                {flavor.image_url ? (
+                  <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-5xl opacity-40">🍱</span>
+                )}
+              </div>
+              <div className="p-4 space-y-1.5">
+                <h4 className="font-display font-bold text-foreground text-sm group-hover/card:text-primary transition-colors">
+                  {flavor.name}
+                </h4>
+                <p className="text-muted-foreground text-xs line-clamp-2">{flavor.description}</p>
+                {minPrice !== null && (
+                  <p className="text-primary font-bold text-sm">
+                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
+                  </p>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll("right")}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+          aria-label="Próximo"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
 
-      <button
-        onClick={() => scroll("right")}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
-        aria-label="Próximo"
-      >
-        <ChevronRight className="h-4 w-4" />
-      </button>
+      <div className="text-center">
+        <Button variant="cta" asChild>
+          <Link to={`/montar/${categorySlug}`}>
+            {categoryCTAs[categorySlug] || "Faça seu pedido"} <ArrowRight className="h-4 w-4 ml-1" />
+          </Link>
+        </Button>
+      </div>
     </div>
   );
 }
@@ -128,7 +147,7 @@ export default function HomePage() {
 
       {/* Category carousels */}
       <section className="py-12 sm:py-16">
-        <div className="container space-y-14">
+        <div className="container space-y-16">
           {isLoading ? (
             <div className="space-y-10">
               {[...Array(3)].map((_, i) => (
@@ -168,6 +187,38 @@ export default function HomePage() {
               );
             })
           )}
+        </div>
+      </section>
+
+      {/* Conheça nossa empresa */}
+      <section className="py-16 bg-card">
+        <div className="container">
+          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+            <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent aspect-[4/5] flex items-center justify-center">
+              {/* Placeholder — substituir pela foto da Karina */}
+              <div className="text-center space-y-3 p-8">
+                <Users className="h-16 w-16 text-primary/30 mx-auto" />
+                <p className="text-muted-foreground text-sm">Foto da equipe em breve</p>
+              </div>
+            </div>
+            <div className="space-y-5">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
+                Conheça nossa empresa
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                A Solaris nasceu do amor pela alimentação saudável e prática. Acreditamos que comer bem não precisa ser complicado — por isso preparamos cada marmita com ingredientes frescos e muito carinho.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Nossa missão é facilitar a rotina de quem busca uma alimentação equilibrada, oferecendo refeições congeladas que mantêm o sabor e os nutrientes de uma comida feita em casa.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                Com diversas linhas — Fitness, Low Carb, Caseira e Vegetariana — temos opções para todos os gostos e objetivos. Cada prato é pensado para entregar praticidade sem abrir mão da qualidade.
+              </p>
+              <Button variant="ctaOutline" asChild>
+                <Link to="/sobre">Saiba mais sobre nós <ArrowRight className="h-4 w-4 ml-1" /></Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 

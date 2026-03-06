@@ -187,7 +187,6 @@ export default function FlavorDetailPage() {
                             setShowSizePicker(false);
                             setSelectedSizeId(null);
                             setQuantity(1);
-                            toggleCart();
                           }}
                         >
                           <ShoppingCart className="h-4 w-4" />
