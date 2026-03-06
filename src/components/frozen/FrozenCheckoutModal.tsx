@@ -13,7 +13,7 @@ interface FormData {
   deliveryMode: "delivery" | "pickup";
 }
 
-const WHATSAPP_NUMBER = "5511999999999";
+const WHATSAPP_NUMBER = "5551989173813";
 
 export default function FrozenCheckoutModal() {
   const { items, totalPrice, isCheckoutOpen, setCheckoutOpen, clearCart } = useFrozenCart();
