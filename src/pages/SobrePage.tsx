@@ -129,7 +129,7 @@ export default function SobrePage() {
       </main>
 
       <Footer />
-      <WhatsAppButton />
+      
     </div>
   );
 }
