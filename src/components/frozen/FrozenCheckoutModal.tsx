@@ -45,7 +45,7 @@ export default function FrozenCheckoutModal() {
       `💰 *Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}*\n` +
       (form.notes.trim() ? `\n📝 *Observações:* ${form.notes.trim()}` : "");
 
-    window.open(`https://api.whatsapp.com/send?phone=${encodeURIComponent(WHATSAPP_NUMBER)}&text=${encodeURIComponent(message)}`, "_blank");
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     clearCart();
     handleClose();
   };

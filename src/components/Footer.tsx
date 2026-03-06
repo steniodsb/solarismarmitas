@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="space-y-4 sm:text-right">
             <h4 className="font-display text-lg font-bold text-primary-foreground">REDES SOCIAIS</h4>
             <div className="flex gap-3 sm:justify-end">
-              <a href="https://api.whatsapp.com/send?phone=5551989173813&text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer" className="text-primary-foreground/60 hover:text-secondary transition-colors" aria-label="WhatsApp">
+              <a href="https://wa.me/5551989173813?text=Ol%C3%A1!%20Gostaria%20de%20fazer%20um%20pedido." target="_blank" rel="noopener noreferrer" className="text-primary-foreground/60 hover:text-secondary transition-colors" aria-label="WhatsApp">
                 <MessageCircle className="h-5 w-5" />
               </a>
               <a href="#" className="text-primary-foreground/60 hover:text-secondary transition-colors" aria-label="Instagram">
