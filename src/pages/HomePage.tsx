@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
@@ -10,6 +10,57 @@ import { Snowflake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import carinaPetersen from "@/assets/carina-petersen.jpg";
 import heroMeals from "@/assets/hero-meals.jpg";
+import catCaseira from "@/assets/cat-caseira.jpg";
+import catFitness from "@/assets/cat-fitness.jpg";
+import catLowcarb from "@/assets/cat-lowcarb.jpg";
+import catVegetariana from "@/assets/cat-vegetariana.jpg";
+
+const heroImages = [heroMeals, catCaseira, catFitness, catLowcarb, catVegetariana];
+
+function HeroCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="py-16 sm:py-24 relative overflow-hidden">
+      {heroImages.map((img, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+          style={{
+            backgroundImage: `url(${img})`,
+            opacity: i === currentIndex ? 1 : 0,
+          }}
+        />
+      ))}
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="container text-center space-y-6 relative z-10">
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-white/90 text-sm">
+          <Snowflake className="h-4 w-4" />
+          Marmitas Congeladas
+        </div>
+        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+          Comida de verdade,<br />
+          <span className="text-secondary">pronta pra você.</span>
+        </h1>
+        <p className="text-white/70 max-w-lg mx-auto text-lg">
+          Escolha sua linha, o tamanho ideal e monte seu combo de marmitas congeladas com os sabores que você mais gosta.
+        </p>
+        <div className="pt-2">
+          <Button variant="cta" size="xl" asChild>
+            <Link to="/pedir">Pedir Agora</Link>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -125,31 +176,7 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="pt-16">
-        <div className="py-16 sm:py-24 relative overflow-hidden">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroMeals})` }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/60 via-primary/40 to-primary/70" />
-          <div className="container text-center space-y-6 relative z-10">
-            <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-4 py-2 text-primary-foreground/90 text-sm">
-              <Snowflake className="h-4 w-4" />
-              Marmitas Congeladas
-            </div>
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-primary-foreground leading-tight">
-              Comida de verdade,<br />
-              <span className="text-secondary">pronta pra você.</span>
-            </h1>
-            <p className="text-primary-foreground/70 max-w-lg mx-auto text-lg">
-              Escolha sua linha, o tamanho ideal e monte seu combo de marmitas congeladas com os sabores que você mais gosta.
-            </p>
-            <div className="pt-2">
-              <Button variant="cta" size="xl" asChild>
-                <Link to="/pedir">Pedir Agora</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+        <HeroCarousel />
       </section>
 
       {/* Category carousels */}
