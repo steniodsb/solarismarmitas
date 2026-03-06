@@ -6,8 +6,9 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import { Snowflake, ArrowRight, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Snowflake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import carinaPetersen from "@/assets/carina-petersen.jpg";
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -194,25 +195,25 @@ export default function HomePage() {
       <section className="py-16 bg-card">
         <div className="container">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-            <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent aspect-[4/5] flex items-center justify-center">
-              {/* Placeholder — substituir pela foto da Karina */}
-              <div className="text-center space-y-3 p-8">
-                <Users className="h-16 w-16 text-primary/30 mx-auto" />
-                <p className="text-muted-foreground text-sm">Foto da equipe em breve</p>
-              </div>
+            <div className="rounded-2xl overflow-hidden shadow-lg">
+              <img
+                src={carinaPetersen}
+                alt="Carina Petersen, proprietária do Restaurante Solaris, com as marmitas"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="space-y-5">
               <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">
                 Conheça nossa empresa
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                A Solaris nasceu do amor pela alimentação saudável e prática. Acreditamos que comer bem não precisa ser complicado — por isso preparamos cada marmita com ingredientes frescos e muito carinho.
+                Aqui no Restaurante Solaris, cada marmita é preparada como se fosse para a nossa própria família.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Nossa missão é facilitar a rotina de quem busca uma alimentação equilibrada, oferecendo refeições congeladas que mantêm o sabor e os nutrientes de uma comida feita em casa.
+                Desde 2018, cuidamos de cada detalhe — da escolha dos ingredientes à higienização rigorosa e ao preparo com carinho.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Com diversas linhas — Fitness, Low Carb, Caseira e Vegetariana — temos opções para todos os gostos e objetivos. Cada prato é pensado para entregar praticidade sem abrir mão da qualidade.
+                A proprietária Carina Petersen acompanha toda a produção, garantindo qualidade e atenção também na entrega, para que você se sinta verdadeiramente em casa.
               </p>
               <Button variant="ctaOutline" asChild>
                 <Link to="/sobre">Saiba mais sobre nós <ArrowRight className="h-4 w-4 ml-1" /></Link>
