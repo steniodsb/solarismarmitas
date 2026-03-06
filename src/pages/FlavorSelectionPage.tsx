@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Minus, ShoppingCart, Check, X } from "lucide-react";
+import { ArrowLeft, Plus, Minus, ShoppingCart, Check, X, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 interface FlavorSelection {
@@ -17,7 +17,7 @@ interface FlavorSelection {
 export default function FlavorSelectionPage() {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const navigate = useNavigate();
-  const { addItem, toggleCart } = useFrozenCart();
+  const { addItem, toggleCart, totalItems, totalPrice } = useFrozenCart();
 
   const { data: categories } = useFrozenCategories();
   const category = categories?.find((c) => c.slug === categorySlug);
@@ -228,6 +228,25 @@ export default function FlavorSelectionPage() {
           )}
         </div>
       </main>
+
+      {/* Floating cart button */}
+      {totalItems > 0 && (
+        <button
+          onClick={toggleCart}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-3 gradient-hero text-primary-foreground px-5 py-4 rounded-2xl shadow-2xl hover:scale-105 transition-transform"
+        >
+          <div className="relative">
+            <ShoppingBag className="h-6 w-6" />
+            <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {totalItems}
+            </span>
+          </div>
+          <div className="text-left">
+            <p className="text-xs opacity-80">Ver carrinho</p>
+            <p className="font-display font-bold text-sm">R$ {totalPrice.toFixed(2).replace(".", ",")}</p>
+          </div>
+        </button>
+      )}
     </div>
   );
 }
