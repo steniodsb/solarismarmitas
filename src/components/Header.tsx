@@ -6,7 +6,7 @@ import logoSolaris from "@/assets/logo-solaris.webp";
 
 const navLinks = [
   { label: "Início", href: "/" },
-  { label: "Pedir", href: "/pedir" },
+  { label: "Produtos", href: "/pedir" },
   { label: "Sobre", href: "/sobre" },
   { label: "Contato", href: "/contato" },
 ];
