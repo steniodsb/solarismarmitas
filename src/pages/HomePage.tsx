@@ -9,6 +9,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { Snowflake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import carinaPetersen from "@/assets/carina-petersen.jpg";
+import heroMeals from "@/assets/hero-meals.jpg";
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -124,8 +125,13 @@ export default function HomePage() {
 
       {/* Hero */}
       <section className="pt-16">
-        <div className="gradient-hero py-16 sm:py-24">
-          <div className="container text-center space-y-6">
+        <div className="gradient-hero py-16 sm:py-24 relative overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-15"
+            style={{ backgroundImage: `url(${heroMeals})` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/60 to-primary/90" />
+          <div className="container text-center space-y-6 relative z-10">
             <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-4 py-2 text-primary-foreground/90 text-sm">
               <Snowflake className="h-4 w-4" />
               Marmitas Congeladas
