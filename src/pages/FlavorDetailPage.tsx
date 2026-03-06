@@ -223,7 +223,7 @@ export default function FlavorDetailPage() {
 
       <CartNotification message={cartMessage} onDismiss={dismissNotification} />
       <Footer />
-      <WhatsAppButton />
+      
     </div>
   );
 }

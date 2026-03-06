@@ -113,7 +113,7 @@ export default function CategoryPage() {
       </main>
 
       <Footer />
-      <WhatsAppButton />
+      
     </div>
   );
 }

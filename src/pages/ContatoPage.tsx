@@ -32,7 +32,7 @@ export default function ContatoPage() {
       <Footer />
       <FrozenCartSidebar />
       <FrozenCheckoutModal />
-      <WhatsAppButton />
+      
     </div>
   );
 }

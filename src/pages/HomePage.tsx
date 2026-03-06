@@ -282,7 +282,7 @@ export default function HomePage() {
       </section>
 
       <Footer />
-      <WhatsAppButton />
+      
     </div>
   );
 }
