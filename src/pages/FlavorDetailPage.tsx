@@ -169,12 +169,19 @@ export default function FlavorDetailPage() {
               )}
             </div>
 
-            {/* Other flavors */}
-            {otherFlavors.length > 0 && (
-              <div className="mt-12">
-                <h2 className="font-display text-lg sm:text-xl font-bold text-foreground mb-4">
+            {/* More flavors button + preview */}
+            <div className="mt-12">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-display text-lg sm:text-xl font-bold text-foreground">
                   Outros sabores de {category.name}
                 </h2>
+                <Button variant="ctaOutline" size="sm" asChild>
+                  <Link to={`/montar/${categorySlug}`}>
+                    Mais sabores <ArrowRight className="h-4 w-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+              {otherFlavors.length > 0 && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {otherFlavors.map((f) => (
                     <Link
@@ -197,8 +204,8 @@ export default function FlavorDetailPage() {
                     </Link>
                   ))}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </main>
