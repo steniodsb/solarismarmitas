@@ -6,10 +6,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
-import WhatsAppButton from "@/components/WhatsAppButton";
 import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, ShoppingCart, Check, Minus, Plus } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShoppingCart, ShoppingBag, Check, Minus, Plus } from "lucide-react";
 
 export default function FlavorDetailPage() {
   const { categorySlug, flavorId } = useParams<{ categorySlug: string; flavorId: string }>();
@@ -21,9 +20,6 @@ export default function FlavorDetailPage() {
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const dismissNotification = useCallback(() => setCartMessage(null), []);
 
-  const minPrice = sizes?.length ? Math.min(...sizes.map((s) => s.price)) : null;
-
-  // Other flavors from same category (excluding current)
   const otherFlavors = flavors?.filter((f) => f.id !== flavorId)?.slice(0, 4) || [];
 
   if (isLoading) {
@@ -31,9 +27,9 @@ export default function FlavorDetailPage() {
       <div className="min-h-screen bg-background">
         <Header />
         <main className="pt-16">
-          <div className="container py-20">
-            <div className="max-w-2xl mx-auto space-y-6">
-              <div className="h-64 bg-muted animate-pulse rounded-2xl" />
+          <div className="container px-4 py-10">
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div className="h-48 sm:h-64 bg-muted animate-pulse rounded-2xl" />
               <div className="h-8 w-48 bg-muted animate-pulse rounded" />
               <div className="h-4 w-full bg-muted animate-pulse rounded" />
             </div>
@@ -48,7 +44,7 @@ export default function FlavorDetailPage() {
       <div className="min-h-screen bg-background">
         <Header />
         <main className="pt-16">
-          <div className="container py-20 text-center">
+          <div className="container px-4 py-20 text-center">
             <h1 className="font-display text-2xl font-bold text-foreground mb-4">Sabor não encontrado</h1>
             <Button variant="ctaOutline" asChild>
               <Link to="/">Voltar ao início</Link>
@@ -65,9 +61,10 @@ export default function FlavorDetailPage() {
       <FrozenCartSidebar />
       <FrozenCheckoutModal />
 
-      <main className="pt-16">
-        <div className="gradient-hero py-6">
-          <div className="container">
+      <main className="pt-16 pb-24">
+        {/* Breadcrumb */}
+        <div className="gradient-hero py-4 sm:py-6">
+          <div className="container px-4">
             <Link
               to={`/categoria/${categorySlug}`}
               className="flex items-center gap-2 text-primary-foreground/70 hover:text-primary-foreground text-sm transition-colors"
@@ -77,121 +74,125 @@ export default function FlavorDetailPage() {
           </div>
         </div>
 
-        <div className="container py-10">
+        <div className="container px-4 py-6 sm:py-10">
           <div className="max-w-3xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Image */}
-              <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent aspect-square flex items-center justify-center">
-                {flavor.image_url ? (
-                  <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
-                ) : (
+            {/* Image — full width on mobile */}
+            <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent aspect-[4/3] sm:aspect-[16/9] mb-6">
+              {flavor.image_url ? (
+                <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex items-center justify-center w-full h-full">
                   <span className="text-8xl opacity-30">🍱</span>
-                )}
-              </div>
-
-              {/* Details */}
-              <div className="space-y-6 flex flex-col justify-center">
-                <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
-                    {category.name}
-                  </span>
                 </div>
-                <h1 className="font-display text-3xl sm:text-4xl font-black text-foreground">
-                  {flavor.name}
-                </h1>
-                <p className="text-muted-foreground text-lg leading-relaxed">
-                  {flavor.description}
-                </p>
+              )}
+            </div>
 
-                {/* Size selection */}
-                {sizes && sizes.length > 0 && (
-                  <div className="space-y-4">
-                    <h4 className="font-display font-bold text-foreground">Escolha o tamanho</h4>
-                    <div className="flex flex-col gap-2">
-                      {sizes.map((s) => (
-                        <button
-                          key={s.id}
-                          onClick={() => { setSelectedSizeId(s.id); setQuantity(1); }}
-                          className={`flex items-center justify-between p-3.5 rounded-xl border-2 transition-all ${
-                            selectedSizeId === s.id
-                              ? "border-primary bg-primary/5"
-                              : "border-border bg-card hover:border-primary/30"
-                          }`}
-                        >
-                          <span className="font-semibold text-foreground">{s.label}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-primary font-bold">R$ {s.price.toFixed(2).replace(".", ",")}</span>
-                            {selectedSizeId === s.id && <Check className="h-4 w-4 text-primary" />}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
+            {/* Details */}
+            <div className="space-y-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full">
+                {category.name}
+              </span>
+              <h1 className="font-display text-2xl sm:text-4xl font-black text-foreground">
+                {flavor.name}
+              </h1>
+              <p className="text-muted-foreground text-base leading-relaxed">
+                {flavor.description}
+              </p>
 
-                    {/* Quantity + Add to cart */}
-                    {selectedSizeId && (
-                      <div className="flex items-center justify-between pt-2">
+              {/* Size selection */}
+              {sizes && sizes.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  <h4 className="font-display font-bold text-foreground">Escolha o tamanho</h4>
+                  <div className="space-y-2">
+                    {sizes.map((s) => (
+                      <button
+                        key={s.id}
+                        onClick={() => { setSelectedSizeId(s.id); setQuantity(1); }}
+                        className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all w-full active:scale-[0.98] ${
+                          selectedSizeId === s.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border bg-card hover:border-primary/30"
+                        }`}
+                      >
                         <div className="flex items-center gap-3">
-                          <span className="text-sm text-muted-foreground">Qtd:</span>
-                          <button
-                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                            className="w-8 h-8 rounded-full border border-border bg-card flex items-center justify-center hover:bg-muted"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-6 text-center font-bold text-foreground">{quantity}</span>
-                          <button
-                            onClick={() => setQuantity((q) => q + 1)}
-                            className="w-8 h-8 rounded-full border border-primary bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </button>
+                          <span className="font-display text-lg font-black text-foreground">
+                            {s.ml}<span className="text-xs text-muted-foreground font-normal">ml</span>
+                          </span>
+                          <span className="text-sm text-muted-foreground">{s.label}</span>
                         </div>
-                        <Button
-                          variant="cta"
-                          onClick={() => {
-                            const size = sizes.find((s) => s.id === selectedSizeId);
-                            if (!size || !category || !flavor) return;
-                            addItem({ category, size, flavor, quantity, unitPrice: size.price });
-                            setCartMessage(`${quantity}x ${flavor.name} adicionado ao carrinho!`);
-                            setSelectedSizeId(null);
-                            setQuantity(1);
-                          }}
-                        >
-                          <ShoppingCart className="h-4 w-4" />
-                          Adicionar — R$ {((sizes.find((s) => s.id === selectedSizeId)?.price || 0) * quantity).toFixed(2).replace(".", ",")}
-                        </Button>
-                      </div>
-                    )}
+                        <div className="flex items-center gap-2">
+                          <span className="text-primary font-bold text-base">R$ {s.price.toFixed(2).replace(".", ",")}</span>
+                          {selectedSizeId === s.id && <Check className="h-5 w-5 text-primary" />}
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
+
+                  {/* Quantity + Add to cart — stacked on mobile */}
+                  {selectedSizeId && (
+                    <div className="flex flex-col gap-3 pt-3">
+                      <div className="flex items-center justify-center gap-4">
+                        <span className="text-sm text-muted-foreground">Quantidade:</span>
+                        <button
+                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                          className="w-10 h-10 rounded-full border border-border bg-card flex items-center justify-center hover:bg-muted active:scale-95 transition-all"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <span className="w-8 text-center font-bold text-foreground text-xl">{quantity}</span>
+                        <button
+                          onClick={() => setQuantity((q) => q + 1)}
+                          className="w-10 h-10 rounded-full border border-primary bg-primary text-primary-foreground flex items-center justify-center hover:opacity-90 active:scale-95 transition-all"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <Button
+                        variant="cta"
+                        size="xl"
+                        className="w-full h-12"
+                        onClick={() => {
+                          const size = sizes.find((s) => s.id === selectedSizeId);
+                          if (!size || !category || !flavor) return;
+                          addItem({ category, size, flavor, quantity, unitPrice: size.price });
+                          setCartMessage(`${quantity}x ${flavor.name} adicionado ao carrinho!`);
+                          setSelectedSizeId(null);
+                          setQuantity(1);
+                        }}
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Adicionar — R$ {((sizes.find((s) => s.id === selectedSizeId)?.price || 0) * quantity).toFixed(2).replace(".", ",")}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Other flavors */}
             {otherFlavors.length > 0 && (
-              <div className="mt-16">
-                <h2 className="font-display text-xl font-bold text-foreground mb-6">
+              <div className="mt-12">
+                <h2 className="font-display text-lg sm:text-xl font-bold text-foreground mb-4">
                   Outros sabores de {category.name}
                 </h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {otherFlavors.map((f) => (
                     <Link
                       key={f.id}
                       to={`/categoria/${categorySlug}/sabor/${f.id}`}
-                      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all"
+                      className="group rounded-xl border border-border bg-card overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all active:scale-[0.98]"
                     >
-                      <div className="h-28 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
+                      <div className="h-24 sm:h-28 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
                         {f.image_url ? (
                           <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-4xl opacity-30">🍱</span>
+                          <span className="text-3xl opacity-30">🍱</span>
                         )}
                       </div>
-                      <div className="p-3">
-                        <h4 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+                      <div className="p-2.5">
+                        <h4 className="font-semibold text-xs sm:text-sm text-foreground group-hover:text-primary transition-colors leading-tight">
                           {f.name}
                         </h4>
-                        <p className="text-muted-foreground text-xs line-clamp-1 mt-0.5">{f.description}</p>
                       </div>
                     </Link>
                   ))}
@@ -202,14 +203,14 @@ export default function FlavorDetailPage() {
         </div>
       </main>
 
-      {/* Floating cart button */}
+      {/* Floating cart button — full-width bar on mobile */}
       {totalItems > 0 && (
         <button
           onClick={toggleCart}
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-3 gradient-hero text-primary-foreground px-5 py-4 rounded-2xl shadow-2xl hover:scale-105 transition-transform"
+          className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto z-40 flex items-center justify-center gap-3 gradient-hero text-primary-foreground px-5 py-3.5 rounded-2xl shadow-2xl hover:scale-[1.02] transition-transform active:scale-95"
         >
           <div className="relative">
-            <ShoppingCart className="h-6 w-6" />
+            <ShoppingBag className="h-5 w-5" />
             <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
               {totalItems}
             </span>
@@ -223,7 +224,6 @@ export default function FlavorDetailPage() {
 
       <CartNotification message={cartMessage} onDismiss={dismissNotification} />
       <Footer />
-      
     </div>
   );
 }
