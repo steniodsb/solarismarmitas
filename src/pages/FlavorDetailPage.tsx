@@ -18,7 +18,6 @@ export default function FlavorDetailPage() {
 
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [showSizePicker, setShowSizePicker] = useState(false);
 
   const minPrice = sizes?.length ? Math.min(...sizes.map((s) => s.price)) : null;
 
@@ -102,57 +101,31 @@ export default function FlavorDetailPage() {
                   {flavor.description}
                 </p>
 
-                {minPrice !== null && (
-                  <div className="bg-muted rounded-xl p-4">
-                    <p className="text-sm text-muted-foreground">A partir de</p>
-                    <p className="font-display text-3xl font-black text-primary">
-                      R$ {minPrice.toFixed(2).replace(".", ",")}
-                      <span className="text-sm font-normal text-muted-foreground ml-1">/ unidade</span>
-                    </p>
-                    {sizes && sizes.length > 1 && (
-                      <div className="flex gap-2 mt-3 flex-wrap">
-                        {sizes.map((s) => (
-                          <span key={s.id} className="text-xs bg-card border border-border px-3 py-1.5 rounded-lg">
-                            {s.label}: <strong>R$ {s.price.toFixed(2).replace(".", ",")}</strong>
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <Button
-                  variant="cta"
-                  size="xl"
-                  className="w-full sm:w-auto"
-                  onClick={() => setShowSizePicker(true)}
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Pedir Este Sabor
-                </Button>
-
-                {/* Size picker inline */}
-                {showSizePicker && sizes && sizes.length > 0 && (
-                  <div className="bg-muted rounded-xl p-5 space-y-4 animate-in slide-in-from-bottom-2">
+                {/* Size selection */}
+                {sizes && sizes.length > 0 && (
+                  <div className="space-y-4">
                     <h4 className="font-display font-bold text-foreground">Escolha o tamanho</h4>
                     <div className="flex flex-col gap-2">
                       {sizes.map((s) => (
                         <button
                           key={s.id}
-                          onClick={() => setSelectedSizeId(s.id)}
-                          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                          onClick={() => { setSelectedSizeId(s.id); setQuantity(1); }}
+                          className={`flex items-center justify-between p-3.5 rounded-xl border-2 transition-all ${
                             selectedSizeId === s.id
-                              ? "border-primary bg-accent"
+                              ? "border-primary bg-primary/5"
                               : "border-border bg-card hover:border-primary/30"
                           }`}
                         >
                           <span className="font-semibold text-foreground">{s.label}</span>
-                          <span className="text-primary font-bold">R$ {s.price.toFixed(2).replace(".", ",")}</span>
-                          {selectedSizeId === s.id && <Check className="h-4 w-4 text-primary" />}
+                          <div className="flex items-center gap-2">
+                            <span className="text-primary font-bold">R$ {s.price.toFixed(2).replace(".", ",")}</span>
+                            {selectedSizeId === s.id && <Check className="h-4 w-4 text-primary" />}
+                          </div>
                         </button>
                       ))}
                     </div>
 
+                    {/* Quantity + Add to cart */}
                     {selectedSizeId && (
                       <div className="flex items-center justify-between pt-2">
                         <div className="flex items-center gap-3">
@@ -176,15 +149,8 @@ export default function FlavorDetailPage() {
                           onClick={() => {
                             const size = sizes.find((s) => s.id === selectedSizeId);
                             if (!size || !category || !flavor) return;
-                            addItem({
-                              category,
-                              size,
-                              flavor,
-                              quantity,
-                              unitPrice: size.price,
-                            });
+                            addItem({ category, size, flavor, quantity, unitPrice: size.price });
                             toast.success(`${quantity}x ${flavor.name} adicionado ao carrinho!`);
-                            setShowSizePicker(false);
                             setSelectedSizeId(null);
                             setQuantity(1);
                           }}
