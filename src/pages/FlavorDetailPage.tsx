@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useFrozenFlavorBySlug } from "@/hooks/useFrozenData";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
@@ -7,17 +7,19 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, ShoppingCart, Check, Minus, Plus } from "lucide-react";
-import { toast } from "sonner";
 
 export default function FlavorDetailPage() {
   const { categorySlug, flavorId } = useParams<{ categorySlug: string; flavorId: string }>();
   const { category, flavor, sizes, flavors, isLoading } = useFrozenFlavorBySlug(categorySlug, flavorId);
-  const { addItem, toggleCart } = useFrozenCart();
+  const { addItem, toggleCart, totalItems, totalPrice } = useFrozenCart();
 
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const dismissNotification = useCallback(() => setCartMessage(null), []);
 
   const minPrice = sizes?.length ? Math.min(...sizes.map((s) => s.price)) : null;
 
@@ -150,7 +152,7 @@ export default function FlavorDetailPage() {
                             const size = sizes.find((s) => s.id === selectedSizeId);
                             if (!size || !category || !flavor) return;
                             addItem({ category, size, flavor, quantity, unitPrice: size.price });
-                            toast.success(`${quantity}x ${flavor.name} adicionado ao carrinho!`);
+                            setCartMessage(`${quantity}x ${flavor.name} adicionado ao carrinho!`);
                             setSelectedSizeId(null);
                             setQuantity(1);
                           }}
@@ -200,6 +202,26 @@ export default function FlavorDetailPage() {
         </div>
       </main>
 
+      {/* Floating cart button */}
+      {totalItems > 0 && (
+        <button
+          onClick={toggleCart}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-3 gradient-hero text-primary-foreground px-5 py-4 rounded-2xl shadow-2xl hover:scale-105 transition-transform"
+        >
+          <div className="relative">
+            <ShoppingCart className="h-6 w-6" />
+            <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {totalItems}
+            </span>
+          </div>
+          <div className="text-left">
+            <p className="text-xs opacity-80">Ver carrinho</p>
+            <p className="font-display font-bold text-sm">R$ {totalPrice.toFixed(2).replace(".", ",")}</p>
+          </div>
+        </button>
+      )}
+
+      <CartNotification message={cartMessage} onDismiss={dismissNotification} />
       <Footer />
       <WhatsAppButton />
     </div>

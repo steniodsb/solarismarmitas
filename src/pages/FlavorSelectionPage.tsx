@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useFrozenCategories, useFrozenSizes, useFrozenFlavors } from "@/hooks/useFrozenData";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
+import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, Minus, ShoppingCart, Check, X, ShoppingBag } from "lucide-react";
-import { toast } from "sonner";
 
 interface FlavorSelection {
   sizeId: string;
@@ -30,6 +30,8 @@ export default function FlavorSelectionPage() {
   const [activeFlavor, setActiveFlavor] = useState<string | null>(null);
   // Track selections per flavor: { flavorId: { sizeId, quantity } }
   const [selections, setSelections] = useState<Record<string, FlavorSelection>>({});
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const dismissNotification = useCallback(() => setCartMessage(null), []);
 
   const selectSize = (flavorId: string, sizeId: string) => {
     setSelections((prev) => ({
@@ -61,7 +63,7 @@ export default function FlavorSelectionPage() {
       quantity: sel.quantity,
       unitPrice: size.price,
     });
-    toast.success(`${sel.quantity}x ${flavor.name} (${size.label}) adicionado!`);
+    setCartMessage(`${sel.quantity}x ${flavor.name} (${size.label}) adicionado!`);
     // Reset this flavor
     setSelections((prev) => {
       const { [flavorId]: _, ...rest } = prev;
@@ -247,6 +249,8 @@ export default function FlavorSelectionPage() {
           </div>
         </button>
       )}
+
+      <CartNotification message={cartMessage} onDismiss={dismissNotification} />
     </div>
   );
 }
