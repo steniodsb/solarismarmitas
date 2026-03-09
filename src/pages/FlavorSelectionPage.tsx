@@ -91,7 +91,9 @@ export default function FlavorSelectionPage() {
               {category?.name || "..."}
             </h1>
             <p className="text-primary-foreground/70 mt-1 text-sm sm:text-base">
-              Escolha o sabor, o tamanho e adicione ao carrinho
+              {isJuice
+                ? "Sucos naturais em embalagens de 300ml para congelamento"
+                : "Escolha o sabor, o tamanho e adicione ao carrinho"}
             </p>
           </div>
         </div>
