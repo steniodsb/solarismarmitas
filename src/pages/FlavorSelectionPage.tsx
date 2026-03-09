@@ -166,42 +166,54 @@ export default function FlavorSelectionPage() {
                     {/* Size picker (expanded) */}
                     {isOpen && sizes && sizes.length > 0 && (
                       <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                        <div className="border-t border-border pt-3">
-                          <p className="text-sm font-semibold text-foreground mb-2">Escolha o tamanho:</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {sizes.map((size, idx) => {
-                              const isPopular = idx === 1 && sizes.length > 2;
-                              const isSelected = sel?.sizeId === size.id;
-                              return (
-                                <button
-                                  key={size.id}
-                                  onClick={() => selectSize(flavor.id, size.id)}
-                                  className={`relative rounded-xl border-2 py-3 px-2 text-center transition-all ${
-                                    isSelected
-                                      ? "border-primary bg-accent shadow-md"
-                                      : "border-border bg-card hover:border-primary/40"
-                                  }`}
-                                >
-                                  {isPopular && (
-                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 gradient-gold text-secondary-foreground text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                                      Mais vendido
-                                    </span>
-                                  )}
-                                  {isSelected && (
-                                    <Check className="absolute top-1.5 right-1.5 h-3.5 w-3.5 text-primary" />
-                                  )}
-                                  <div className="font-display text-xl sm:text-2xl font-black text-foreground leading-none">
-                                    {size.ml}
-                                    <span className="text-[10px] text-muted-foreground font-normal">ml</span>
-                                  </div>
-                                  <div className="font-display text-base sm:text-lg font-bold text-primary mt-1">
-                                    R$ {size.price.toFixed(2).replace(".", ",")}
-                                  </div>
-                                </button>
-                              );
-                            })}
+                        {/* Hide size picker for sucos — auto-selected */}
+                        {!isJuice && (
+                          <div className="border-t border-border pt-3">
+                            <p className="text-sm font-semibold text-foreground mb-2">Escolha o tamanho:</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {sizes.map((size, idx) => {
+                                const isPopular = idx === 1 && sizes.length > 2;
+                                const isSelected = sel?.sizeId === size.id;
+                                return (
+                                  <button
+                                    key={size.id}
+                                    onClick={() => selectSize(flavor.id, size.id)}
+                                    className={`relative rounded-xl border-2 py-3 px-2 text-center transition-all ${
+                                      isSelected
+                                        ? "border-primary bg-accent shadow-md"
+                                        : "border-border bg-card hover:border-primary/40"
+                                    }`}
+                                  >
+                                    {isPopular && (
+                                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 gradient-gold text-secondary-foreground text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                                        Mais vendido
+                                      </span>
+                                    )}
+                                    {isSelected && (
+                                      <Check className="absolute top-1.5 right-1.5 h-3.5 w-3.5 text-primary" />
+                                    )}
+                                    <div className="font-display text-xl sm:text-2xl font-black text-foreground leading-none">
+                                      {size.ml}
+                                      <span className="text-[10px] text-muted-foreground font-normal">ml</span>
+                                    </div>
+                                    <div className="font-display text-base sm:text-lg font-bold text-primary mt-1">
+                                      R$ {size.price.toFixed(2).replace(".", ",")}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* For sucos, show price info */}
+                        {isJuice && juiceSize && (
+                          <div className="border-t border-border pt-3">
+                            <p className="text-sm text-muted-foreground">
+                              300ml — <span className="text-primary font-bold">R$ {juiceSize.price.toFixed(2).replace(".", ",")}</span> cada
+                            </p>
+                          </div>
+                        )}
 
                         {/* Quantity + Add to cart */}
                         {sel && selectedSize && (
