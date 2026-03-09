@@ -17,6 +17,7 @@ const categoryImages: Record<string, string> = {
   caseira: catCaseira,
   vegetariana: catVegetariana,
   sucos: catSucos,
+  promocionais: catFitness, // placeholder
 };
 
 const categoryEmojis: Record<string, string> = {
@@ -25,6 +26,7 @@ const categoryEmojis: Record<string, string> = {
   caseira: "🏠",
   vegetariana: "🥬",
   sucos: "🧃",
+  promocionais: "🔥",
 };
 
 export default function OrderCategoriesPage() {
@@ -65,7 +67,7 @@ export default function OrderCategoriesPage() {
               {categories?.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => navigate(`/montar/${cat.slug}`)}
+                  onClick={() => navigate(cat.slug === "promocionais" ? "/montar/promocionais" : `/montar/${cat.slug}`)}
                   className="group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <img

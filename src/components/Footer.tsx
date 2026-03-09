@@ -6,6 +6,7 @@ const footerLinks = [
   { label: "Início", href: "/" },
   { label: "Sobre", href: "/sobre" },
   { label: "Contato", href: "/contato" },
+  { label: "Área de Atendimento", href: "/area-atendimento" },
 ];
 
 export default function Footer() {

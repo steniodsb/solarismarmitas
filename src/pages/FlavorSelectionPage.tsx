@@ -31,6 +31,9 @@ export default function FlavorSelectionPage() {
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const dismissNotification = useCallback(() => setCartMessage(null), []);
 
+  // For sucos, auto-select the single 300ml size when opening a flavor
+  const juiceSize = isJuice ? sizes?.[0] : null;
+
   const selectSize = (flavorId: string, sizeId: string) => {
     setSelections((prev) => ({
       ...prev,
@@ -88,7 +91,9 @@ export default function FlavorSelectionPage() {
               {category?.name || "..."}
             </h1>
             <p className="text-primary-foreground/70 mt-1 text-sm sm:text-base">
-              Escolha o sabor, o tamanho e adicione ao carrinho
+              {isJuice
+                ? "Sucos naturais em embalagens de 300ml para congelamento"
+                : "Escolha o sabor, o tamanho e adicione ao carrinho"}
             </p>
           </div>
         </div>
@@ -118,7 +123,17 @@ export default function FlavorSelectionPage() {
                   >
                     {/* Flavor row */}
                     <button
-                      onClick={() => setActiveFlavor(isOpen ? null : flavor.id)}
+                      onClick={() => {
+                        const opening = !isOpen;
+                        setActiveFlavor(opening ? flavor.id : null);
+                        // Auto-select size for juice
+                        if (opening && isJuice && juiceSize && !selections[flavor.id]) {
+                          setSelections((prev) => ({
+                            ...prev,
+                            [flavor.id]: { sizeId: juiceSize.id, quantity: 1 },
+                          }));
+                        }
+                      }}
                       className="flex items-center gap-3 p-3 sm:p-4 w-full text-left"
                     >
                       <div className="relative w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
@@ -135,7 +150,9 @@ export default function FlavorSelectionPage() {
                         )}
                         {sizes && sizes.length > 0 && (
                           <p className="text-primary text-xs font-semibold mt-1">
-                            A partir de R$ {Math.min(...sizes.map((s) => s.price)).toFixed(2).replace(".", ",")}
+                            {isJuice
+                              ? `R$ ${sizes[0].price.toFixed(2).replace(".", ",")} — 300ml`
+                              : `A partir de R$ ${Math.min(...sizes.map((s) => s.price)).toFixed(2).replace(".", ",")}`}
                           </p>
                         )}
                       </div>
@@ -151,42 +168,54 @@ export default function FlavorSelectionPage() {
                     {/* Size picker (expanded) */}
                     {isOpen && sizes && sizes.length > 0 && (
                       <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
-                        <div className="border-t border-border pt-3">
-                          <p className="text-sm font-semibold text-foreground mb-2">Escolha o tamanho:</p>
-                          <div className="grid grid-cols-3 gap-2">
-                            {sizes.map((size, idx) => {
-                              const isPopular = idx === 1 && sizes.length > 2;
-                              const isSelected = sel?.sizeId === size.id;
-                              return (
-                                <button
-                                  key={size.id}
-                                  onClick={() => selectSize(flavor.id, size.id)}
-                                  className={`relative rounded-xl border-2 py-3 px-2 text-center transition-all ${
-                                    isSelected
-                                      ? "border-primary bg-accent shadow-md"
-                                      : "border-border bg-card hover:border-primary/40"
-                                  }`}
-                                >
-                                  {isPopular && (
-                                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 gradient-gold text-secondary-foreground text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                                      Mais vendido
-                                    </span>
-                                  )}
-                                  {isSelected && (
-                                    <Check className="absolute top-1.5 right-1.5 h-3.5 w-3.5 text-primary" />
-                                  )}
-                                  <div className="font-display text-xl sm:text-2xl font-black text-foreground leading-none">
-                                    {size.ml}
-                                    <span className="text-[10px] text-muted-foreground font-normal">ml</span>
-                                  </div>
-                                  <div className="font-display text-base sm:text-lg font-bold text-primary mt-1">
-                                    R$ {size.price.toFixed(2).replace(".", ",")}
-                                  </div>
-                                </button>
-                              );
-                            })}
+                        {/* Hide size picker for sucos — auto-selected */}
+                        {!isJuice && (
+                          <div className="border-t border-border pt-3">
+                            <p className="text-sm font-semibold text-foreground mb-2">Escolha o tamanho:</p>
+                            <div className="grid grid-cols-3 gap-2">
+                              {sizes.map((size, idx) => {
+                                const isPopular = idx === 1 && sizes.length > 2;
+                                const isSelected = sel?.sizeId === size.id;
+                                return (
+                                  <button
+                                    key={size.id}
+                                    onClick={() => selectSize(flavor.id, size.id)}
+                                    className={`relative rounded-xl border-2 py-3 px-2 text-center transition-all ${
+                                      isSelected
+                                        ? "border-primary bg-accent shadow-md"
+                                        : "border-border bg-card hover:border-primary/40"
+                                    }`}
+                                  >
+                                    {isPopular && (
+                                      <span className="absolute -top-2 left-1/2 -translate-x-1/2 gradient-gold text-secondary-foreground text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
+                                        Mais vendido
+                                      </span>
+                                    )}
+                                    {isSelected && (
+                                      <Check className="absolute top-1.5 right-1.5 h-3.5 w-3.5 text-primary" />
+                                    )}
+                                    <div className="font-display text-xl sm:text-2xl font-black text-foreground leading-none">
+                                      {size.ml}
+                                      <span className="text-[10px] text-muted-foreground font-normal">ml</span>
+                                    </div>
+                                    <div className="font-display text-base sm:text-lg font-bold text-primary mt-1">
+                                      R$ {size.price.toFixed(2).replace(".", ",")}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* For sucos, show price info */}
+                        {isJuice && juiceSize && (
+                          <div className="border-t border-border pt-3">
+                            <p className="text-sm text-muted-foreground">
+                              300ml — <span className="text-primary font-bold">R$ {juiceSize.price.toFixed(2).replace(".", ",")}</span> cada
+                            </p>
+                          </div>
+                        )}
 
                         {/* Quantity + Add to cart */}
                         {sel && selectedSize && (
