@@ -123,7 +123,17 @@ export default function FlavorSelectionPage() {
                   >
                     {/* Flavor row */}
                     <button
-                      onClick={() => setActiveFlavor(isOpen ? null : flavor.id)}
+                      onClick={() => {
+                        const opening = !isOpen;
+                        setActiveFlavor(opening ? flavor.id : null);
+                        // Auto-select size for juice
+                        if (opening && isJuice && juiceSize && !selections[flavor.id]) {
+                          setSelections((prev) => ({
+                            ...prev,
+                            [flavor.id]: { sizeId: juiceSize.id, quantity: 1 },
+                          }));
+                        }
+                      }}
                       className="flex items-center gap-3 p-3 sm:p-4 w-full text-left"
                     >
                       <div className="relative w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
