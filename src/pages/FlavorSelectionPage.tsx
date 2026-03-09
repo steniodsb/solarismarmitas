@@ -150,7 +150,9 @@ export default function FlavorSelectionPage() {
                         )}
                         {sizes && sizes.length > 0 && (
                           <p className="text-primary text-xs font-semibold mt-1">
-                            A partir de R$ {Math.min(...sizes.map((s) => s.price)).toFixed(2).replace(".", ",")}
+                            {isJuice
+                              ? `R$ ${sizes[0].price.toFixed(2).replace(".", ",")} — 300ml`
+                              : `A partir de R$ ${Math.min(...sizes.map((s) => s.price)).toFixed(2).replace(".", ",")}`}
                           </p>
                         )}
                       </div>
