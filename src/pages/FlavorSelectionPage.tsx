@@ -31,6 +31,9 @@ export default function FlavorSelectionPage() {
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const dismissNotification = useCallback(() => setCartMessage(null), []);
 
+  // For sucos, auto-select the single 300ml size when opening a flavor
+  const juiceSize = isJuice ? sizes?.[0] : null;
+
   const selectSize = (flavorId: string, sizeId: string) => {
     setSelections((prev) => ({
       ...prev,
