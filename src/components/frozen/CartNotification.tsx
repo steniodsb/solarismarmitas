@@ -26,7 +26,7 @@ export default function CartNotification({ message, onDismiss }: CartNotificatio
 
   return (
     <div
-      className={`fixed bottom-20 sm:bottom-24 left-4 right-4 sm:right-6 sm:left-auto sm:max-w-xs z-50 transition-all duration-300 ${
+      className={`fixed bottom-28 sm:bottom-28 left-4 right-4 sm:right-6 sm:left-auto sm:max-w-xs z-50 transition-all duration-300 ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
       }`}
     >

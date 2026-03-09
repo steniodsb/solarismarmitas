@@ -10,6 +10,8 @@ import CategoryPage from "./pages/CategoryPage";
 import FlavorDetailPage from "./pages/FlavorDetailPage";
 import SizeSelectionPage from "./pages/SizeSelectionPage";
 import FlavorSelectionPage from "./pages/FlavorSelectionPage";
+import PromotionalPage from "./pages/PromotionalPage";
+import AreaAtendimentoPage from "./pages/AreaAtendimentoPage";
 import SobrePage from "./pages/SobrePage";
 import ContatoPage from "./pages/ContatoPage";
 import NotFound from "./pages/NotFound";
@@ -30,6 +32,8 @@ const App = () => (
             <Route path="/categoria/:categorySlug/sabor/:flavorId" element={<FlavorDetailPage />} />
             <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
             <Route path="/montar/:categorySlug" element={<FlavorSelectionPage />} />
+            <Route path="/montar/promocionais" element={<PromotionalPage />} />
+            <Route path="/area-atendimento" element={<AreaAtendimentoPage />} />
             <Route path="/sobre" element={<SobrePage />} />
             <Route path="/contato" element={<ContatoPage />} />
             <Route path="*" element={<NotFound />} />

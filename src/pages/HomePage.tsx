@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
@@ -9,58 +9,6 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { Snowflake, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import carinaPetersen from "@/assets/carina-petersen.jpg";
-import heroMeals from "@/assets/hero-meals.jpg";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-
-const heroImages = [heroMeals, catCaseira, catFitness, catLowcarb, catVegetariana];
-
-function HeroCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="py-16 sm:py-24 relative overflow-hidden">
-      {heroImages.map((img, i) => (
-        <div
-          key={i}
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
-          style={{
-            backgroundImage: `url(${img})`,
-            opacity: i === currentIndex ? 1 : 0,
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 bg-black/60" />
-      <div className="container text-center space-y-6 relative z-10">
-        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-white/90 text-sm">
-          <Snowflake className="h-4 w-4" />
-          Marmitas Congeladas
-        </div>
-        <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
-          Comida de verdade,<br />
-          <span className="text-secondary">pronta pra você.</span>
-        </h1>
-        <p className="text-white/70 max-w-lg mx-auto text-lg">
-          Escolha sua linha, o tamanho ideal e monte seu combo de marmitas congeladas com os sabores que você mais gosta.
-        </p>
-        <div className="pt-2">
-          <Button variant="cta" size="xl" asChild>
-            <Link to="/pedir">Pedir Agora</Link>
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -68,6 +16,7 @@ const categoryEmojis: Record<string, string> = {
   caseira: "🏠",
   vegetariana: "🥬",
   sucos: "🧃",
+  promocionais: "🔥",
 };
 
 const categoryCTAs: Record<string, string> = {
@@ -76,6 +25,7 @@ const categoryCTAs: Record<string, string> = {
   caseira: "Peça Caseira agora",
   vegetariana: "Monte seu combo Vegetariano",
   sucos: "Peça seus Sucos",
+  promocionais: "Aproveite as promoções",
 };
 
 function FlavorCarousel({
@@ -150,7 +100,7 @@ function FlavorCarousel({
 
       <div className="text-center">
         <Button variant="cta" asChild>
-          <Link to={`/montar/${categorySlug}`}>
+          <Link to={categorySlug === "promocionais" ? "/montar/promocionais" : `/montar/${categorySlug}`}>
             {categoryCTAs[categorySlug] || "Faça seu pedido"} <ArrowRight className="h-4 w-4 ml-1" />
           </Link>
         </Button>
@@ -174,9 +124,28 @@ export default function HomePage() {
       <FrozenCartSidebar />
       <FrozenCheckoutModal />
 
-      {/* Hero */}
+      {/* Hero — solid red gradient */}
       <section className="pt-16">
-        <HeroCarousel />
+        <div className="gradient-hero py-16 sm:py-24">
+          <div className="container text-center space-y-6">
+            <div className="inline-flex items-center gap-2 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-4 py-2 text-primary-foreground/90 text-sm">
+              <Snowflake className="h-4 w-4" />
+              Marmitas Congeladas
+            </div>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-primary-foreground leading-tight">
+              Comida de verdade,<br />
+              <span className="text-secondary">pronta pra você.</span>
+            </h1>
+            <p className="text-primary-foreground/70 max-w-lg mx-auto text-lg">
+              Escolha sua linha, o tamanho ideal e monte seu combo de marmitas congeladas com os sabores que você mais gosta.
+            </p>
+            <div className="pt-2">
+              <Button variant="cta" size="xl" asChild>
+                <Link to="/pedir">Pedir Agora</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Category carousels */}
@@ -198,7 +167,8 @@ export default function HomePage() {
           ) : (
             categories?.map((cat) => {
               const flavors = flavorsByCategory(cat.id);
-              if (!flavors.length) return null;
+              // Promocionais may not have flavors yet, show section anyway with description
+              if (!flavors.length && cat.slug !== "promocionais") return null;
               return (
                 <div key={cat.id}>
                   <div className="flex items-center justify-between mb-5">
@@ -209,14 +179,28 @@ export default function HomePage() {
                         <p className="text-muted-foreground text-sm hidden sm:block">{cat.description}</p>
                       </div>
                     </div>
-                    <Link
-                      to={`/categoria/${cat.slug}`}
-                      className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-2.5 transition-all"
-                    >
-                      Ver mais <ArrowRight className="h-4 w-4" />
-                    </Link>
+                    {cat.slug !== "promocionais" && (
+                      <Link
+                        to={`/categoria/${cat.slug}`}
+                        className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-2.5 transition-all"
+                      >
+                        Ver mais <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    )}
                   </div>
-                  <FlavorCarousel categorySlug={cat.slug} categoryId={cat.id} flavors={flavors} />
+                  {flavors.length > 0 ? (
+                    <FlavorCarousel categorySlug={cat.slug} categoryId={cat.id} flavors={flavors} />
+                  ) : (
+                    /* Promocionais without flavors — just show CTA */
+                    <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 text-center space-y-4">
+                      <p className="text-muted-foreground max-w-xl mx-auto">{cat.description}</p>
+                      <Button variant="cta" asChild>
+                        <Link to="/montar/promocionais">
+                          Aproveite as promoções <ArrowRight className="h-4 w-4 ml-1" />
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -224,7 +208,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Conheça nossa empresa */}
+      {/* Conheça nossa empresa — no clickable links */}
       <section className="py-16 bg-card">
         <div className="container">
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
@@ -248,9 +232,6 @@ export default function HomePage() {
               <p className="text-muted-foreground leading-relaxed">
                 A proprietária Carina Petersen acompanha toda a produção, garantindo qualidade e atenção também na entrega, para que você se sinta verdadeiramente em casa.
               </p>
-              <Button variant="ctaOutline" asChild>
-                <Link to="/sobre">Saiba mais sobre nós <ArrowRight className="h-4 w-4 ml-1" /></Link>
-              </Button>
             </div>
           </div>
         </div>
@@ -282,7 +263,6 @@ export default function HomePage() {
       </section>
 
       <Footer />
-      
     </div>
   );
 }
