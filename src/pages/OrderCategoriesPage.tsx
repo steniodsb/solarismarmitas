@@ -17,6 +17,7 @@ const categoryImages: Record<string, string> = {
   caseira: catCaseira,
   vegetariana: catVegetariana,
   sucos: catSucos,
+  promocionais: catFitness, // placeholder
 };
 
 const categoryEmojis: Record<string, string> = {
@@ -25,6 +26,7 @@ const categoryEmojis: Record<string, string> = {
   caseira: "🏠",
   vegetariana: "🥬",
   sucos: "🧃",
+  promocionais: "🔥",
 };
 
 export default function OrderCategoriesPage() {
