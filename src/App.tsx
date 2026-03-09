@@ -30,9 +30,9 @@ const App = () => (
             <Route path="/pedir" element={<OrderCategoriesPage />} />
             <Route path="/categoria/:categorySlug" element={<CategoryPage />} />
             <Route path="/categoria/:categorySlug/sabor/:flavorId" element={<FlavorDetailPage />} />
+            <Route path="/montar/promocionais" element={<PromotionalPage />} />
             <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
             <Route path="/montar/:categorySlug" element={<FlavorSelectionPage />} />
-            <Route path="/montar/promocionais" element={<PromotionalPage />} />
             <Route path="/area-atendimento" element={<AreaAtendimentoPage />} />
             <Route path="/sobre" element={<SobrePage />} />
             <Route path="/contato" element={<ContatoPage />} />
