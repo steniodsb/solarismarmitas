@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePromoGallery } from "@/hooks/useFrozenData";
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
+import catCaseira from "@/assets/cat-caseira.jpg";
+import catVegetariana from "@/assets/cat-vegetariana.jpg";
 import size400 from "@/assets/size-400ml.jpg";
 import size500 from "@/assets/size-500ml.jpg";
 import size850 from "@/assets/size-850ml.jpg";
@@ -16,30 +16,37 @@ const sizes = [
 
 const lines = [
   {
-    name: "Fitness",
-    img: catFitness,
+    name: "Tradicional",
+    img: catCaseira,
     items: [
-      "Arroz integral",
-      "Feijão / Lentilha",
+      "Arroz branco",
+      "Feijão",
+      "Lentilha",
+      "Purê / Massa",
       "Complementos",
       "Seletas",
-      "Purê / Massa",
-      "Legumes / Refogados",
+      "Legumes",
+      "Refogados",
       "Frangos variados",
       "Carnes variadas",
       "Filé de peixe",
     ],
   },
   {
-    name: "Low Carb",
-    img: catLowcarb,
+    name: "Vegetariana",
+    img: catVegetariana,
     items: [
+      "Arroz branco ou integral",
+      "Feijão",
+      "Lentilha",
+      "Purê / Massa",
+      "Complementos",
+      "Seletas",
       "Legumes",
       "Refogados",
-      "Seletas",
-      "Frangos variados",
-      "Carnes variados",
-      "Filé de peixe",
+      "Yakisoba",
+      "Lasanha de brócolis",
+      "Panquecas de legumes",
     ],
   },
 ];
