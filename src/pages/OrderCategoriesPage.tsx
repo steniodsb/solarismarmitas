@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import MixPromoSection from "@/components/MixPromoSection";
+import SizesSection from "@/components/SizesSection";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -138,6 +139,8 @@ export default function OrderCategoriesPage() {
             <p className="text-primary-foreground/70 mt-1 text-sm sm:text-base">Selecione a categoria para montar seu pedido</p>
           </div>
         </div>
+
+        <SizesSection />
 
         <div className="container px-4 py-8 sm:py-12">
           <div className="space-y-16">

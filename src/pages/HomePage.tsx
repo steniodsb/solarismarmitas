@@ -1,14 +1,12 @@
 import { Link } from "react-router-dom";
 import { useFrozenCategories } from "@/hooks/useFrozenData";
-import size400 from "@/assets/size-400ml.jpg";
-import size500 from "@/assets/size-500ml.jpg";
-import size850 from "@/assets/size-850ml.jpg";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import MixPromoSection from "@/components/MixPromoSection";
+import SizesSection from "@/components/SizesSection";
 import { Snowflake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import carinaPetersen from "@/assets/carina-petersen.jpg";
@@ -78,29 +76,6 @@ export default function HomePage() {
             <p className="text-muted-foreground mt-1">Selecione a categoria para montar seu pedido</p>
           </div>
 
-          {/* Size reference strip */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-4 max-w-xl mx-auto mb-10">
-            {[
-              { label: "400ml", price: "R$ 16,90", img: size400 },
-              { label: "500ml", price: "R$ 19,90", img: size500, highlight: true },
-              { label: "850ml", price: "R$ 26,90", img: size850 },
-            ].map((s) => (
-              <div key={s.label} className={`rounded-2xl overflow-hidden border-2 ${s.highlight ? "border-primary shadow-md" : "border-border"}`}>
-                {s.highlight && (
-                  <div className="bg-primary text-primary-foreground text-[10px] font-bold text-center py-0.5">
-                    Mais pedido
-                  </div>
-                )}
-                <div className="aspect-square">
-                  <img src={s.img} alt={`Marmita ${s.label}`} className="w-full h-full object-cover" />
-                </div>
-                <div className={`px-2 py-2 text-center ${s.highlight ? "bg-primary/5" : "bg-card"}`}>
-                  <div className="font-display font-black text-foreground text-base sm:text-lg leading-none">{s.label}</div>
-                  <div className="text-primary font-bold text-xs sm:text-sm mt-0.5">{s.price}</div>
-                </div>
-              </div>
-            ))}
-          </div>
           {isLoading ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {[...Array(6)].map((_, i) => (
@@ -136,6 +111,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <SizesSection />
       <MixPromoSection />
 
       {/* Conheça nossa empresa — no clickable links */}

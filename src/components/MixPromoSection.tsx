@@ -79,36 +79,6 @@ export default function MixPromoSection() {
           </p>
         </div>
 
-        {/* Size cards */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-5 max-w-2xl mx-auto mb-10">
-          {sizes.map((s) => (
-            <div
-              key={s.label}
-              className={`relative rounded-2xl overflow-hidden border-2 transition-all ${
-                s.highlight ? "border-primary shadow-lg" : "border-border"
-              }`}
-            >
-              {s.highlight && (
-                <span className="absolute top-2 left-1/2 -translate-x-1/2 z-10 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-0.5 rounded-full whitespace-nowrap shadow">
-                  Mais pedido
-                </span>
-              )}
-              {/* Photo */}
-              <div className="aspect-square">
-                <img src={s.img} alt={`Marmita ${s.label}`} className="w-full h-full object-cover" />
-              </div>
-              {/* Info overlay at bottom */}
-              <div className={`px-3 py-2.5 text-center ${s.highlight ? "bg-primary/5" : "bg-card"}`}>
-                <div className="font-display text-lg sm:text-xl font-black text-foreground leading-none">
-                  {s.label}
-                </div>
-                <div className="text-primary font-bold text-sm sm:text-base mt-0.5">{s.price}</div>
-                <p className="text-muted-foreground text-[10px] sm:text-xs mt-0.5 leading-tight">{s.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Photo gallery */}
         {hasGallery && (
           <div className="max-w-2xl mx-auto mb-10 space-y-2">

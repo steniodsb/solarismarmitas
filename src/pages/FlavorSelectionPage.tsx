@@ -108,23 +108,17 @@ export default function FlavorSelectionPage() {
           <div className="container px-4 pt-4 sm:pt-6">
             <div className="max-w-2xl mx-auto">
               <p className="text-sm font-semibold text-muted-foreground mb-3">Tamanhos disponíveis:</p>
-              <div className="grid grid-cols-3 gap-3">
-                {sizes.map((size, idx) => {
-                  const isPopular = idx === 1 && sizes.length > 2;
+              <div className="flex gap-3">
+                {sizes.map((size) => {
                   const img = sizeImages[size.ml];
                   return (
-                    <div key={size.id} className={`rounded-xl overflow-hidden border-2 ${isPopular ? "border-primary shadow-md" : "border-border"}`}>
-                      {isPopular && (
-                        <div className="bg-primary text-primary-foreground text-[10px] font-bold text-center py-0.5">
-                          Mais vendido
-                        </div>
-                      )}
+                    <div key={size.id} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
                       {img && (
-                        <div className="aspect-square">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
                           <img src={img} alt={`${size.ml}ml`} className="w-full h-full object-cover" />
                         </div>
                       )}
-                      <div className={`px-2 py-1.5 text-center ${isPopular ? "bg-primary/5" : "bg-card"}`}>
+                      <div>
                         <div className="font-display font-black text-foreground text-sm leading-none">{size.label}</div>
                         <div className="text-primary font-bold text-xs mt-0.5">R$ {size.price.toFixed(2).replace(".", ",")}</div>
                       </div>
@@ -211,8 +205,7 @@ export default function FlavorSelectionPage() {
                           <div className="border-t border-border pt-3">
                             <p className="text-sm font-semibold text-foreground mb-2">Escolha o tamanho:</p>
                             <div className="grid grid-cols-3 gap-2">
-                              {sizes.map((size, idx) => {
-                                const isPopular = idx === 1 && sizes.length > 2;
+                              {sizes.map((size) => {
                                 const isSelected = sel?.sizeId === size.id;
                                 return (
                                   <button
@@ -224,11 +217,6 @@ export default function FlavorSelectionPage() {
                                         : "border-border bg-card hover:border-primary/40"
                                     }`}
                                   >
-                                    {isPopular && (
-                                      <span className="absolute top-1 left-1/2 -translate-x-1/2 z-10 gradient-gold text-secondary-foreground text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">
-                                        Mais vendido
-                                      </span>
-                                    )}
                                     {isSelected && (
                                       <Check className="absolute top-1.5 right-1.5 z-10 h-3.5 w-3.5 text-primary" />
                                     )}

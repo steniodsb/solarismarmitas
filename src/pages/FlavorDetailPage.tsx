@@ -9,6 +9,11 @@ import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, ShoppingCart, ShoppingBag, Check, Minus, Plus } from "lucide-react";
+import size400 from "@/assets/size-400ml.jpg";
+import size500 from "@/assets/size-500ml.jpg";
+import size850 from "@/assets/size-850ml.jpg";
+
+const sizeImages: Record<number, string> = { 400: size400, 500: size500, 850: size850 };
 
 export default function FlavorDetailPage() {
   const { categorySlug, flavorId } = useParams<{ categorySlug: string; flavorId: string }>();
@@ -108,17 +113,21 @@ export default function FlavorDetailPage() {
                       <button
                         key={s.id}
                         onClick={() => { setSelectedSizeId(s.id); setQuantity(1); }}
-                        className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all w-full active:scale-[0.98] ${
+                        className={`flex items-center justify-between p-3 rounded-xl border-2 transition-all w-full active:scale-[0.98] ${
                           selectedSizeId === s.id
                             ? "border-primary bg-primary/5"
                             : "border-border bg-card hover:border-primary/30"
                         }`}
                       >
                         <div className="flex items-center gap-3">
+                          {sizeImages[s.ml] && (
+                            <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                              <img src={sizeImages[s.ml]} alt={`${s.ml}ml`} className="w-full h-full object-cover" />
+                            </div>
+                          )}
                           <span className="font-display text-lg font-black text-foreground">
                             {s.ml}<span className="text-xs text-muted-foreground font-normal">ml</span>
                           </span>
-                          <span className="text-sm text-muted-foreground">{s.label}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-primary font-bold text-base">R$ {s.price.toFixed(2).replace(".", ",")}</span>
