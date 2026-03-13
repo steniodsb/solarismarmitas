@@ -89,6 +89,30 @@ export function useAllFrozenFlavors() {
   });
 }
 
+export interface PromoGalleryImage {
+  id: string;
+  image_url: string;
+  alt_text: string | null;
+  is_main: boolean;
+  sort_order: number;
+  active: boolean;
+}
+
+export function usePromoGallery() {
+  return useQuery({
+    queryKey: ["promo-gallery"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("promo_gallery")
+        .select("*")
+        .eq("active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as PromoGalleryImage[];
+    },
+  });
+}
+
 export function useFrozenFlavorBySlug(categorySlug: string | undefined, flavorId: string | undefined) {
   const { data: categories } = useFrozenCategories();
   const category = categories?.find((c) => c.slug === categorySlug);

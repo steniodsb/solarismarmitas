@@ -1,24 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import { useFrozenCategories } from "@/hooks/useFrozenData";
+import { useRef } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catSucos from "@/assets/cat-sucos.jpg";
-
-const categoryImages: Record<string, string> = {
-  fitness: catFitness,
-  "low-carb": catLowcarb,
-  caseira: catCaseira,
-  vegetariana: catVegetariana,
-  sucos: catSucos,
-  promocionais: catFitness, // placeholder
-};
+import MixPromoSection from "@/components/MixPromoSection";
+import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const categoryEmojis: Record<string, string> = {
   fitness: "💪",
@@ -29,9 +17,105 @@ const categoryEmojis: Record<string, string> = {
   promocionais: "🔥",
 };
 
+const categoryCTAs: Record<string, string> = {
+  fitness: "Monte seu combo Fitness",
+  "low-carb": "Peça Low Carb agora",
+  caseira: "Peça Caseira agora",
+  vegetariana: "Monte seu combo Vegetariano",
+  sucos: "Peça seus Sucos",
+  promocionais: "Aproveite as promoções",
+};
+
+function FlavorCarousel({
+  categorySlug,
+  categoryId,
+  flavors,
+}: {
+  categorySlug: string;
+  categoryId: string;
+  flavors: { id: string; name: string; description: string; image_url: string | null }[];
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { data: sizes } = useFrozenSizes(categoryId);
+
+  const minPrice = sizes?.length ? Math.min(...sizes.map((s) => s.price)) : null;
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: direction === "left" ? -280 : 280, behavior: "smooth" });
+  };
+
+  if (!flavors.length) return null;
+
+  return (
+    <div className="space-y-4">
+      <div className="relative group">
+        <button
+          onClick={() => scroll("left")}
+          className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+          aria-label="Anterior"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        <div ref={scrollRef} className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1">
+          {flavors.map((flavor) => (
+            <Link
+              key={flavor.id}
+              to={`/categoria/${categorySlug}/sabor/${flavor.id}`}
+              className="snap-start shrink-0 w-64 group/card rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300"
+            >
+              <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
+                {flavor.image_url ? (
+                  <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-5xl opacity-40">🍱</span>
+                )}
+              </div>
+              <div className="p-4 space-y-1.5">
+                <h4 className="font-display font-bold text-foreground text-sm group-hover/card:text-primary transition-colors">
+                  {flavor.name}
+                </h4>
+                <p className="text-muted-foreground text-xs line-clamp-2">{flavor.description}</p>
+                {minPrice !== null && (
+                  <p className="text-primary font-bold text-sm">
+                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
+                  </p>
+                )}
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <button
+          onClick={() => scroll("right")}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+          aria-label="Próximo"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+
+      <div className="text-center">
+        <Button variant="cta" asChild>
+          <Link to={categorySlug === "promocionais" ? "/montar/promocionais" : `/montar/${categorySlug}`}>
+            {categoryCTAs[categorySlug] || "Faça seu pedido"} <ArrowRight className="h-4 w-4 ml-1" />
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function OrderCategoriesPage() {
-  const { data: categories, isLoading } = useFrozenCategories();
+  const { data: categories, isLoading: catLoading } = useFrozenCategories();
+  const { data: allFlavors, isLoading: flavLoading } = useAllFrozenFlavors();
   const navigate = useNavigate();
+
+  const isLoading = catLoading || flavLoading;
+
+  const flavorsByCategory = (categoryId: string) =>
+    (allFlavors || []).filter((f) => f.category_id === categoryId);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,40 +139,64 @@ export default function OrderCategoriesPage() {
           </div>
         </div>
 
-        <div className="container px-4 py-6 sm:py-10">
-          {isLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-48 sm:h-64 rounded-2xl bg-muted animate-pulse" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-              {categories?.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => navigate(cat.slug === "promocionais" ? "/montar/promocionais" : `/montar/${cat.slug}`)}
-                  className="group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <img
-                    src={categoryImages[cat.slug] || catFitness}
-                    alt={cat.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                    <span className="text-2xl sm:text-3xl mb-1 sm:mb-2">{categoryEmojis[cat.slug] || "🍱"}</span>
-                    <h3 className="font-display text-lg sm:text-2xl font-bold text-primary-foreground leading-tight">{cat.name}</h3>
-                    <p className="text-primary-foreground/70 text-xs sm:text-sm mt-1 line-clamp-2">{cat.description}</p>
-                    <div className="mt-2 sm:mt-3 inline-flex items-center gap-2 text-secondary font-semibold text-xs sm:text-sm group-hover:gap-3 transition-all">
-                      Escolher <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        <div className="container px-4 py-8 sm:py-12">
+          <div className="space-y-16">
+            {isLoading ? (
+              <div className="space-y-10">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i}>
+                    <div className="h-6 w-40 bg-muted animate-pulse rounded mb-4" />
+                    <div className="flex gap-4">
+                      {[...Array(4)].map((_, j) => (
+                        <div key={j} className="w-64 h-52 bg-muted animate-pulse rounded-2xl shrink-0" />
+                      ))}
                     </div>
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            ) : (
+              categories?.map((cat) => {
+                const flavors = flavorsByCategory(cat.id);
+                if (!flavors.length && cat.slug !== "promocionais") return null;
+                return (
+                  <div key={cat.id}>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{categoryEmojis[cat.slug] || "🍱"}</span>
+                        <div>
+                          <h2 className="font-display text-xl sm:text-2xl font-bold text-foreground">{cat.name}</h2>
+                          <p className="text-muted-foreground text-sm hidden sm:block">{cat.description}</p>
+                        </div>
+                      </div>
+                      {cat.slug !== "promocionais" && (
+                        <Link
+                          to={`/categoria/${cat.slug}`}
+                          className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-2.5 transition-all"
+                        >
+                          Ver mais <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      )}
+                    </div>
+                    {flavors.length > 0 ? (
+                      <FlavorCarousel categorySlug={cat.slug} categoryId={cat.id} flavors={flavors} />
+                    ) : (
+                      <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 text-center space-y-4">
+                        <p className="text-muted-foreground max-w-xl mx-auto">{cat.description}</p>
+                        <Button variant="cta" asChild>
+                          <Link to="/montar/promocionais">
+                            Aproveite as promoções <ArrowRight className="h-4 w-4 ml-1" />
+                          </Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
+
+        <MixPromoSection />
       </main>
     </div>
   );

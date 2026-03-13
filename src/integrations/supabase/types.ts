@@ -123,6 +123,36 @@ export type Database = {
           },
         ]
       }
+      promo_gallery: {
+        Row: {
+          id: string
+          image_url: string
+          alt_text: string | null
+          is_main: boolean
+          sort_order: number
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          image_url: string
+          alt_text?: string | null
+          is_main?: boolean
+          sort_order?: number
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          image_url?: string
+          alt_text?: string | null
+          is_main?: boolean
+          sort_order?: number
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean
