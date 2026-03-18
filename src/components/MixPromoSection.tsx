@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { usePromoGallery } from "@/hooks/useFrozenData";
 import catCaseira from "@/assets/cat-caseira.jpg";
 import catVegetariana from "@/assets/cat-vegetariana.jpg";
+import catFitness from "@/assets/cat-fitness.jpg";
+import catLowcarb from "@/assets/cat-lowcarb.jpg";
 import size400 from "@/assets/size-400ml.jpg";
 import size500 from "@/assets/size-500ml.jpg";
 import size850 from "@/assets/size-850ml.jpg";
@@ -47,6 +49,40 @@ const lines = [
       "Yakisoba",
       "Lasanha de brócolis",
       "Panquecas de legumes",
+    ],
+  },
+  {
+    name: "Fitness",
+    img: catFitness,
+    items: [
+      "Arroz integral",
+      "Batata doce",
+      "Quinoa",
+      "Legumes grelhados",
+      "Brócolis",
+      "Espinafre",
+      "Frango grelhado",
+      "Carne magra",
+      "Tilápia / Salmão",
+      "Omelete proteico",
+      "Grão de bico",
+    ],
+  },
+  {
+    name: "Low Carb",
+    img: catLowcarb,
+    items: [
+      "Abobrinha",
+      "Berinjela gratinada",
+      "Couve-flor",
+      "Aspargos",
+      "Cogumelos",
+      "Brócolis",
+      "Frango grelhado",
+      "Carne moída magra",
+      "Salmão ao forno",
+      "Lombo suíno",
+      "Tomate assado",
     ],
   },
 ];
@@ -111,20 +147,20 @@ export default function MixPromoSection() {
         )}
 
         {/* Line cards */}
-        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-10">
           {lines.map((line) => (
             <div
               key={line.name}
-              className="rounded-2xl border border-border bg-card overflow-hidden flex flex-col sm:flex-row"
+              className="rounded-2xl border border-border bg-card overflow-hidden flex flex-col"
             >
-              <div className="h-40 sm:h-auto sm:w-40 shrink-0">
+              <div className="h-40 shrink-0">
                 <img
                   src={line.img}
                   alt={`Linha ${line.name}`}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-4 sm:p-5 space-y-2">
+              <div className="p-3 sm:p-4 space-y-2">
                 <h3 className="font-display font-bold text-foreground text-base">
                   Cardápio {line.name}
                 </h3>
