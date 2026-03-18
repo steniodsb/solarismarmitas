@@ -4,7 +4,6 @@ import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hook
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
-import MixPromoSection from "@/components/MixPromoSection";
 import SizesSection from "@/components/SizesSection";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ function FlavorCarousel({
           {flavors.map((flavor) => (
             <Link
               key={flavor.id}
-              to={`/categoria/${categorySlug}/sabor/${flavor.id}`}
+              to={`/categoria/${categorySlug}`}
               className="snap-start shrink-0 w-64 group/card rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300"
             >
               <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
@@ -199,7 +198,7 @@ export default function OrderCategoriesPage() {
           </div>
         </div>
 
-        <MixPromoSection />
+
       </main>
     </div>
   );

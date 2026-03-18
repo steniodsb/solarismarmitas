@@ -87,6 +87,11 @@ export default function FrozenCheckoutModal() {
                 )}
                 <textarea name="notes" placeholder="Observações (opcional)" value={form.notes} onChange={handleChange} rows={3} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
+              {form.deliveryMode === "delivery" && (
+                <p className="text-xs text-muted-foreground text-center bg-muted rounded-lg px-3 py-2">
+                  O valor da entrega será calculado de acordo com o endereço e informado na finalização do pedido.
+                </p>
+              )}
               <Button variant="cta" size="xl" type="submit" className="w-full">Revisar Pedido</Button>
             </form>
           ) : (

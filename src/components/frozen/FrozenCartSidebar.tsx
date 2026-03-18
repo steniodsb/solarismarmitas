@@ -75,6 +75,12 @@ export default function FrozenCartSidebar() {
             <Button variant="cta" size="lg" className="w-full" onClick={handleCheckout}>
               Finalizar Pedido
             </Button>
+            <button
+              onClick={() => setCartOpen(false)}
+              className="w-full text-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              Continuar comprando
+            </button>
           </div>
         )}
       </div>

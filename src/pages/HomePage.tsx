@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import MixPromoSection from "@/components/MixPromoSection";
 import SizesSection from "@/components/SizesSection";
 import { Snowflake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -112,7 +111,7 @@ export default function HomePage() {
       </section>
 
       <SizesSection />
-      <MixPromoSection />
+
 
       {/* Conheça nossa empresa — no clickable links */}
       <section className="py-16 bg-card">
