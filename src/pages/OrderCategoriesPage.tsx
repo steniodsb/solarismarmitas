@@ -1,6 +1,10 @@
 import { useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes, useAllFrozenSizes } from "@/hooks/useFrozenData";
+import catCaseira from "@/assets/cat-caseira.jpg";
+import catVegetariana from "@/assets/cat-vegetariana.jpg";
+import catFitness from "@/assets/cat-fitness.jpg";
+import catLowcarb from "@/assets/cat-lowcarb.jpg";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
@@ -15,6 +19,13 @@ const categoryEmojis: Record<string, string> = {
   vegetariana: "🥬",
   sucos: "🧃",
   promocionais: "🔥",
+};
+
+const categoryImages: Record<string, string> = {
+  fitness: catFitness,
+  "low-carb": catLowcarb,
+  caseira: catCaseira,
+  vegetariana: catVegetariana,
 };
 
 const categoryCTAs: Record<string, string> = {
@@ -189,27 +200,39 @@ export default function OrderCategoriesPage() {
                           .map((promoCat) => {
                             const catSizes = allSizes?.filter((s) => s.category_id === promoCat.id);
                             const minPrice = catSizes?.length ? Math.min(...catSizes.map((s) => s.price)) : null;
+                            const img = categoryImages[promoCat.slug];
                             return (
                               <Link
                                 key={promoCat.id}
                                 to={`/montar/${promoCat.slug}`}
-                                className="group/promo bg-card border border-border rounded-2xl p-5 hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col gap-3"
+                                className="group/promo bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col"
                               >
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xl">{categoryEmojis[promoCat.slug] || "🍱"}</span>
-                                  <h3 className="font-display font-bold text-foreground group-hover/promo:text-primary transition-colors">
-                                    {promoCat.name}
-                                  </h3>
-                                </div>
-                                <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
-                                {minPrice !== null && (
-                                  <p className="text-primary font-bold text-sm">
-                                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
-                                  </p>
+                                {img && (
+                                  <div className="h-36 sm:h-40 shrink-0 overflow-hidden">
+                                    <img
+                                      src={img}
+                                      alt={promoCat.name}
+                                      className="w-full h-full object-cover group-hover/promo:scale-105 transition-transform duration-300"
+                                    />
+                                  </div>
                                 )}
-                                <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
-                                  Montar combo <ArrowRight className="h-4 w-4" />
-                                </span>
+                                <div className="p-4 flex flex-col gap-2 flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-lg">{categoryEmojis[promoCat.slug] || "🍱"}</span>
+                                    <h3 className="font-display font-bold text-foreground group-hover/promo:text-primary transition-colors">
+                                      {promoCat.name}
+                                    </h3>
+                                  </div>
+                                  <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
+                                  {minPrice !== null && (
+                                    <p className="text-primary font-bold text-sm">
+                                      A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
+                                    </p>
+                                  )}
+                                  <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
+                                    Montar combo <ArrowRight className="h-4 w-4" />
+                                  </span>
+                                </div>
                               </Link>
                             );
                           })}

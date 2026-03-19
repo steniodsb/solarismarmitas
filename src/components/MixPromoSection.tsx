@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Flame } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { usePromoGallery } from "@/hooks/useFrozenData";
 import catCaseira from "@/assets/cat-caseira.jpg";
 import catVegetariana from "@/assets/cat-vegetariana.jpg";
@@ -177,22 +176,16 @@ export default function MixPromoSection() {
                     </li>
                   ))}
                 </ul>
-                <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm pt-1 group-hover:gap-2 transition-all">
-                  Pedir combo <ArrowRight className="h-4 w-4" />
-                </span>
+                <div className="pt-2">
+                  <span className="inline-flex items-center justify-center gap-2 w-full rounded-lg bg-primary text-primary-foreground font-semibold text-sm py-2.5 group-hover:bg-primary/90 transition-colors">
+                    Pedir combo <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
               </div>
             </Link>
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="text-center">
-          <Button variant="cta" size="lg" asChild>
-            <Link to="/montar/promocionais">
-              Pedir Combo Agora <ArrowRight className="h-4 w-4 ml-1" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   );

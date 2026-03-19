@@ -5,10 +5,9 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import { usePromoLineGallery } from "@/hooks/useFrozenData";
+import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, MessageCircle, Check, ChevronLeft, ChevronRight } from "lucide-react";
-
-const WHATSAPP_NUMBER = "5551989173813";
+import { ArrowLeft, ShoppingCart, Check, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 
 const lineNames: Record<string, string> = {
   tradicional: "Marmitas Tradicionais",
@@ -72,11 +71,10 @@ export default function ComboLinePage() {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<ComboSize | null>(null);
   const [selectedQty, setSelectedQty] = useState<number>(10);
-  const [notes, setNotes] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [added, setAdded] = useState(false);
 
   const { data: galleryImages } = usePromoLineGallery(lineSlug);
+  const { addItem, setCartOpen } = useFrozenCart();
 
   const lineName = lineNames[lineSlug || ""] || "Marmitas";
   const lineDescription = lineDescriptions[lineSlug || ""] || "";
@@ -89,22 +87,45 @@ export default function ComboLinePage() {
     return selectedSize.priceFor10 * multiplier - (qtyOption?.discount || 0);
   };
 
-  const handleSendWhatsApp = () => {
-    if (!selectedSize || !name.trim() || !phone.trim()) return;
-    const price = getPrice();
-    const qtyOption = quantityOptions.find((q) => q.qty === selectedQty);
-    const message =
-      `🔥 *PEDIDO SOLARIS — COMBO ${lineName.toUpperCase()}*\n\n` +
-      `👤 *Cliente:* ${name.trim()}\n📱 *Telefone:* ${phone.trim()}\n\n` +
-      `*━━━ ${lineName} ━━━*\n` +
-      `📦 ${selectedQty} unidades de ${selectedSize.label}\n` +
-      (qtyOption && qtyOption.discount > 0
-        ? `🎉 Desconto: -R$ ${qtyOption.discount.toFixed(2).replace(".", ",")}\n`
-        : "") +
-      `💰 *Total: R$ ${price.toFixed(2).replace(".", ",")}*\n` +
-      (notes.trim() ? `\n📝 *Observações/Alergias/Preferências:* ${notes.trim()}` : "");
+  const handleAddToCart = () => {
+    if (!selectedSize) return;
+    const unitPrice = getPrice() / selectedQty;
 
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+    addItem({
+      category: {
+        id: `promo-${lineSlug}`,
+        name: lineName,
+        slug: lineSlug || "",
+        description: lineDescription,
+        image_url: null,
+        sort_order: 0,
+      },
+      size: {
+        id: `promo-${lineSlug}-${selectedSize.id}`,
+        category_id: `promo-${lineSlug}`,
+        label: selectedSize.label,
+        ml: selectedSize.ml,
+        price: unitPrice,
+        sort_order: 0,
+      },
+      flavor: {
+        id: `promo-${lineSlug}-combo`,
+        category_id: `promo-${lineSlug}`,
+        name: `Combo ${lineName}`,
+        description: `Combo sortido ${lineName.toLowerCase()}`,
+        image_url: null,
+        sort_order: 0,
+      },
+      quantity: selectedQty,
+      unitPrice,
+    });
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2500);
+  };
+
+  const handleGoToCart = () => {
+    setCartOpen(true);
   };
 
   return (
@@ -258,44 +279,46 @@ export default function ComboLinePage() {
               </div>
             )}
 
-            {/* Customer info + notes */}
+            {/* Add to cart button */}
             {selectedSize && (
               <div className="space-y-3 animate-in slide-in-from-top-2 duration-200">
-                <h2 className="font-display text-lg font-bold text-foreground">3. Seus dados</h2>
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    placeholder="Nome completo *"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Telefone / WhatsApp *"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  />
-                  <textarea
-                    placeholder="Observações, alergias ou preferências (opcional)"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    rows={3}
-                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
-                  />
-                </div>
-
-                <Button
-                  variant="cta"
-                  size="xl"
-                  className="w-full"
-                  disabled={!name.trim() || !phone.trim()}
-                  onClick={handleSendWhatsApp}
-                >
-                  <MessageCircle className="h-5 w-5" />
-                  Enviar Pedido — R$ {getPrice().toFixed(2).replace(".", ",")}
-                </Button>
+                {added ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 rounded-xl py-4 text-green-700 font-semibold">
+                      <CheckCircle className="h-5 w-5" />
+                      Adicionado ao carrinho!
+                    </div>
+                    <div className="flex gap-3">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="flex-1"
+                        onClick={() => navigate("/montar/promocionais")}
+                      >
+                        Continuar comprando
+                      </Button>
+                      <Button
+                        variant="cta"
+                        size="lg"
+                        className="flex-1"
+                        onClick={handleGoToCart}
+                      >
+                        <ShoppingCart className="h-5 w-5" />
+                        Ver carrinho
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    variant="cta"
+                    size="xl"
+                    className="w-full"
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    Adicionar ao Carrinho — R$ {getPrice().toFixed(2).replace(".", ",")}
+                  </Button>
+                )}
               </div>
             )}
           </div>
