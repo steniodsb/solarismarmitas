@@ -262,14 +262,14 @@ export default function ComboLinePage() {
                         {selectedQty === opt.qty && (
                           <Check className="absolute top-2 right-2 h-4 w-4 text-primary" />
                         )}
-                        <div className="font-display text-2xl font-black text-foreground">{opt.qty}</div>
-                        <p className="text-muted-foreground text-xs">unidades</p>
+                        <div className="font-display text-3xl sm:text-4xl font-black text-foreground">{opt.qty}</div>
+                        <p className="text-muted-foreground text-sm">unidades</p>
                         {opt.discount > 0 && (
-                          <span className="inline-block mt-1 gradient-gold text-secondary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                            -R$ {opt.discount.toFixed(2).replace(".", ",")}
+                          <span className="inline-block mt-2 gradient-gold text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                            Desconto de R$ {opt.discount.toFixed(2).replace(".", ",")}
                           </span>
                         )}
-                        <div className="text-primary font-bold text-sm mt-1">
+                        <div className="text-primary font-bold text-base sm:text-lg mt-2">
                           R$ {totalPrice.toFixed(2).replace(".", ",")}
                         </div>
                       </button>
