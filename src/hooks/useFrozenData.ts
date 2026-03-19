@@ -127,6 +127,32 @@ export function usePromoGallery() {
   });
 }
 
+export interface PromoLineGalleryImage {
+  id: string;
+  line_slug: string;
+  image_url: string;
+  alt_text: string | null;
+  sort_order: number;
+  active: boolean;
+}
+
+export function usePromoLineGallery(lineSlug: string | undefined) {
+  return useQuery({
+    queryKey: ["promo-line-gallery", lineSlug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("promo_line_gallery")
+        .select("*")
+        .eq("line_slug", lineSlug!)
+        .eq("active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as PromoLineGalleryImage[];
+    },
+    enabled: !!lineSlug,
+  });
+}
+
 export function useFrozenFlavorBySlug(categorySlug: string | undefined, flavorId: string | undefined) {
   const { data: categories } = useFrozenCategories();
   const category = categories?.find((c) => c.slug === categorySlug);
