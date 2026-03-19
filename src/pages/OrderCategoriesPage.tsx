@@ -28,6 +28,13 @@ const categoryImages: Record<string, string> = {
   vegetariana: catVegetariana,
 };
 
+const promoSlugMap: Record<string, string> = {
+  fitness: "fitness",
+  "low-carb": "low-carb",
+  caseira: "tradicional",
+  vegetariana: "vegetariana",
+};
+
 const categoryCTAs: Record<string, string> = {
   fitness: "Monte seu combo Fitness",
   "low-carb": "Peça Low Carb agora",
@@ -204,7 +211,7 @@ export default function OrderCategoriesPage() {
                             return (
                               <Link
                                 key={promoCat.id}
-                                to={`/montar/${promoCat.slug}`}
+                                to={`/montar/promocionais/${promoSlugMap[promoCat.slug] || promoCat.slug}`}
                                 className="group/promo bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col"
                               >
                                 {img && (
