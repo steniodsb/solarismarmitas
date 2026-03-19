@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LogOut, Upload, Trash2, Star, StarOff, ImagePlus, Loader2, Save } from "lucide-react";
+import AdminCategories from "@/components/admin/AdminCategories";
+import AdminFlavors from "@/components/admin/AdminFlavors";
+import AdminSizes from "@/components/admin/AdminSizes";
 
 interface GalleryImage {
   id: string;
@@ -29,14 +32,14 @@ const PROMO_LINES = [
   { slug: "low-carb", label: "Low Carb" },
 ];
 
-type AdminTab = "galeria-geral" | "promocionais" | "pixels";
+type AdminTab = "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lineFileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<AdminTab>("galeria-geral");
+  const [activeTab, setActiveTab] = useState<AdminTab>("categorias");
   const [activeLineSlug, setActiveLineSlug] = useState<string>("tradicional");
 
   // General gallery state
@@ -320,16 +323,46 @@ export default function AdminPage() {
 
       {/* Tabs */}
       <div className="border-b border-border bg-card">
-        <div className="container px-4 flex gap-0">
+        <div className="container px-4 flex gap-0 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => setActiveTab("categorias")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "categorias"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Categorias
+          </button>
+          <button
+            onClick={() => setActiveTab("sabores")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "sabores"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Sabores
+          </button>
+          <button
+            onClick={() => setActiveTab("tamanhos")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "tamanhos"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Tamanhos
+          </button>
           <button
             onClick={() => setActiveTab("galeria-geral")}
-            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
               activeTab === "galeria-geral"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            Galeria Geral
+            Galeria
           </button>
           <button
             onClick={() => setActiveTab("promocionais")}
@@ -365,6 +398,15 @@ export default function AdminPage() {
             {message.text}
           </div>
         )}
+
+        {/* ─── Tab: Categorias ─── */}
+        {activeTab === "categorias" && <AdminCategories />}
+
+        {/* ─── Tab: Sabores ─── */}
+        {activeTab === "sabores" && <AdminFlavors />}
+
+        {/* ─── Tab: Tamanhos ─── */}
+        {activeTab === "tamanhos" && <AdminSizes />}
 
         {/* ─── Tab: Galeria Geral ─── */}
         {activeTab === "galeria-geral" && (
