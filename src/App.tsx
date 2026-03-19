@@ -18,6 +18,7 @@ import ContatoPage from "./pages/ContatoPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
+import TrackingScripts from "./components/TrackingScripts";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <TrackingScripts />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/pedir" element={<OrderCategoriesPage />} />

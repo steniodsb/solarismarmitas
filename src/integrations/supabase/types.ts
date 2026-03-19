@@ -241,10 +241,15 @@ export type Database = {
           closed_message: string
           cnpj: string
           created_at: string
+          custom_head_scripts: string
+          facebook_pixel_id: string
+          google_analytics_id: string
+          google_tag_manager_id: string
           id: string
           min_order_value: number
           opening_hours: Json
           state: string
+          tiktok_pixel_id: string
           updated_at: string
           whatsapp_number: string
           zip_code: string
@@ -255,10 +260,15 @@ export type Database = {
           closed_message?: string
           cnpj?: string
           created_at?: string
+          custom_head_scripts?: string
+          facebook_pixel_id?: string
+          google_analytics_id?: string
+          google_tag_manager_id?: string
           id?: string
           min_order_value?: number
           opening_hours?: Json
           state?: string
+          tiktok_pixel_id?: string
           updated_at?: string
           whatsapp_number?: string
           zip_code?: string
@@ -269,10 +279,15 @@ export type Database = {
           closed_message?: string
           cnpj?: string
           created_at?: string
+          custom_head_scripts?: string
+          facebook_pixel_id?: string
+          google_analytics_id?: string
+          google_tag_manager_id?: string
           id?: string
           min_order_value?: number
           opening_hours?: Json
           state?: string
+          tiktok_pixel_id?: string
           updated_at?: string
           whatsapp_number?: string
           zip_code?: string

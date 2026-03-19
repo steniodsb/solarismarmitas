@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Upload, Trash2, Star, StarOff, ImagePlus, Loader2 } from "lucide-react";
+import { LogOut, Upload, Trash2, Star, StarOff, ImagePlus, Loader2, Save } from "lucide-react";
 
 interface GalleryImage {
   id: string;
@@ -29,7 +29,7 @@ const PROMO_LINES = [
   { slug: "low-carb", label: "Low Carb" },
 ];
 
-type AdminTab = "galeria-geral" | "promocionais";
+type AdminTab = "galeria-geral" | "promocionais" | "pixels";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -49,6 +49,17 @@ export default function AdminPage() {
   const [lineLoading, setLineLoading] = useState(false);
   const [lineUploading, setLineUploading] = useState(false);
 
+  // Tracking / pixels state
+  const [trackingData, setTrackingData] = useState({
+    facebook_pixel_id: "",
+    google_analytics_id: "",
+    google_tag_manager_id: "",
+    tiktok_pixel_id: "",
+    custom_head_scripts: "",
+  });
+  const [trackingLoading, setTrackingLoading] = useState(false);
+  const [trackingSaving, setTrackingSaving] = useState(false);
+
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   // Check auth
@@ -65,6 +76,13 @@ export default function AdminPage() {
       fetchLineImages(activeLineSlug);
     }
   }, [activeTab, activeLineSlug]);
+
+  // Fetch tracking data when tab changes
+  useEffect(() => {
+    if (activeTab === "pixels") {
+      fetchTrackingData();
+    }
+  }, [activeTab]);
 
   const fetchImages = async () => {
     setLoading(true);
@@ -90,6 +108,48 @@ export default function AdminPage() {
   const showMessage = (text: string, type: "success" | "error") => {
     setMessage({ text, type });
     setTimeout(() => setMessage(null), 3500);
+  };
+
+  // ─── Tracking handlers ───
+
+  const fetchTrackingData = async () => {
+    setTrackingLoading(true);
+    const { data, error } = await supabase
+      .from("store_config")
+      .select("facebook_pixel_id, google_analytics_id, google_tag_manager_id, tiktok_pixel_id, custom_head_scripts")
+      .limit(1)
+      .single();
+    if (!error && data) {
+      setTrackingData({
+        facebook_pixel_id: data.facebook_pixel_id || "",
+        google_analytics_id: data.google_analytics_id || "",
+        google_tag_manager_id: data.google_tag_manager_id || "",
+        tiktok_pixel_id: data.tiktok_pixel_id || "",
+        custom_head_scripts: data.custom_head_scripts || "",
+      });
+    }
+    setTrackingLoading(false);
+  };
+
+  const handleSaveTracking = async () => {
+    setTrackingSaving(true);
+    const { error } = await supabase
+      .from("store_config")
+      .update({
+        facebook_pixel_id: trackingData.facebook_pixel_id,
+        google_analytics_id: trackingData.google_analytics_id,
+        google_tag_manager_id: trackingData.google_tag_manager_id,
+        tiktok_pixel_id: trackingData.tiktok_pixel_id,
+        custom_head_scripts: trackingData.custom_head_scripts,
+      })
+      .eq("id", (await supabase.from("store_config").select("id").limit(1).single()).data?.id || "");
+
+    if (error) {
+      showMessage("Erro ao salvar: " + error.message, "error");
+    } else {
+      showMessage("Pixels e tags salvos com sucesso!", "success");
+    }
+    setTrackingSaving(false);
   };
 
   // ─── General gallery handlers ───
@@ -281,6 +341,16 @@ export default function AdminPage() {
           >
             Promocionais
           </button>
+          <button
+            onClick={() => setActiveTab("pixels")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+              activeTab === "pixels"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Pixels & Tags
+          </button>
         </div>
       </div>
 
@@ -399,6 +469,129 @@ export default function AdminPage() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ─── Tab: Pixels & Tags ─── */}
+        {activeTab === "pixels" && (
+          <>
+            <h2 className="font-display font-bold text-foreground text-lg">Pixels & Tags de Rastreamento</h2>
+            <p className="text-muted-foreground text-sm -mt-4">
+              Configure seus pixels e tags de rastreamento. Deixe em branco para desativar.
+            </p>
+
+            {trackingLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : (
+              <div className="space-y-5">
+                {/* Facebook Pixel */}
+                <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                  <label className="flex items-center gap-2 font-semibold text-foreground text-sm">
+                    <span className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center text-xs font-bold">f</span>
+                    Facebook Pixel ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: 123456789012345"
+                    value={trackingData.facebook_pixel_id}
+                    onChange={(e) => setTrackingData((d) => ({ ...d, facebook_pixel_id: e.target.value }))}
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Encontre seu Pixel ID no Meta Business Suite &gt; Eventos &gt; Fontes de dados.
+                  </p>
+                </div>
+
+                {/* Google Analytics */}
+                <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                  <label className="flex items-center gap-2 font-semibold text-foreground text-sm">
+                    <span className="w-6 h-6 rounded bg-yellow-500 text-white flex items-center justify-center text-xs font-bold">G</span>
+                    Google Analytics (GA4)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: G-XXXXXXXXXX"
+                    value={trackingData.google_analytics_id}
+                    onChange={(e) => setTrackingData((d) => ({ ...d, google_analytics_id: e.target.value }))}
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    ID de medicao do GA4 (formato G-XXXXXXXXXX).
+                  </p>
+                </div>
+
+                {/* Google Tag Manager */}
+                <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                  <label className="flex items-center gap-2 font-semibold text-foreground text-sm">
+                    <span className="w-6 h-6 rounded bg-sky-500 text-white flex items-center justify-center text-xs font-bold">T</span>
+                    Google Tag Manager
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: GTM-XXXXXXX"
+                    value={trackingData.google_tag_manager_id}
+                    onChange={(e) => setTrackingData((d) => ({ ...d, google_tag_manager_id: e.target.value }))}
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    ID do container GTM (formato GTM-XXXXXXX).
+                  </p>
+                </div>
+
+                {/* TikTok Pixel */}
+                <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                  <label className="flex items-center gap-2 font-semibold text-foreground text-sm">
+                    <span className="w-6 h-6 rounded bg-black text-white flex items-center justify-center text-xs font-bold">T</span>
+                    TikTok Pixel ID
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: CXXXXXXXXXXXXXXXXX"
+                    value={trackingData.tiktok_pixel_id}
+                    onChange={(e) => setTrackingData((d) => ({ ...d, tiktok_pixel_id: e.target.value }))}
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Encontre no TikTok Ads Manager &gt; Ativos &gt; Eventos.
+                  </p>
+                </div>
+
+                {/* Custom Scripts */}
+                <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+                  <label className="flex items-center gap-2 font-semibold text-foreground text-sm">
+                    <span className="w-6 h-6 rounded bg-gray-600 text-white flex items-center justify-center text-xs font-bold">&lt;/&gt;</span>
+                    Scripts personalizados
+                  </label>
+                  <textarea
+                    placeholder={"Cole aqui tags <script> adicionais..."}
+                    value={trackingData.custom_head_scripts}
+                    onChange={(e) => setTrackingData((d) => ({ ...d, custom_head_scripts: e.target.value }))}
+                    rows={5}
+                    className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  />
+                  <p className="text-muted-foreground text-xs">
+                    Tags de script adicionais que serao injetadas no &lt;head&gt; do site.
+                  </p>
+                </div>
+
+                {/* Save button */}
+                <Button
+                  variant="cta"
+                  size="lg"
+                  className="w-full"
+                  onClick={handleSaveTracking}
+                  disabled={trackingSaving}
+                >
+                  {trackingSaving ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                  ) : (
+                    <><Save className="h-4 w-4" /> Salvar configuracoes</>
+                  )}
+                </Button>
               </div>
             )}
           </>
