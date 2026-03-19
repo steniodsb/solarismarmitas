@@ -11,6 +11,7 @@ import FlavorDetailPage from "./pages/FlavorDetailPage";
 import SizeSelectionPage from "./pages/SizeSelectionPage";
 import FlavorSelectionPage from "./pages/FlavorSelectionPage";
 import PromotionalPage from "./pages/PromotionalPage";
+import ComboLinePage from "./pages/ComboLinePage";
 import AreaAtendimentoPage from "./pages/AreaAtendimentoPage";
 import SobrePage from "./pages/SobrePage";
 import ContatoPage from "./pages/ContatoPage";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/categoria/:categorySlug" element={<CategoryPage />} />
             <Route path="/categoria/:categorySlug/sabor/:flavorId" element={<FlavorDetailPage />} />
             <Route path="/montar/promocionais" element={<PromotionalPage />} />
+            <Route path="/montar/promocionais/:lineSlug" element={<ComboLinePage />} />
             <Route path="/montar/:categorySlug/tamanho" element={<SizeSelectionPage />} />
             <Route path="/montar/:categorySlug" element={<FlavorSelectionPage />} />
             <Route path="/area-atendimento" element={<AreaAtendimentoPage />} />

@@ -19,6 +19,7 @@ const sizes = [
 const lines = [
   {
     name: "Tradicional",
+    slug: "tradicional",
     img: catCaseira,
     items: [
       "Arroz branco",
@@ -36,6 +37,7 @@ const lines = [
   },
   {
     name: "Vegetariana",
+    slug: "vegetariana",
     img: catVegetariana,
     items: [
       "Arroz branco ou integral",
@@ -53,6 +55,7 @@ const lines = [
   },
   {
     name: "Fitness",
+    slug: "fitness",
     img: catFitness,
     items: [
       "Arroz integral",
@@ -70,6 +73,7 @@ const lines = [
   },
   {
     name: "Low Carb",
+    slug: "low-carb",
     img: catLowcarb,
     items: [
       "Abobrinha",
@@ -149,19 +153,20 @@ export default function MixPromoSection() {
         {/* Line cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-10">
           {lines.map((line) => (
-            <div
+            <Link
               key={line.name}
-              className="rounded-2xl border border-border bg-card overflow-hidden flex flex-col"
+              to={`/montar/promocionais/${line.slug}`}
+              className="rounded-2xl border border-border bg-card overflow-hidden flex flex-col hover:shadow-xl hover:border-primary/30 transition-all duration-300 group"
             >
               <div className="h-40 shrink-0">
                 <img
                   src={line.img}
                   alt={`Linha ${line.name}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
               <div className="p-3 sm:p-4 space-y-2">
-                <h3 className="font-display font-bold text-foreground text-base">
+                <h3 className="font-display font-bold text-foreground text-base group-hover:text-primary transition-colors">
                   Cardápio {line.name}
                 </h3>
                 <ul className="space-y-0.5">
@@ -172,8 +177,11 @@ export default function MixPromoSection() {
                     </li>
                   ))}
                 </ul>
+                <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm pt-1 group-hover:gap-2 transition-all">
+                  Pedir combo <ArrowRight className="h-4 w-4" />
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

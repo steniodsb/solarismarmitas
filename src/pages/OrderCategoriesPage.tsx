@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes } from "@/hooks/useFrozenData";
+import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes, useAllFrozenSizes } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
@@ -62,7 +62,7 @@ function FlavorCarousel({
           {flavors.map((flavor) => (
             <Link
               key={flavor.id}
-              to={`/categoria/${categorySlug}`}
+              to={categorySlug === "promocionais" ? "/montar/promocionais" : `/montar/${categorySlug}`}
               className="snap-start shrink-0 w-64 group/card rounded-2xl border border-border bg-card overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300"
             >
               <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
@@ -110,6 +110,7 @@ function FlavorCarousel({
 export default function OrderCategoriesPage() {
   const { data: categories, isLoading: catLoading } = useFrozenCategories();
   const { data: allFlavors, isLoading: flavLoading } = useAllFrozenFlavors();
+  const { data: allSizes } = useAllFrozenSizes();
   const navigate = useNavigate();
 
   const isLoading = catLoading || flavLoading;
@@ -172,7 +173,7 @@ export default function OrderCategoriesPage() {
                       </div>
                       {cat.slug !== "promocionais" && (
                         <Link
-                          to={`/categoria/${cat.slug}`}
+                          to={`/montar/${cat.slug}`}
                           className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:gap-2.5 transition-all"
                         >
                           Ver mais <ArrowRight className="h-4 w-4" />
@@ -181,16 +182,39 @@ export default function OrderCategoriesPage() {
                     </div>
                     {flavors.length > 0 ? (
                       <FlavorCarousel categorySlug={cat.slug} categoryId={cat.id} flavors={flavors} />
-                    ) : (
-                      <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 text-center space-y-4">
-                        <p className="text-muted-foreground max-w-xl mx-auto">{cat.description}</p>
-                        <Button variant="cta" asChild>
-                          <Link to="/montar/promocionais">
-                            Aproveite as promoções <ArrowRight className="h-4 w-4 ml-1" />
-                          </Link>
-                        </Button>
+                    ) : cat.slug === "promocionais" ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {categories
+                          ?.filter((c) => !["promocionais", "sucos"].includes(c.slug) && flavorsByCategory(c.id).length > 0)
+                          .map((promoCat) => {
+                            const catSizes = allSizes?.filter((s) => s.category_id === promoCat.id);
+                            const minPrice = catSizes?.length ? Math.min(...catSizes.map((s) => s.price)) : null;
+                            return (
+                              <Link
+                                key={promoCat.id}
+                                to={`/montar/${promoCat.slug}`}
+                                className="group/promo bg-card border border-border rounded-2xl p-5 hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col gap-3"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xl">{categoryEmojis[promoCat.slug] || "🍱"}</span>
+                                  <h3 className="font-display font-bold text-foreground group-hover/promo:text-primary transition-colors">
+                                    {promoCat.name}
+                                  </h3>
+                                </div>
+                                <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
+                                {minPrice !== null && (
+                                  <p className="text-primary font-bold text-sm">
+                                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
+                                  </p>
+                                )}
+                                <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
+                                  Montar combo <ArrowRight className="h-4 w-4" />
+                                </span>
+                              </Link>
+                            );
+                          })}
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 );
               })

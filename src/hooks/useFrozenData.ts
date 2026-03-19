@@ -74,6 +74,20 @@ export function useFrozenFlavors(categoryId: string | undefined) {
   });
 }
 
+export function useAllFrozenSizes() {
+  return useQuery({
+    queryKey: ["frozen-sizes-all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("frozen_sizes")
+        .select("*")
+        .order("sort_order");
+      if (error) throw error;
+      return data as FrozenSize[];
+    },
+  });
+}
+
 export function useAllFrozenFlavors() {
   return useQuery({
     queryKey: ["frozen-flavors-all"],
