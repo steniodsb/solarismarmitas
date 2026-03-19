@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
 
 interface Category { id: string; name: string; slug: string; }
 interface Flavor {
@@ -23,8 +23,11 @@ export default function AdminFlavors() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const [form, setForm] = useState({ name: "", description: "", image_url: "", active: true });
+  const [form, setForm] = useState({ name: "", description: "", active: true });
 
   const showMessage = (text: string, type: "success" | "error") => {
     setMessage({ text, type });
@@ -55,35 +58,76 @@ export default function AdminFlavors() {
     setLoading(false);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `flavors/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(fileName, file, { upsert: false });
+
+    if (error) {
+      showMessage("Erro no upload: " + error.message, "error");
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
+
   const startCreate = () => {
     setEditing(null);
-    setForm({ name: "", description: "", image_url: "", active: true });
+    setForm({ name: "", description: "", active: true });
+    setImageFile(null);
+    setImagePreview(null);
     setCreating(true);
   };
 
   const startEdit = (f: Flavor) => {
     setCreating(false);
     setEditing(f);
-    setForm({ name: f.name, description: f.description, image_url: f.image_url || "", active: f.active });
+    setForm({ name: f.name, description: f.description, active: f.active });
+    setImageFile(null);
+    setImagePreview(f.image_url);
   };
 
-  const cancelForm = () => { setCreating(false); setEditing(null); };
+  const cancelForm = () => {
+    setCreating(false);
+    setEditing(null);
+    setImageFile(null);
+    setImagePreview(null);
+  };
 
   const handleSave = async () => {
-    if (!form.name.trim()) { showMessage("Nome é obrigatório.", "error"); return; }
+    if (!form.name.trim()) { showMessage("Nome e obrigatorio.", "error"); return; }
     setSaving(true);
+
+    let imageUrl: string | null = editing?.image_url || null;
+
+    if (imageFile) {
+      const uploaded = await uploadImage(imageFile);
+      if (uploaded) imageUrl = uploaded;
+      else { setSaving(false); return; }
+    }
 
     if (editing) {
       const { error } = await supabase
         .from("frozen_flavors")
-        .update({ name: form.name, description: form.description, image_url: form.image_url || null, active: form.active })
+        .update({ name: form.name, description: form.description, image_url: imageUrl, active: form.active })
         .eq("id", editing.id);
       if (error) showMessage("Erro: " + error.message, "error");
       else { showMessage("Sabor atualizado!", "success"); cancelForm(); }
     } else {
       const { error } = await supabase
         .from("frozen_flavors")
-        .insert({ category_id: selectedCatId, name: form.name, description: form.description, image_url: form.image_url || null, active: form.active, sort_order: flavors.length });
+        .insert({ category_id: selectedCatId, name: form.name, description: form.description, image_url: imageUrl, active: form.active, sort_order: flavors.length });
       if (error) showMessage("Erro: " + error.message, "error");
       else { showMessage("Sabor criado!", "success"); cancelForm(); }
     }
@@ -99,9 +143,13 @@ export default function AdminFlavors() {
 
   const handleDelete = async (f: Flavor) => {
     if (!confirm(`Excluir "${f.name}"?`)) return;
+    if (f.image_url) {
+      const path = f.image_url.split("/product-images/").pop();
+      if (path) await supabase.storage.from("product-images").remove([path]);
+    }
     const { error } = await supabase.from("frozen_flavors").delete().eq("id", f.id);
     if (error) showMessage("Erro: " + error.message, "error");
-    else { showMessage("Sabor excluído.", "success"); fetchFlavors(); }
+    else { showMessage("Sabor excluido.", "success"); fetchFlavors(); }
   };
 
   const selectedCatName = categories.find((c) => c.id === selectedCatId)?.name || "";
@@ -126,7 +174,6 @@ export default function AdminFlavors() {
         </div>
       )}
 
-      {/* Category selector */}
       <div className="flex gap-2 flex-wrap">
         {categories.map((cat) => (
           <button
@@ -143,7 +190,6 @@ export default function AdminFlavors() {
         ))}
       </div>
 
-      {/* Form */}
       {(creating || editing) && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
           <h3 className="font-semibold text-foreground">{editing ? "Editar sabor" : `Novo sabor — ${selectedCatName}`}</h3>
@@ -167,16 +213,24 @@ export default function AdminFlavors() {
               className="w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">URL da imagem (opcional)</label>
-            <input
-              type="text"
-              value={form.image_url}
-              onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-              placeholder="https://..."
-              className="w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+
+          {/* Image upload */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Imagem</label>
+            <div className="flex items-center gap-4">
+              {imagePreview && (
+                <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-xl object-cover border border-border" />
+              )}
+              <div>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4" /> {imagePreview ? "Trocar imagem" : "Enviar imagem"}
+                </Button>
+                <p className="text-muted-foreground text-xs mt-1">JPG, PNG ou WebP</p>
+              </div>
+            </div>
           </div>
+
           <div className="flex items-center gap-2">
             <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} id="flavor-active" className="rounded" />
             <label htmlFor="flavor-active" className="text-sm text-foreground">Ativo</label>
@@ -190,7 +244,6 @@ export default function AdminFlavors() {
         </div>
       )}
 
-      {/* List */}
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
       ) : !selectedCatId ? (
@@ -200,10 +253,7 @@ export default function AdminFlavors() {
       ) : (
         <div className="space-y-2">
           {flavors.map((f) => (
-            <div
-              key={f.id}
-              className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!f.active ? "opacity-50" : ""}`}
-            >
+            <div key={f.id} className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!f.active ? "opacity-50" : ""}`}>
               {f.image_url ? (
                 <img src={f.image_url} alt={f.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
               ) : (

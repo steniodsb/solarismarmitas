@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Plus, Pencil, Trash2, GripVertical, Eye, EyeOff } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload, GripVertical } from "lucide-react";
 
 interface Category {
   id: string;
@@ -20,8 +20,11 @@ export default function AdminCategories() {
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const [form, setForm] = useState({ name: "", slug: "", description: "", image_url: "", active: true });
+  const [form, setForm] = useState({ name: "", slug: "", description: "", active: true });
 
   const showMessage = (text: string, type: "success" | "error") => {
     setMessage({ text, type });
@@ -45,39 +48,77 @@ export default function AdminCategories() {
 
   const startCreate = () => {
     setEditing(null);
-    setForm({ name: "", slug: "", description: "", image_url: "", active: true });
+    setForm({ name: "", slug: "", description: "", active: true });
+    setImageFile(null);
+    setImagePreview(null);
     setCreating(true);
   };
 
   const startEdit = (cat: Category) => {
     setCreating(false);
     setEditing(cat);
-    setForm({ name: cat.name, slug: cat.slug, description: cat.description, image_url: cat.image_url || "", active: cat.active });
+    setForm({ name: cat.name, slug: cat.slug, description: cat.description, active: cat.active });
+    setImageFile(null);
+    setImagePreview(cat.image_url);
   };
 
   const cancelForm = () => {
     setCreating(false);
     setEditing(null);
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `categories/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error } = await supabase.storage
+      .from("product-images")
+      .upload(fileName, file, { upsert: false });
+
+    if (error) {
+      showMessage("Erro no upload: " + error.message, "error");
+      return null;
+    }
+
+    const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
+    return urlData.publicUrl;
   };
 
   const handleSave = async () => {
     if (!form.name.trim() || !form.slug.trim()) {
-      showMessage("Nome e slug são obrigatórios.", "error");
+      showMessage("Nome e slug sao obrigatorios.", "error");
       return;
     }
     setSaving(true);
 
+    let imageUrl: string | null = editing?.image_url || null;
+
+    if (imageFile) {
+      const uploaded = await uploadImage(imageFile);
+      if (uploaded) imageUrl = uploaded;
+      else { setSaving(false); return; }
+    }
+
     if (editing) {
       const { error } = await supabase
         .from("frozen_categories")
-        .update({ name: form.name, slug: form.slug, description: form.description, image_url: form.image_url || null, active: form.active })
+        .update({ name: form.name, slug: form.slug, description: form.description, image_url: imageUrl, active: form.active })
         .eq("id", editing.id);
       if (error) showMessage("Erro: " + error.message, "error");
       else { showMessage("Categoria atualizada!", "success"); cancelForm(); }
     } else {
       const { error } = await supabase
         .from("frozen_categories")
-        .insert({ name: form.name, slug: form.slug, description: form.description, image_url: form.image_url || null, active: form.active, sort_order: categories.length });
+        .insert({ name: form.name, slug: form.slug, description: form.description, image_url: imageUrl, active: form.active, sort_order: categories.length });
       if (error) showMessage("Erro: " + error.message, "error");
       else { showMessage("Categoria criada!", "success"); cancelForm(); }
     }
@@ -93,9 +134,13 @@ export default function AdminCategories() {
 
   const handleDelete = async (cat: Category) => {
     if (!confirm(`Tem certeza que deseja excluir "${cat.name}"? Isso vai excluir todos os sabores e tamanhos desta categoria.`)) return;
+    if (cat.image_url) {
+      const path = cat.image_url.split("/product-images/").pop();
+      if (path) await supabase.storage.from("product-images").remove([path]);
+    }
     const { error } = await supabase.from("frozen_categories").delete().eq("id", cat.id);
     if (error) showMessage("Erro: " + error.message, "error");
-    else { showMessage("Categoria excluída.", "success"); fetchCategories(); }
+    else { showMessage("Categoria excluida.", "success"); fetchCategories(); }
   };
 
   return (
@@ -116,7 +161,6 @@ export default function AdminCategories() {
         </div>
       )}
 
-      {/* Form */}
       {(creating || editing) && (
         <div className="bg-card border border-border rounded-xl p-5 space-y-4">
           <h3 className="font-semibold text-foreground">{editing ? "Editar categoria" : "Nova categoria"}</h3>
@@ -126,9 +170,7 @@ export default function AdminCategories() {
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) => {
-                  setForm((f) => ({ ...f, name: e.target.value, slug: editing ? f.slug : generateSlug(e.target.value) }));
-                }}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value, slug: editing ? f.slug : generateSlug(e.target.value) }))}
                 placeholder="Ex: Fitness"
                 className="w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
@@ -154,16 +196,24 @@ export default function AdminCategories() {
               className="w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-muted-foreground">URL da imagem (opcional)</label>
-            <input
-              type="text"
-              value={form.image_url}
-              onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
-              placeholder="https://..."
-              className="w-full rounded-lg border border-border bg-muted px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
+
+          {/* Image upload */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-muted-foreground">Imagem</label>
+            <div className="flex items-center gap-4">
+              {imagePreview && (
+                <img src={imagePreview} alt="Preview" className="w-20 h-20 rounded-xl object-cover border border-border" />
+              )}
+              <div>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
+                  <Upload className="h-4 w-4" /> {imagePreview ? "Trocar imagem" : "Enviar imagem"}
+                </Button>
+                <p className="text-muted-foreground text-xs mt-1">JPG, PNG ou WebP</p>
+              </div>
+            </div>
           </div>
+
           <div className="flex items-center gap-2">
             <input type="checkbox" checked={form.active} onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))} id="cat-active" className="rounded" />
             <label htmlFor="cat-active" className="text-sm text-foreground">Ativa</label>
@@ -177,7 +227,6 @@ export default function AdminCategories() {
         </div>
       )}
 
-      {/* List */}
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
       ) : categories.length === 0 ? (
@@ -185,13 +234,12 @@ export default function AdminCategories() {
       ) : (
         <div className="space-y-2">
           {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!cat.active ? "opacity-50" : ""}`}
-            >
+            <div key={cat.id} className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!cat.active ? "opacity-50" : ""}`}>
               <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
-              {cat.image_url && (
+              {cat.image_url ? (
                 <img src={cat.image_url} alt={cat.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+              ) : (
+                <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 text-lg">🍱</div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
