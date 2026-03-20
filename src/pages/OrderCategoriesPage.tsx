@@ -125,6 +125,94 @@ function FlavorCarousel({
   );
 }
 
+function PromoCarousel({
+  categories,
+  allSizes,
+  flavorsByCategory,
+}: {
+  categories: { id: string; slug: string; name: string; description: string }[] | undefined;
+  allSizes: { id: string; category_id: string; price: number }[] | undefined;
+  flavorsByCategory: (categoryId: string) => { id: string }[];
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: direction === "left" ? -280 : 280, behavior: "smooth" });
+  };
+
+  const promoItems = categories?.filter(
+    (c) => !["promocionais", "sucos"].includes(c.slug) && flavorsByCategory(c.id).length > 0
+  );
+
+  if (!promoItems?.length) return null;
+
+  return (
+    <div className="relative group">
+      <button
+        onClick={() => scroll("left")}
+        className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+        aria-label="Anterior"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible"
+      >
+        {promoItems.map((promoCat) => {
+          const catSizes = allSizes?.filter((s) => s.category_id === promoCat.id);
+          const minPrice = catSizes?.length ? Math.min(...catSizes.map((s) => s.price)) : null;
+          const img = categoryImages[promoCat.slug];
+          return (
+            <Link
+              key={promoCat.id}
+              to={`/montar/promocionais/${promoSlugMap[promoCat.slug] || promoCat.slug}`}
+              className="snap-start shrink-0 w-[75vw] sm:w-auto group/promo bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col"
+            >
+              {img && (
+                <div className="h-36 sm:h-40 shrink-0 overflow-hidden">
+                  <img
+                    src={img}
+                    alt={promoCat.name}
+                    className="w-full h-full object-cover group-hover/promo:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              )}
+              <div className="p-4 flex flex-col gap-2 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{categoryEmojis[promoCat.slug] || "🍱"}</span>
+                  <h3 className="font-display font-bold text-foreground group-hover/promo:text-primary transition-colors">
+                    {promoCat.name}
+                  </h3>
+                </div>
+                <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
+                {minPrice !== null && (
+                  <p className="text-primary font-bold text-sm">
+                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
+                  </p>
+                )}
+                <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
+                  Montar combo <ArrowRight className="h-4 w-4" />
+                </span>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      <button
+        onClick={() => scroll("right")}
+        className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-card border border-border shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-accent"
+        aria-label="Próximo"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function OrderCategoriesPage() {
   const { data: categories, isLoading: catLoading } = useFrozenCategories();
   const { data: allFlavors, isLoading: flavLoading } = useAllFrozenFlavors();
@@ -201,49 +289,11 @@ export default function OrderCategoriesPage() {
                     {flavors.length > 0 ? (
                       <FlavorCarousel categorySlug={cat.slug} categoryId={cat.id} flavors={flavors} />
                     ) : cat.slug === "promocionais" ? (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {categories
-                          ?.filter((c) => !["promocionais", "sucos"].includes(c.slug) && flavorsByCategory(c.id).length > 0)
-                          .map((promoCat) => {
-                            const catSizes = allSizes?.filter((s) => s.category_id === promoCat.id);
-                            const minPrice = catSizes?.length ? Math.min(...catSizes.map((s) => s.price)) : null;
-                            const img = categoryImages[promoCat.slug];
-                            return (
-                              <Link
-                                key={promoCat.id}
-                                to={`/montar/promocionais/${promoSlugMap[promoCat.slug] || promoCat.slug}`}
-                                className="group/promo bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300 flex flex-col"
-                              >
-                                {img && (
-                                  <div className="h-36 sm:h-40 shrink-0 overflow-hidden">
-                                    <img
-                                      src={img}
-                                      alt={promoCat.name}
-                                      className="w-full h-full object-cover group-hover/promo:scale-105 transition-transform duration-300"
-                                    />
-                                  </div>
-                                )}
-                                <div className="p-4 flex flex-col gap-2 flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-lg">{categoryEmojis[promoCat.slug] || "🍱"}</span>
-                                    <h3 className="font-display font-bold text-foreground group-hover/promo:text-primary transition-colors">
-                                      {promoCat.name}
-                                    </h3>
-                                  </div>
-                                  <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
-                                  {minPrice !== null && (
-                                    <p className="text-primary font-bold text-sm">
-                                      A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
-                                    </p>
-                                  )}
-                                  <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
-                                    Montar combo <ArrowRight className="h-4 w-4" />
-                                  </span>
-                                </div>
-                              </Link>
-                            );
-                          })}
-                      </div>
+                      <PromoCarousel
+                        categories={categories}
+                        allSizes={allSizes}
+                        flavorsByCategory={flavorsByCategory}
+                      />
                     ) : null}
                   </div>
                 );
