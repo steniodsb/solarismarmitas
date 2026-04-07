@@ -167,6 +167,52 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Formas de Pagamento */}
+      <section className="py-12 sm:py-16 bg-card">
+        <div className="container px-4">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground text-center mb-3">
+            Formas de Pagamento
+          </h2>
+          <p className="text-muted-foreground text-center mb-8 text-sm sm:text-base">
+            Cartões: Débito, Crédito, Refeição e Alimentação
+          </p>
+          <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-7 gap-3 sm:gap-4 max-w-3xl mx-auto">
+            {[
+              { name: "MasterCard", bg: "bg-[#1A1F71]", text: "text-white" },
+              { name: "Elo", bg: "bg-[#1D1D1B]", text: "text-white" },
+              { name: "Visa", bg: "bg-white border border-border", text: "text-[#1A1F71]" },
+              { name: "Hipercard", bg: "bg-white border border-border", text: "text-[#822124]" },
+              { name: "Banrisul", bg: "bg-[#005BAA]", text: "text-white" },
+              { name: "Sodexo", bg: "bg-white border border-border", text: "text-[#1D3160]" },
+              { name: "BanriCard", bg: "bg-white border border-border", text: "text-[#005BAA]" },
+              { name: "Alelo", bg: "bg-[#00A651]", text: "text-white" },
+              { name: "VR", bg: "bg-[#009639]", text: "text-white" },
+              { name: "Ben Visa Vale", bg: "bg-[#00A651]", text: "text-white" },
+              { name: "GreenCard", bg: "bg-white border border-border", text: "text-[#00854A]" },
+              { name: "Ticket", bg: "bg-white border border-border", text: "text-[#E30613]" },
+              { name: "Verde Card", bg: "bg-[#00854A]", text: "text-white" },
+            ].map((card) => (
+              <div
+                key={card.name}
+                className={`${card.bg} ${card.text} rounded-xl p-3 flex items-center justify-center aspect-[3/2] shadow-sm`}
+              >
+                <span className="font-bold text-xs sm:text-sm text-center leading-tight">{card.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-center gap-6 sm:gap-10 mt-8">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">💵</span>
+              <span className="font-display font-bold text-foreground text-lg sm:text-xl">Dinheiro</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">📱</span>
+              <span className="font-display font-bold text-foreground text-lg sm:text-xl">PIX</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );

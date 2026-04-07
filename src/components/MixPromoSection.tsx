@@ -168,14 +168,6 @@ export default function MixPromoSection() {
                 <h3 className="font-display font-bold text-foreground text-base group-hover:text-primary transition-colors">
                   Cardápio {line.name}
                 </h3>
-                <ul className="space-y-0.5">
-                  {line.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
                 <div className="pt-2">
                   <span className="inline-flex items-center justify-center gap-2 w-full rounded-lg bg-primary text-primary-foreground font-semibold text-sm py-2.5 group-hover:bg-primary/90 transition-colors">
                     Pedir combo <ArrowRight className="h-4 w-4" />

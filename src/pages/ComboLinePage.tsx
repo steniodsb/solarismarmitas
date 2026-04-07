@@ -1,13 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
+import CartNotification from "@/components/frozen/CartNotification";
 import { usePromoLineGallery } from "@/hooks/useFrozenData";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ShoppingCart, Check, ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ShoppingBag, Check, ChevronLeft, ChevronRight } from "lucide-react";
 
 const lineNames: Record<string, string> = {
   tradicional: "Marmitas Tradicionais",
@@ -18,13 +19,13 @@ const lineNames: Record<string, string> = {
 
 const lineDescriptions: Record<string, string> = {
   tradicional:
-    "Refeições completas com arroz, feijão, carnes variadas, complementos e legumes — o sabor caseiro de todo dia.",
+    "Cardápio bem variado com arroz branco, feijão ou lentilha, acompanhamentos como massa, aipim, purê… Proteína bem sortida (frango, carne, peixe) e legumes variados.\n\nMontamos combinações de sabores bem Mix, prontas em 5min no micro, perfeita pra facilitar o seu dia a dia.",
   vegetariana:
-    "Refeições sem carne, com proteínas vegetais, legumes, massas e grãos — sabor e nutrição sem abrir mão do prazer.",
+    "Cardápio bem mix com arroz branco ou integral (escrever na observação do pedido sua preferência) feijão ou lentilha, acompanhamentos como massa, batata, aipim, purê… bastante legumes, refogados, seletas sortidas com lasanha de brócolis, panqueca de legumes…\n\nMontamos Marmitas bem variadas sem carnes focado bem nos legumes, comida bem saudável. Prontas em 5 min no micro, para facilitar seu dia a dia.",
   fitness:
-    "Refeições com foco em proteína e baixo carboidrato — ideais para quem treina e cuida da alimentação.",
+    "Cardápio bem mix com arroz integral, feijão ou lentilha, acompanhamentos como massa integral, aipim, purê… Proteína bem sortida (frango, carne ou peixe) e bastante legumes e refogados variados.\n\nMontamos Marmitas bem variadas com propósito mais saudável, ideal para quem está começando dietas e quer cuidar da alimentação. Prontas em 5 min no micro, pensada para facilitar seu dia a dia.",
   "low-carb":
-    "Refeições sem arroz e sem massa, com legumes grelhados, proteínas nobres e ingredientes funcionais.",
+    "Cardápio bem mix focado em bastante legumes, refogados e seletas sortidas com proteínas bem variadas — frango, carne, peixe.\n\nMontamos Marmitas bem variadas com foco para dietas e perda de peso. Prontas em 5 min no micro, pensada para facilitar seu dia a dia.",
 };
 
 const lineItems: Record<string, string[]> = {
@@ -71,10 +72,11 @@ export default function ComboLinePage() {
   const galleryRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<ComboSize | null>(null);
   const [selectedQty, setSelectedQty] = useState<number>(10);
-  const [added, setAdded] = useState(false);
 
   const { data: galleryImages } = usePromoLineGallery(lineSlug);
-  const { addItem, setCartOpen } = useFrozenCart();
+  const { addItem, toggleCart, totalItems, totalPrice } = useFrozenCart();
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const dismissNotification = useCallback(() => setCartMessage(null), []);
 
   const lineName = lineNames[lineSlug || ""] || "Marmitas";
   const lineDescription = lineDescriptions[lineSlug || ""] || "";
@@ -120,12 +122,9 @@ export default function ComboLinePage() {
       unitPrice,
     });
 
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2500);
-  };
-
-  const handleGoToCart = () => {
-    setCartOpen(true);
+    setCartMessage(`${selectedQty}x Combo ${lineName} (${selectedSize.label}) adicionado!`);
+    setSelectedSize(null);
+    setSelectedQty(10);
   };
 
   return (
@@ -282,43 +281,15 @@ export default function ComboLinePage() {
             {/* Add to cart button */}
             {selectedSize && (
               <div className="space-y-3 animate-in slide-in-from-top-2 duration-200">
-                {added ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-center gap-2 bg-green-50 border border-green-200 rounded-xl py-4 text-green-700 font-semibold">
-                      <CheckCircle className="h-5 w-5" />
-                      Adicionado ao carrinho!
-                    </div>
-                    <div className="flex gap-3">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="flex-1"
-                        onClick={() => navigate("/montar/promocionais")}
-                      >
-                        Continuar comprando
-                      </Button>
-                      <Button
-                        variant="cta"
-                        size="lg"
-                        className="flex-1"
-                        onClick={handleGoToCart}
-                      >
-                        <ShoppingCart className="h-5 w-5" />
-                        Ver carrinho
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button
-                    variant="cta"
-                    size="xl"
-                    className="w-full"
-                    onClick={handleAddToCart}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    Adicionar ao Carrinho — R$ {getPrice().toFixed(2).replace(".", ",")}
-                  </Button>
-                )}
+                <Button
+                  variant="cta"
+                  size="xl"
+                  className="w-full"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  Adicionar ao Carrinho — R$ {getPrice().toFixed(2).replace(".", ",")}
+                </Button>
               </div>
             )}
           </div>
@@ -326,6 +297,27 @@ export default function ComboLinePage() {
       </main>
 
       <Footer />
+
+      {/* Floating cart button */}
+      {totalItems > 0 && (
+        <button
+          onClick={toggleCart}
+          className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:w-auto z-40 flex items-center justify-center gap-3 gradient-hero text-primary-foreground px-5 py-3.5 rounded-2xl shadow-2xl hover:scale-[1.02] transition-transform active:scale-95"
+        >
+          <div className="relative">
+            <ShoppingBag className="h-5 w-5" />
+            <span className="absolute -top-2 -right-2 bg-secondary text-secondary-foreground text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              {totalItems}
+            </span>
+          </div>
+          <div className="text-left">
+            <p className="text-xs opacity-80">Ver carrinho</p>
+            <p className="font-display font-bold text-sm">R$ {totalPrice.toFixed(2).replace(".", ",")}</p>
+          </div>
+        </button>
+      )}
+
+      <CartNotification message={cartMessage} onDismiss={dismissNotification} />
     </div>
   );
 }

@@ -120,6 +120,9 @@ export default function FrozenCheckoutModal() {
                   <span className="text-primary text-lg">R$ {totalPrice.toFixed(2).replace(".", ",")}</span>
                 </div>
               </div>
+              <p className="text-xs text-muted-foreground text-center bg-muted rounded-lg px-3 py-2">
+                Entraremos em contato pelo WhatsApp informado para combinar melhor horário de entrega e ver forma de pagamento desejada.
+              </p>
               <Button variant="cta" size="xl" className="w-full" onClick={handleSend}>
                 <MessageCircle className="h-5 w-5" /> Enviar Pedido pelo WhatsApp
               </Button>

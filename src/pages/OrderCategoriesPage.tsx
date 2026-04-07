@@ -162,8 +162,6 @@ function PromoCarousel({
         className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible"
       >
         {promoItems.map((promoCat) => {
-          const catSizes = allSizes?.filter((s) => s.category_id === promoCat.id);
-          const minPrice = catSizes?.length ? Math.min(...catSizes.map((s) => s.price)) : null;
           const img = categoryImages[promoCat.slug];
           return (
             <Link
@@ -188,11 +186,9 @@ function PromoCarousel({
                   </h3>
                 </div>
                 <p className="text-muted-foreground text-sm line-clamp-2 flex-1">{promoCat.description}</p>
-                {minPrice !== null && (
-                  <p className="text-primary font-bold text-sm">
-                    A partir de R$ {minPrice.toFixed(2).replace(".", ",")}
-                  </p>
-                )}
+                <p className="text-primary font-bold text-sm">
+                  10 unidades a partir de R$ 159,90
+                </p>
                 <span className="inline-flex items-center gap-1 text-primary font-semibold text-sm group-hover/promo:gap-2 transition-all">
                   Montar combo <ArrowRight className="h-4 w-4" />
                 </span>
