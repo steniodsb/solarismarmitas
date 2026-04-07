@@ -90,7 +90,7 @@ export default function HomePage() {
                   className="group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <img
-                    src={categoryImages[cat.slug] || catFitness}
+                    src={cat.image_url || categoryImages[cat.slug] || catFitness}
                     alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
@@ -178,25 +178,34 @@ export default function HomePage() {
           </p>
           <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-7 gap-3 sm:gap-4 max-w-3xl mx-auto">
             {[
-              { name: "MasterCard", bg: "bg-[#1A1F71]", text: "text-white" },
-              { name: "Elo", bg: "bg-[#1D1D1B]", text: "text-white" },
-              { name: "Visa", bg: "bg-white border border-border", text: "text-[#1A1F71]" },
-              { name: "Hipercard", bg: "bg-white border border-border", text: "text-[#822124]" },
-              { name: "Banrisul", bg: "bg-[#005BAA]", text: "text-white" },
-              { name: "Sodexo", bg: "bg-white border border-border", text: "text-[#1D3160]" },
-              { name: "BanriCard", bg: "bg-white border border-border", text: "text-[#005BAA]" },
-              { name: "Alelo", bg: "bg-[#00A651]", text: "text-white" },
-              { name: "VR", bg: "bg-[#009639]", text: "text-white" },
-              { name: "Ben Visa Vale", bg: "bg-[#00A651]", text: "text-white" },
-              { name: "GreenCard", bg: "bg-white border border-border", text: "text-[#00854A]" },
-              { name: "Ticket", bg: "bg-white border border-border", text: "text-[#E30613]" },
-              { name: "Verde Card", bg: "bg-[#00854A]", text: "text-white" },
+              { name: "Mastercard", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" },
+              { name: "Elo", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Cartão_Elo_logo.svg/200px-Cartão_Elo_logo.svg.png" },
+              { name: "Visa", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" },
+              { name: "Hipercard", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Hipercard_logo.svg/200px-Hipercard_logo.svg.png" },
+              { name: "Banrisul", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Banrisul_logo.svg/200px-Banrisul_logo.svg.png" },
+              { name: "Sodexo", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Sodexo_logo.svg/200px-Sodexo_logo.svg.png" },
+              { name: "BanriCard", logo: "https://upload.wikimedia.org/wikipedia/pt/thumb/5/5c/Banricard.png/200px-Banricard.png" },
+              { name: "Alelo", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Alelo.svg/200px-Alelo.svg.png" },
+              { name: "VR", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/VR_Benefícios_logo.svg/200px-VR_Benefícios_logo.svg.png" },
+              { name: "Ben Visa Vale", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Ben_Visa_Vale.svg/200px-Ben_Visa_Vale.svg.png" },
+              { name: "GreenCard", logo: "https://upload.wikimedia.org/wikipedia/pt/thumb/c/ca/Green_Card_logo.png/200px-Green_Card_logo.png" },
+              { name: "Ticket", logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Ticket_logo.svg/200px-Ticket_logo.svg.png" },
+              { name: "Verde Card", logo: "https://upload.wikimedia.org/wikipedia/pt/thumb/7/7a/VerdeCard.png/200px-VerdeCard.png" },
             ].map((card) => (
               <div
                 key={card.name}
-                className={`${card.bg} ${card.text} rounded-xl p-3 flex items-center justify-center aspect-[3/2] shadow-sm`}
+                className="bg-white border border-border rounded-xl p-2 sm:p-3 flex items-center justify-center aspect-[3/2] shadow-sm"
               >
-                <span className="font-bold text-xs sm:text-sm text-center leading-tight">{card.name}</span>
+                <img
+                  src={card.logo}
+                  alt={card.name}
+                  className="max-h-8 sm:max-h-10 w-auto object-contain"
+                  onError={(e) => {
+                    const el = e.currentTarget;
+                    el.style.display = "none";
+                    el.parentElement!.innerHTML = `<span class="font-bold text-xs text-muted-foreground">${card.name}</span>`;
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -206,7 +215,11 @@ export default function HomePage() {
               <span className="font-display font-bold text-foreground text-lg sm:text-xl">Dinheiro</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl">📱</span>
+              <svg className="h-7 w-7" viewBox="0 0 512 512" fill="none">
+                <rect width="512" height="512" rx="80" fill="#32BCAD"/>
+                <path d="M256 100c-86 0-156 70-156 156s70 156 156 156 156-70 156-156S342 100 256 100zm0 260c-57.4 0-104-46.6-104-104s46.6-104 104-104 104 46.6 104 104-46.6 104-104 104z" fill="white"/>
+                <circle cx="256" cy="256" r="52" fill="white"/>
+              </svg>
               <span className="font-display font-bold text-foreground text-lg sm:text-xl">PIX</span>
             </div>
           </div>

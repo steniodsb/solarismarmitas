@@ -122,11 +122,11 @@ export default function MixPromoSection() {
         {hasGallery && (
           <div className="max-w-2xl mx-auto mb-10 space-y-2">
             {/* Main photo */}
-            <div className="rounded-2xl overflow-hidden aspect-video sm:aspect-[16/7] bg-card border border-border">
+            <div className="rounded-2xl overflow-hidden bg-card border border-border">
               <img
                 src={mainImage.image_url}
                 alt={mainImage.alt_text ?? "Combo promocional Solaris"}
-                className="w-full h-full object-cover"
+                className="w-full h-auto object-contain"
               />
             </div>
             {/* Thumbnails */}
