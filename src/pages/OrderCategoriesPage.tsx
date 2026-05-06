@@ -130,7 +130,7 @@ function PromoCarousel({
   allSizes,
   flavorsByCategory,
 }: {
-  categories: { id: string; slug: string; name: string; description: string }[] | undefined;
+  categories: { id: string; slug: string; name: string; description: string; image_url: string | null }[] | undefined;
   allSizes: { id: string; category_id: string; price: number }[] | undefined;
   flavorsByCategory: (categoryId: string) => { id: string }[];
 }) {
@@ -162,7 +162,7 @@ function PromoCarousel({
         className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 px-1 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-x-visible"
       >
         {promoItems.map((promoCat) => {
-          const img = categoryImages[promoCat.slug];
+          const img = promoCat.image_url || categoryImages[promoCat.slug];
           return (
             <Link
               key={promoCat.id}

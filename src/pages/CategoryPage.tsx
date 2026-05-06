@@ -40,7 +40,7 @@ export default function CategoryPage() {
         {/* Hero banner */}
         <div className="relative h-40 sm:h-64 overflow-hidden">
           <img
-            src={categoryImages[categorySlug || ""] || catFitness}
+            src={category?.image_url || categoryImages[categorySlug || ""] || catFitness}
             alt={category?.name}
             className="absolute inset-0 w-full h-full object-cover"
           />
