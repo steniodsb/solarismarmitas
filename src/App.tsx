@@ -19,8 +19,14 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminPage from "./pages/AdminPage";
 import NotFound from "./pages/NotFound";
 import TrackingScripts from "./components/TrackingScripts";
+import { useAnalyticsTracking } from "@/hooks/useAnalytics";
 
 const queryClient = new QueryClient();
+
+function AnalyticsTracker() {
+  useAnalyticsTracking();
+  return null;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -30,6 +36,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <TrackingScripts />
+          <AnalyticsTracker />
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/pedir" element={<OrderCategoriesPage />} />

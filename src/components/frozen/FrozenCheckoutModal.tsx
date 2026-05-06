@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, MessageCircle, ArrowLeft, MapPin, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
+import { trackEvent } from "@/hooks/useAnalytics";
 
 type Step = "form" | "summary";
 
@@ -44,6 +45,12 @@ export default function FrozenCheckoutModal() {
       `*━━━ Itens do Pedido ━━━*\n${itemsList}\n\n` +
       `💰 *Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}*\n` +
       (form.notes.trim() ? `\n📝 *Observações:* ${form.notes.trim()}` : "");
+
+    trackEvent("whatsapp_order", window.location.pathname, {
+      total: totalPrice,
+      items_count: items.length,
+      delivery_mode: form.deliveryMode,
+    });
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     clearCart();

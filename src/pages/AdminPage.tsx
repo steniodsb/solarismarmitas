@@ -6,6 +6,7 @@ import { LogOut, Upload, Trash2, Star, StarOff, ImagePlus, Loader2, Save } from 
 import AdminCategories from "@/components/admin/AdminCategories";
 import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
+import AdminDashboard from "@/components/admin/AdminDashboard";
 
 interface GalleryImage {
   id: string;
@@ -32,14 +33,14 @@ const PROMO_LINES = [
   { slug: "low-carb", label: "Low Carb" },
 ];
 
-type AdminTab = "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
+type AdminTab = "dashboard" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lineFileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<AdminTab>("categorias");
+  const [activeTab, setActiveTab] = useState<AdminTab>("dashboard");
   const [activeLineSlug, setActiveLineSlug] = useState<string>("tradicional");
 
   // General gallery state
@@ -325,6 +326,16 @@ export default function AdminPage() {
       <div className="border-b border-border bg-card">
         <div className="container px-4 flex gap-0 overflow-x-auto scrollbar-hide">
           <button
+            onClick={() => setActiveTab("dashboard")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "dashboard"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Dashboard
+          </button>
+          <button
             onClick={() => setActiveTab("categorias")}
             className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
               activeTab === "categorias"
@@ -398,6 +409,9 @@ export default function AdminPage() {
             {message.text}
           </div>
         )}
+
+        {/* ─── Tab: Dashboard ─── */}
+        {activeTab === "dashboard" && <AdminDashboard />}
 
         {/* ─── Tab: Categorias ─── */}
         {activeTab === "categorias" && <AdminCategories />}
