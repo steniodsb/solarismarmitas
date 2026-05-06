@@ -90,7 +90,7 @@ export default function HomePage() {
                   className="group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary"
                 >
                   <img
-                    src={cat.image_url || categoryImages[cat.slug] || catFitness}
+                    src={categoryImages[cat.slug] || cat.image_url || catFitness}
                     alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
