@@ -140,13 +140,13 @@ export default function AdminPage() {
     const { error } = await supabase
       .from("store_config")
       .update({
-        facebook_pixel_id: trackingData.facebook_pixel_id,
-        google_analytics_id: trackingData.google_analytics_id,
-        google_tag_manager_id: trackingData.google_tag_manager_id,
-        tiktok_pixel_id: trackingData.tiktok_pixel_id,
-        custom_head_scripts: trackingData.custom_head_scripts,
+        facebook_pixel_id: trackingData.facebook_pixel_id || null,
+        google_analytics_id: trackingData.google_analytics_id || null,
+        google_tag_manager_id: trackingData.google_tag_manager_id || null,
+        tiktok_pixel_id: trackingData.tiktok_pixel_id || null,
+        custom_head_scripts: trackingData.custom_head_scripts || null,
       })
-      .eq("id", (await supabase.from("store_config").select("id").limit(1).single()).data?.id || "");
+      .eq("id", "4c5ed617-d177-4399-9f7e-7a3cd78f2699");
 
     if (error) {
       showMessage("Erro ao salvar: " + error.message, "error");
