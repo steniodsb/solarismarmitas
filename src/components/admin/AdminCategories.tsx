@@ -128,7 +128,11 @@ export default function AdminCategories() {
   };
 
   const handleToggleActive = async (cat: Category) => {
-    await supabase.from("frozen_categories").update({ active: !cat.active }).eq("id", cat.id);
+    const { error } = await supabase.from("frozen_categories").update({ active: !cat.active }).eq("id", cat.id);
+    if (error) {
+      showMessage("Erro ao atualizar: " + error.message, "error");
+      return;
+    }
     fetchCategories();
   };
 

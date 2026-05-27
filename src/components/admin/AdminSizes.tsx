@@ -100,7 +100,11 @@ export default function AdminSizes() {
   };
 
   const handleToggleActive = async (s: Size) => {
-    await supabase.from("frozen_sizes").update({ active: !s.active }).eq("id", s.id);
+    const { error } = await supabase.from("frozen_sizes").update({ active: !s.active }).eq("id", s.id);
+    if (error) {
+      showMessage("Erro ao atualizar: " + error.message, "error");
+      return;
+    }
     fetchSizes();
   };
 

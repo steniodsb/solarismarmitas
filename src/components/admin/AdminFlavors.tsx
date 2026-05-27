@@ -137,7 +137,11 @@ export default function AdminFlavors() {
   };
 
   const handleToggleActive = async (f: Flavor) => {
-    await supabase.from("frozen_flavors").update({ active: !f.active }).eq("id", f.id);
+    const { error } = await supabase.from("frozen_flavors").update({ active: !f.active }).eq("id", f.id);
+    if (error) {
+      showMessage("Erro ao atualizar: " + error.message, "error");
+      return;
+    }
     fetchFlavors();
   };
 

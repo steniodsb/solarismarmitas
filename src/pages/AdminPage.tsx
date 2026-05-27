@@ -137,7 +137,20 @@ export default function AdminPage() {
 
   const handleSaveTracking = async () => {
     setTrackingSaving(true);
-    const { error } = await supabase
+
+    const { data: configRow } = await supabase
+      .from("store_config")
+      .select("id")
+      .limit(1)
+      .single();
+
+    if (!configRow) {
+      showMessage("Erro: configuração da loja não encontrada. Verifique o banco de dados.", "error");
+      setTrackingSaving(false);
+      return;
+    }
+
+    const { error, count } = await supabase
       .from("store_config")
       .update({
         facebook_pixel_id: trackingData.facebook_pixel_id || null,
@@ -146,7 +159,8 @@ export default function AdminPage() {
         tiktok_pixel_id: trackingData.tiktok_pixel_id || null,
         custom_head_scripts: trackingData.custom_head_scripts || null,
       })
-      .eq("id", "4c5ed617-d177-4399-9f7e-7a3cd78f2699");
+      .eq("id", configRow.id)
+      .select();
 
     if (error) {
       showMessage("Erro ao salvar: " + error.message, "error");
@@ -208,14 +222,22 @@ export default function AdminPage() {
   };
 
   const handleSetMain = async (id: string) => {
-    await supabase.from("promo_gallery").update({ is_main: false }).neq("id", "none");
-    await supabase.from("promo_gallery").update({ is_main: true }).eq("id", id);
+    const { error: e1 } = await supabase.from("promo_gallery").update({ is_main: false }).neq("id", "none");
+    const { error: e2 } = await supabase.from("promo_gallery").update({ is_main: true }).eq("id", id);
+    if (e1 || e2) {
+      showMessage("Erro ao definir principal: " + (e1?.message || e2?.message), "error");
+      return;
+    }
     showMessage("Foto principal definida!", "success");
     fetchImages();
   };
 
   const handleToggleActive = async (img: GalleryImage) => {
-    await supabase.from("promo_gallery").update({ active: !img.active }).eq("id", img.id);
+    const { error } = await supabase.from("promo_gallery").update({ active: !img.active }).eq("id", img.id);
+    if (error) {
+      showMessage("Erro ao atualizar: " + error.message, "error");
+      return;
+    }
     fetchImages();
   };
 
@@ -225,7 +247,11 @@ export default function AdminPage() {
     if (fileName) {
       await supabase.storage.from("promo-gallery").remove([fileName]);
     }
-    await supabase.from("promo_gallery").delete().eq("id", img.id);
+    const { error } = await supabase.from("promo_gallery").delete().eq("id", img.id);
+    if (error) {
+      showMessage("Erro ao excluir: " + error.message, "error");
+      return;
+    }
     showMessage("Foto excluída.", "success");
     fetchImages();
   };
@@ -282,7 +308,11 @@ export default function AdminPage() {
   };
 
   const handleLineToggleActive = async (img: LineGalleryImage) => {
-    await supabase.from("promo_line_gallery").update({ active: !img.active }).eq("id", img.id);
+    const { error } = await supabase.from("promo_line_gallery").update({ active: !img.active }).eq("id", img.id);
+    if (error) {
+      showMessage("Erro ao atualizar: " + error.message, "error");
+      return;
+    }
     fetchLineImages(activeLineSlug);
   };
 
@@ -292,7 +322,11 @@ export default function AdminPage() {
     if (fileName) {
       await supabase.storage.from("promo-line-gallery").remove([fileName]);
     }
-    await supabase.from("promo_line_gallery").delete().eq("id", img.id);
+    const { error } = await supabase.from("promo_line_gallery").delete().eq("id", img.id);
+    if (error) {
+      showMessage("Erro ao excluir: " + error.message, "error");
+      return;
+    }
     showMessage("Foto excluída.", "success");
     fetchLineImages(activeLineSlug);
   };
