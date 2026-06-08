@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload, GripVertical } from "lucide-react";
+import { optimizeImage } from "@/lib/optimizeImage";
 
 interface Category {
   id: string;
@@ -77,12 +78,13 @@ export default function AdminCategories() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const ext = file.name.split(".").pop();
+    const optimized = await optimizeImage(file).catch(() => file);
+    const ext = optimized.name.split(".").pop();
     const fileName = `categories/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(fileName, file, { upsert: false });
+      .upload(fileName, optimized, { upsert: false, contentType: optimized.type });
 
     if (error) {
       showMessage("Erro no upload: " + error.message, "error");
@@ -213,7 +215,7 @@ export default function AdminCategories() {
                 <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                   <Upload className="h-4 w-4" /> {imagePreview ? "Trocar imagem" : "Enviar imagem"}
                 </Button>
-                <p className="text-muted-foreground text-xs mt-1">JPG, PNG ou WebP</p>
+                <p className="text-muted-foreground text-xs mt-1">JPG, PNG ou WebP — convertidas e comprimidas automaticamente</p>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
+import { optimizeImage } from "@/lib/optimizeImage";
 
 interface Category { id: string; name: string; slug: string; }
 interface Flavor {
@@ -66,12 +67,13 @@ export default function AdminFlavors() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const ext = file.name.split(".").pop();
+    const optimized = await optimizeImage(file).catch(() => file);
+    const ext = optimized.name.split(".").pop();
     const fileName = `flavors/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(fileName, file, { upsert: false });
+      .upload(fileName, optimized, { upsert: false, contentType: optimized.type });
 
     if (error) {
       showMessage("Erro no upload: " + error.message, "error");

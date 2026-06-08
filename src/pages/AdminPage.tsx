@@ -7,6 +7,7 @@ import AdminCategories from "@/components/admin/AdminCategories";
 import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import { optimizeImage } from "@/lib/optimizeImage";
 
 interface GalleryImage {
   id: string;
@@ -179,16 +180,17 @@ export default function AdminPage() {
     setUploading(true);
     let uploadedCount = 0;
 
-    for (const file of Array.from(files)) {
+    for (const rawFile of Array.from(files)) {
+      const file = await optimizeImage(rawFile).catch(() => rawFile);
       const ext = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: storageError } = await supabase.storage
         .from("promo-gallery")
-        .upload(fileName, file, { upsert: false });
+        .upload(fileName, file, { upsert: false, contentType: file.type });
 
       if (storageError) {
-        showMessage(`Erro ao enviar ${file.name}: ${storageError.message}`, "error");
+        showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
         continue;
       }
 
@@ -199,14 +201,14 @@ export default function AdminPage() {
       const nextOrder = images.length + uploadedCount;
       const { error: dbError } = await supabase.from("promo_gallery").insert({
         image_url: urlData.publicUrl,
-        alt_text: file.name.replace(/\.[^.]+$/, ""),
+        alt_text: rawFile.name.replace(/\.[^.]+$/, ""),
         is_main: images.length === 0 && uploadedCount === 0,
         sort_order: nextOrder,
         active: true,
       });
 
       if (dbError) {
-        showMessage(`Erro ao salvar ${file.name}: ${dbError.message}`, "error");
+        showMessage(`Erro ao salvar ${rawFile.name}: ${dbError.message}`, "error");
       } else {
         uploadedCount++;
       }
@@ -265,16 +267,17 @@ export default function AdminPage() {
     setLineUploading(true);
     let uploadedCount = 0;
 
-    for (const file of Array.from(files)) {
+    for (const rawFile of Array.from(files)) {
+      const file = await optimizeImage(rawFile).catch(() => rawFile);
       const ext = file.name.split(".").pop();
       const fileName = `${activeLineSlug}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: storageError } = await supabase.storage
         .from("promo-line-gallery")
-        .upload(fileName, file, { upsert: false });
+        .upload(fileName, file, { upsert: false, contentType: file.type });
 
       if (storageError) {
-        showMessage(`Erro ao enviar ${file.name}: ${storageError.message}`, "error");
+        showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
         continue;
       }
 
@@ -286,13 +289,13 @@ export default function AdminPage() {
       const { error: dbError } = await supabase.from("promo_line_gallery").insert({
         line_slug: activeLineSlug,
         image_url: urlData.publicUrl,
-        alt_text: file.name.replace(/\.[^.]+$/, ""),
+        alt_text: rawFile.name.replace(/\.[^.]+$/, ""),
         sort_order: nextOrder,
         active: true,
       });
 
       if (dbError) {
-        showMessage(`Erro ao salvar ${file.name}: ${dbError.message}`, "error");
+        showMessage(`Erro ao salvar ${rawFile.name}: ${dbError.message}`, "error");
       } else {
         uploadedCount++;
       }
