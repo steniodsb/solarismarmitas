@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import CartNotification from "@/components/frozen/CartNotification";
-import { usePromoLineGallery } from "@/hooks/useFrozenData";
+import { usePromoLineGallery, useSizesByCategorySlug } from "@/hooks/useFrozenData";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ShoppingCart, ShoppingBag, Check, ChevronLeft, ChevronRight } from "lucide-react";
@@ -54,12 +54,6 @@ interface ComboSize {
   priceFor10: number;
 }
 
-const comboSizes: ComboSize[] = [
-  { id: "400", label: "400ml", ml: 400, priceFor10: 159.90 },
-  { id: "500", label: "500ml", ml: 500, priceFor10: 199.90 },
-  { id: "850", label: "850ml", ml: 850, priceFor10: 269.90 },
-];
-
 const quantityOptions = [
   { qty: 10, discount: 0 },
   { qty: 20, discount: 10 },
@@ -74,6 +68,13 @@ export default function ComboLinePage() {
   const [selectedQty, setSelectedQty] = useState<number>(10);
 
   const { data: galleryImages } = usePromoLineGallery(lineSlug);
+  const { data: dbSizes } = useSizesByCategorySlug("promocionais");
+  const comboSizes: ComboSize[] = (dbSizes || []).map((s) => ({
+    id: String(s.ml),
+    label: s.label,
+    ml: s.ml,
+    priceFor10: Number(s.price),
+  }));
   const { addItem, toggleCart, totalItems, totalPrice } = useFrozenCart();
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const dismissNotification = useCallback(() => setCartMessage(null), []);

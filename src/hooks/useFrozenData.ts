@@ -58,6 +58,29 @@ export function useFrozenSizes(categoryId: string | undefined) {
   });
 }
 
+export function useSizesByCategorySlug(slug: string) {
+  return useQuery({
+    queryKey: ["frozen-sizes-by-slug", slug],
+    queryFn: async () => {
+      const { data: cat, error: e1 } = await supabase
+        .from("frozen_categories")
+        .select("id")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (e1) throw e1;
+      if (!cat) return [] as FrozenSize[];
+      const { data, error } = await supabase
+        .from("frozen_sizes")
+        .select("*")
+        .eq("category_id", cat.id)
+        .eq("active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as FrozenSize[];
+    },
+  });
+}
+
 export function useFrozenFlavors(categoryId: string | undefined) {
   return useQuery({
     queryKey: ["frozen-flavors", categoryId],
