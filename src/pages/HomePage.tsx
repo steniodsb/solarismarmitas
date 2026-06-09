@@ -8,13 +8,13 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import SizesSection from "@/components/SizesSection";
 import { Snowflake, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import carinaPetersen from "@/assets/carina-petersen.jpg";
+import carinaPetersen from "@/assets/carina-petersen.webp";
 
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catSucos from "@/assets/cat-sucos.jpg";
+import catFitness from "@/assets/cat-fitness.webp";
+import catLowcarb from "@/assets/cat-lowcarb.webp";
+import catCaseira from "@/assets/cat-caseira.webp";
+import catVegetariana from "@/assets/cat-vegetariana.webp";
+import catSucos from "@/assets/cat-sucos.webp";
 
 const categoryImages: Record<string, string> = {
   fitness: catFitness,

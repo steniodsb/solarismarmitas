@@ -8,9 +8,9 @@ import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, Minus, ShoppingCart, Check, X, ShoppingBag } from "lucide-react";
-import size400 from "@/assets/size-400ml.jpg";
-import size500 from "@/assets/size-500ml.jpg";
-import size850 from "@/assets/size-850ml.jpg";
+import size400 from "@/assets/size-400ml.webp";
+import size500 from "@/assets/size-500ml.webp";
+import size850 from "@/assets/size-850ml.webp";
 
 const sizeImages: Record<number, string> = { 400: size400, 500: size500, 850: size850 };
 
@@ -115,7 +115,7 @@ export default function FlavorSelectionPage() {
                     <div key={size.id} className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
                       {img && (
                         <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-                          <img src={img} alt={`${size.ml}ml`} className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={img} alt={`${size.ml}ml`} className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div>
@@ -170,7 +170,7 @@ export default function FlavorSelectionPage() {
                     >
                       <div className="relative w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                         {flavor.image_url ? (
-                          <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
                         ) : (
                           <span className="flex items-center justify-center w-full h-full text-2xl opacity-30">🍱</span>
                         )}
@@ -222,7 +222,7 @@ export default function FlavorSelectionPage() {
                                     )}
                                     {sizeImages[size.ml] && (
                                       <div className="aspect-square w-full">
-                                        <img src={sizeImages[size.ml]} alt={`${size.ml}ml`} className="w-full h-full object-cover" />
+                                        <img loading="lazy" decoding="async" src={sizeImages[size.ml]} alt={`${size.ml}ml`} className="w-full h-full object-cover" />
                                       </div>
                                     )}
                                     <div className="py-2 px-1">

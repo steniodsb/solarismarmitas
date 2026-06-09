@@ -7,11 +7,11 @@ import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catSucos from "@/assets/cat-sucos.jpg";
+import catFitness from "@/assets/cat-fitness.webp";
+import catLowcarb from "@/assets/cat-lowcarb.webp";
+import catCaseira from "@/assets/cat-caseira.webp";
+import catVegetariana from "@/assets/cat-vegetariana.webp";
+import catSucos from "@/assets/cat-sucos.webp";
 
 const categoryImages: Record<string, string> = {
   fitness: catFitness,
@@ -90,7 +90,7 @@ export default function CategoryPage() {
                 >
                   <div className="h-28 sm:h-44 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center overflow-hidden">
                     {flavor.image_url ? (
-                      <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img loading="lazy" decoding="async" src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <span className="text-4xl sm:text-6xl opacity-30">🍱</span>
                     )}

@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useFrozenCategories, useAllFrozenFlavors, useFrozenSizes, useAllFrozenSizes } from "@/hooks/useFrozenData";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
+import catCaseira from "@/assets/cat-caseira.webp";
+import catVegetariana from "@/assets/cat-vegetariana.webp";
+import catFitness from "@/assets/cat-fitness.webp";
+import catLowcarb from "@/assets/cat-lowcarb.webp";
 import Header from "@/components/Header";
 import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
@@ -85,7 +85,7 @@ function FlavorCarousel({
             >
               <div className="h-40 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
                 {flavor.image_url ? (
-                  <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-5xl opacity-40">🍱</span>
                 )}

@@ -1,6 +1,6 @@
-import size400 from "@/assets/size-400ml.jpg";
-import size500 from "@/assets/size-500ml.jpg";
-import size850 from "@/assets/size-850ml.jpg";
+import size400 from "@/assets/size-400ml.webp";
+import size500 from "@/assets/size-500ml.webp";
+import size850 from "@/assets/size-850ml.webp";
 
 const sizes = [
   { label: "400ml", price: "R$ 16,90", desc: "Refeição individual leve", img: size400 },
@@ -23,7 +23,7 @@ export default function SizesSection() {
               className="relative rounded-2xl overflow-hidden border-2 border-border transition-all"
             >
               <div className="aspect-square">
-                <img src={s.img} alt={`Marmita ${s.label}`} className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={s.img} alt={`Marmita ${s.label}`} className="w-full h-full object-cover" />
               </div>
               <div className="px-3 py-2.5 text-center bg-background">
                 <div className="font-display text-lg sm:text-xl font-black text-foreground leading-none">{s.label}</div>

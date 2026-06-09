@@ -9,9 +9,9 @@ import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import CartNotification from "@/components/frozen/CartNotification";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, ShoppingCart, ShoppingBag, Check, Minus, Plus } from "lucide-react";
-import size400 from "@/assets/size-400ml.jpg";
-import size500 from "@/assets/size-500ml.jpg";
-import size850 from "@/assets/size-850ml.jpg";
+import size400 from "@/assets/size-400ml.webp";
+import size500 from "@/assets/size-500ml.webp";
+import size850 from "@/assets/size-850ml.webp";
 
 const sizeImages: Record<number, string> = { 400: size400, 500: size500, 850: size850 };
 
@@ -84,7 +84,7 @@ export default function FlavorDetailPage() {
             {/* Image — full width on mobile */}
             <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent aspect-[4/3] sm:aspect-[16/9] mb-6">
               {flavor.image_url ? (
-                <img src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={flavor.image_url} alt={flavor.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="flex items-center justify-center w-full h-full">
                   <span className="text-8xl opacity-30">🍱</span>
@@ -122,7 +122,7 @@ export default function FlavorDetailPage() {
                         <div className="flex items-center gap-3">
                           {sizeImages[s.ml] && (
                             <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                              <img src={sizeImages[s.ml]} alt={`${s.ml}ml`} className="w-full h-full object-cover" />
+                              <img loading="lazy" decoding="async" src={sizeImages[s.ml]} alt={`${s.ml}ml`} className="w-full h-full object-cover" />
                             </div>
                           )}
                           <span className="font-display text-lg font-black text-foreground">
@@ -200,7 +200,7 @@ export default function FlavorDetailPage() {
                     >
                       <div className="h-24 sm:h-28 bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center">
                         {f.image_url ? (
-                          <img src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={f.image_url} alt={f.name} className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-3xl opacity-30">🍱</span>
                         )}

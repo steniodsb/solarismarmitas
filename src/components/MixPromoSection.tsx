@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Flame } from "lucide-react";
 import { usePromoGallery } from "@/hooks/useFrozenData";
-import catCaseira from "@/assets/cat-caseira.jpg";
-import catVegetariana from "@/assets/cat-vegetariana.jpg";
-import catFitness from "@/assets/cat-fitness.jpg";
-import catLowcarb from "@/assets/cat-lowcarb.jpg";
-import size400 from "@/assets/size-400ml.jpg";
-import size500 from "@/assets/size-500ml.jpg";
-import size850 from "@/assets/size-850ml.jpg";
+import catCaseira from "@/assets/cat-caseira.webp";
+import catVegetariana from "@/assets/cat-vegetariana.webp";
+import catFitness from "@/assets/cat-fitness.webp";
+import catLowcarb from "@/assets/cat-lowcarb.webp";
+import size400 from "@/assets/size-400ml.webp";
+import size500 from "@/assets/size-500ml.webp";
+import size850 from "@/assets/size-850ml.webp";
 
 const sizes = [
   { label: "400ml", price: "R$ 16,90", desc: "Refeição individual leve", img: size400 },

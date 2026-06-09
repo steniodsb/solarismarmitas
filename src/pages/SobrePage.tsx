@@ -6,7 +6,7 @@ import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { Button } from "@/components/ui/button";
 import { Heart, Leaf, ShieldCheck, Clock, ArrowRight } from "lucide-react";
-import carinaPetersen from "@/assets/carina-petersen.jpg";
+import carinaPetersen from "@/assets/carina-petersen.webp";
 
 const values = [
   {
