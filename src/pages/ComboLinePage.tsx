@@ -56,8 +56,8 @@ interface ComboSize {
 
 const comboSizes: ComboSize[] = [
   { id: "400", label: "400ml", ml: 400, priceFor10: 159.90 },
-  { id: "500", label: "500ml", ml: 500, priceFor10: 189.90 },
-  { id: "850", label: "850ml", ml: 850, priceFor10: 259.90 },
+  { id: "500", label: "500ml", ml: 500, priceFor10: 199.90 },
+  { id: "850", label: "850ml", ml: 850, priceFor10: 269.90 },
 ];
 
 const quantityOptions = [
