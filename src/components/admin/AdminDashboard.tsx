@@ -136,7 +136,7 @@ export default function AdminDashboard() {
           O dashboard precisa que a tabela <code className="bg-amber-100 px-1 rounded">analytics_events</code> seja criada no Supabase.
         </p>
         <ol className="text-sm text-amber-800 list-decimal pl-5 space-y-1">
-          <li>Acesse o <a href="https://supabase.com/dashboard/project/ixcgauiwwopvzbifnyit/sql" target="_blank" rel="noopener" className="underline font-semibold">SQL Editor</a></li>
+          <li>Acesse o <a href="https://supabase.com/dashboard/project/vwcfcyjfsbgfcoprcywc/sql" target="_blank" rel="noopener" className="underline font-semibold">SQL Editor</a></li>
           <li>Execute o conteúdo do arquivo <code className="bg-amber-100 px-1 rounded">supabase/migrations/20260506200000_analytics_events.sql</code></li>
           <li>Recarregue esta página</li>
         </ol>
