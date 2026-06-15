@@ -34,8 +34,9 @@ const lineItems: Record<string, string[]> = {
     "Seletas", "Legumes", "Refogados", "Frangos variados", "Carnes variadas", "Filé de peixe",
   ],
   vegetariana: [
-    "Arroz branco ou integral", "Feijão", "Lentilha", "Purê / Massa", "Complementos",
-    "Seletas", "Legumes", "Refogados", "Yakisoba", "Lasanha de brócolis", "Panquecas de legumes",
+    "Arroz branco ou integral", "Feijão", "Lentilha", "Purê / Massa", "Aipim", "Batata", "Moranga",
+    "Complementos", "Seletas", "Legumes", "Refogados", "Yakisoba", "Lasanha de brócolis",
+    "Panquecas de legumes", "Omelete",
   ],
   fitness: [
     "Arroz integral", "Batata doce", "Quinoa", "Legumes grelhados", "Brócolis",

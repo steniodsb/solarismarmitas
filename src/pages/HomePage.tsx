@@ -25,15 +25,6 @@ const categoryImages: Record<string, string> = {
   promocionais: catFitness,
 };
 
-const categoryEmojis: Record<string, string> = {
-  fitness: "💪",
-  "low-carb": "🥑",
-  caseira: "🏠",
-  vegetariana: "🥬",
-  sucos: "🧃",
-  promocionais: "🔥",
-};
-
 export default function HomePage() {
   const { data: categories, isLoading } = useFrozenCategories();
 
@@ -53,7 +44,7 @@ export default function HomePage() {
             </div>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-black text-primary-foreground leading-tight">
               Comida de verdade,<br />
-              <span className="text-secondary">pronta pra você.</span>
+              <span className="text-secondary">pronta para você.</span>
             </h1>
             <p className="text-primary-foreground/70 max-w-lg mx-auto text-lg">
               Escolha sua linha, o tamanho ideal e monte seu combo de marmitas congeladas com os sabores que você mais gosta.
@@ -96,7 +87,6 @@ export default function HomePage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
                   <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
-                    <span className="text-2xl sm:text-3xl mb-1 sm:mb-2">{categoryEmojis[cat.slug] || "🍱"}</span>
                     <h3 className="font-display text-lg sm:text-2xl font-bold text-primary-foreground leading-tight">{cat.name}</h3>
                     <p className="text-primary-foreground/70 text-xs sm:text-sm mt-1 line-clamp-2">{cat.description}</p>
                     <div className="mt-2 sm:mt-3 inline-flex items-center gap-2 text-secondary font-semibold text-xs sm:text-sm group-hover:gap-3 transition-all">

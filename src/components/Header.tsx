@@ -5,7 +5,7 @@ import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import logoSolaris from "@/assets/logo-solaris.webp";
 
 const navLinks = [
-  { label: "Início", href: "/" },
+  { label: "Home", href: "/" },
   { label: "Produtos", href: "/pedir" },
   { label: "Promoções", href: "/montar/promocionais" },
   { label: "Sobre", href: "/sobre" },
