@@ -33,8 +33,12 @@ export default function FrozenCheckoutModal() {
 
   const handleSend = () => {
     const itemsList = items
-      .map((i) => `▪️ ${i.flavor.name} x${i.quantity} (${i.category.name} · ${i.size.label}) — R$ ${(i.unitPrice * i.quantity).toFixed(2).replace(".", ",")}`)
-      .join("\n");
+      .map((i) => {
+        const head = `▪️ *${i.flavor.name}* x${i.quantity} (${i.category.name} · ${i.size.label}) — R$ ${(i.unitPrice * i.quantity).toFixed(2).replace(".", ",")}`;
+        const desc = i.flavor.description?.trim();
+        return desc ? `${head}\n   _${desc}_` : head;
+      })
+      .join("\n\n");
 
     const message =
       `🍱 *PEDIDO SOLARIS — CONGELADOS*\n\n` +
