@@ -83,7 +83,7 @@ export default function HomePage() {
                   <img
                     src={cat.image_url || categoryImages[cat.slug] || catFitness}
                     alt={cat.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
                   <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-6">
