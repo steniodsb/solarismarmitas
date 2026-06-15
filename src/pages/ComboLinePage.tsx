@@ -39,12 +39,14 @@ const lineItems: Record<string, string[]> = {
     "Panquecas de legumes", "Omelete",
   ],
   fitness: [
-    "Arroz integral", "Batata doce", "Quinoa", "Legumes grelhados", "Brócolis",
-    "Espinafre", "Frango grelhado", "Carne magra", "Tilápia / Salmão", "Omelete proteico", "Grão de bico",
+    "Abobrinha", "Berinjela", "Couve-flor", "Couve", "Cenoura", "Beterraba",
+    "Moranga", "Repolho", "Brócolis", "Seletas", "Legumes mix", "Refogados sortidos",
+    "Frangos sortidos", "Carnes variadas", "Filé de peixe", "Lombinho",
   ],
   "low-carb": [
-    "Abobrinha", "Berinjela gratinada", "Couve-flor", "Aspargos", "Cogumelos",
-    "Brócolis", "Frango grelhado", "Carne moída magra", "Salmão ao forno", "Lombo suíno", "Tomate assado",
+    "Abobrinha", "Berinjela", "Couve-flor", "Couve", "Cenoura", "Beterraba",
+    "Moranga", "Repolho", "Brócolis", "Seletas", "Legumes mix", "Refogados sortidos",
+    "Frangos sortidos", "Carnes variadas", "Filé de peixe", "Lombinho",
   ],
 };
 

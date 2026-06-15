@@ -111,10 +111,10 @@ export default function MixPromoSection() {
             Combos Promocionais
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
-            Montamos combos sortidos com combinações bem variadas pra você que não tem
-            tempo de ficar escolhendo e quer praticidade nas suas refeições.
-            Qualquer observação que não goste, preferências ou alergias — anote
-            junto ao pedido para nossa cozinha cuidar.
+            Montamos combos sortidos, bem variadas para você que não tem tempo de
+            ficar escolhido e quer praticidade nas suas refeições. Qualquer
+            observação que não goste, preferências ou alergias — anote junto ao
+            pedido para nossa cozinha cuidar.
           </p>
         </div>
 

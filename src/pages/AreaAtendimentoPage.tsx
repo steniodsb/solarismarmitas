@@ -23,7 +23,6 @@ const cities = [
   "Viamão",
   "Guaíba",
   "Eldorado do Sul",
-  "Estância Velha",
 ];
 
 export default function AreaAtendimentoPage() {
