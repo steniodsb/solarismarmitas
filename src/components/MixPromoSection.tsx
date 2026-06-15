@@ -71,7 +71,7 @@ const lines = [
     ],
   },
   {
-    name: "Low Carb",
+    name: "Lowcarb",
     slug: "low-carb",
     img: catLowcarb,
     items: [

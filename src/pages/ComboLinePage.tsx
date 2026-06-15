@@ -14,7 +14,7 @@ const lineNames: Record<string, string> = {
   tradicional: "Marmitas Tradicionais",
   vegetariana: "Marmitas Vegetarianas",
   fitness: "Marmitas Fitness",
-  "low-carb": "Marmitas Low Carb",
+  "low-carb": "Marmitas Lowcarb",
 };
 
 const lineDescriptions: Record<string, string> = {

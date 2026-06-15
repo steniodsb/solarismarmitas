@@ -140,7 +140,7 @@ export default function HomePage() {
           </h2>
           <div className="grid sm:grid-cols-4 gap-8">
             {[
-              { step: "1", title: "Escolha a linha", desc: "Fitness, Low Carb, Caseira ou Vegetariana" },
+              { step: "1", title: "Escolha a linha", desc: "Fitness, Lowcarb, Caseira ou Vegetariana" },
               { step: "2", title: "Selecione o tamanho", desc: "400ml, 500ml ou 850ml" },
               { step: "3", title: "Monte seus sabores", desc: "Escolha a quantidade de cada sabor" },
               { step: "4", title: "Finalize pelo WhatsApp", desc: "Receba na sua casa!" },

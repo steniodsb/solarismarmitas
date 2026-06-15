@@ -31,7 +31,7 @@ const PROMO_LINES = [
   { slug: "tradicional", label: "Tradicional" },
   { slug: "vegetariana", label: "Vegetariana" },
   { slug: "fitness", label: "Fitness" },
-  { slug: "low-carb", label: "Low Carb" },
+  { slug: "low-carb", label: "Lowcarb" },
 ];
 
 type AdminTab = "dashboard" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";

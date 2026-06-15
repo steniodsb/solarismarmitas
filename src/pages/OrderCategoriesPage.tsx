@@ -37,7 +37,7 @@ const promoSlugMap: Record<string, string> = {
 
 const categoryCTAs: Record<string, string> = {
   fitness: "Monte seu combo Fitness",
-  "low-carb": "Peça Low Carb agora",
+  "low-carb": "Peça Lowcarb agora",
   caseira: "Peça Caseira agora",
   vegetariana: "Monte seu combo Vegetariano",
   sucos: "Peça seus Sucos",

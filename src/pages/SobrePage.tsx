@@ -114,7 +114,7 @@ export default function SobrePage() {
                 Facilitar a rotina de quem busca uma alimentação equilibrada, oferecendo refeições congeladas que mantêm o sabor e os nutrientes de uma comida feita em casa.
               </p>
               <p className="text-muted-foreground text-lg leading-relaxed">
-                Com diversas linhas — <strong className="text-foreground">Fitness</strong>, <strong className="text-foreground">Low Carb</strong>, <strong className="text-foreground">Caseira</strong> e <strong className="text-foreground">Vegetariana</strong> — temos opções para todos os gostos e objetivos.
+                Com diversas linhas — <strong className="text-foreground">Fitness</strong>, <strong className="text-foreground">Lowcarb</strong>, <strong className="text-foreground">Caseira</strong> e <strong className="text-foreground">Vegetariana</strong> — temos opções para todos os gostos e objetivos.
               </p>
               <div className="pt-4">
                 <Button variant="cta" size="xl" asChild>
