@@ -178,7 +178,7 @@ export default function FlavorSelectionPage() {
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-foreground text-sm sm:text-base leading-tight">{flavor.name}</h3>
                         {flavor.description && (
-                          <p className="text-muted-foreground text-xs mt-0.5 line-clamp-1">{flavor.description}</p>
+                          <p className="text-muted-foreground text-xs mt-0.5 whitespace-pre-wrap break-words">{flavor.description}</p>
                         )}
                         {sizes && sizes.length > 0 && (
                           <p className="text-primary text-xs font-semibold mt-1">
