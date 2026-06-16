@@ -102,12 +102,17 @@ export default function FrozenCheckoutModal() {
               <div className="space-y-2">
                 <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Itens</h4>
                 {items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <div>
-                      <span className="text-card-foreground">{item.flavor.name} x{item.quantity}</span>
-                      <span className="text-muted-foreground text-xs ml-1">({item.category.name} · {item.size.label})</span>
+                  <div key={item.id} className="flex justify-between gap-3 text-sm">
+                    <div className="flex-1 min-w-0">
+                      <div>
+                        <span className="text-card-foreground">{item.flavor.name} x{item.quantity}</span>
+                        <span className="text-muted-foreground text-xs ml-1">({item.category.name} · {item.size.label})</span>
+                      </div>
+                      {item.flavor.description && (
+                        <p className="text-muted-foreground text-xs mt-0.5 whitespace-pre-wrap break-words">{item.flavor.description}</p>
+                      )}
                     </div>
-                    <span className="font-medium text-card-foreground">R$ {(item.unitPrice * item.quantity).toFixed(2).replace(".", ",")}</span>
+                    <span className="font-medium text-card-foreground shrink-0">R$ {(item.unitPrice * item.quantity).toFixed(2).replace(".", ",")}</span>
                   </div>
                 ))}
                 <div className="flex justify-between pt-2 border-t border-border font-bold">

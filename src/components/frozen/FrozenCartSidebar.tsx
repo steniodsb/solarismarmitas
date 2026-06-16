@@ -37,6 +37,9 @@ export default function FrozenCartSidebar() {
               <div key={item.id} className="flex gap-3 bg-muted rounded-xl p-3">
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold text-sm text-card-foreground">{item.flavor.name}</h4>
+                  {item.flavor.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5 whitespace-pre-wrap break-words">{item.flavor.description}</p>
+                  )}
                   <div className="flex flex-wrap gap-1 mt-1">
                     <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">{item.category.name}</span>
                     <span className="text-[10px] bg-secondary/10 text-secondary-foreground px-1.5 py-0.5 rounded">{item.size.label}</span>
