@@ -54,6 +54,53 @@ export default function FrozenCheckoutModal() {
       delivery_mode: "delivery",
     });
 
+    // Conversao Meta Pixel (Purchase)
+    const w = window as unknown as {
+      fbq?: (...args: unknown[]) => void;
+      gtag?: (...args: unknown[]) => void;
+      ttq?: { track: (event: string, data: Record<string, unknown>) => void };
+    };
+    const contents = items.map((i) => ({
+      id: i.flavor.id,
+      quantity: i.quantity,
+      item_price: i.unitPrice,
+    }));
+    try {
+      w.fbq?.("track", "Purchase", {
+        value: totalPrice,
+        currency: "BRL",
+        contents,
+        content_type: "product",
+        num_items: items.reduce((s, i) => s + i.quantity, 0),
+      });
+    } catch { /* pixel pode nao estar carregado */ }
+
+    // Conversao Google Analytics (purchase)
+    try {
+      w.gtag?.("event", "purchase", {
+        transaction_id: `${Date.now()}`,
+        value: totalPrice,
+        currency: "BRL",
+        items: items.map((i) => ({
+          item_id: i.flavor.id,
+          item_name: i.flavor.name,
+          item_category: i.category.name,
+          item_variant: i.size.label,
+          price: i.unitPrice,
+          quantity: i.quantity,
+        })),
+      });
+    } catch { /* gtag pode nao estar carregado */ }
+
+    // Conversao TikTok Pixel (CompletePayment)
+    try {
+      w.ttq?.track("CompletePayment", {
+        value: totalPrice,
+        currency: "BRL",
+        contents,
+      });
+    } catch { /* tiktok pixel pode nao estar carregado */ }
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     clearCart();
     handleClose();
