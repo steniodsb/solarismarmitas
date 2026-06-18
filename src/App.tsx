@@ -22,6 +22,7 @@ const ContatoPage = lazy(() => import("./pages/ContatoPage"));
 const AdminLoginPage = lazy(() => import("./pages/AdminLoginPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ObrigadoPage = lazy(() => import("./pages/ObrigadoPage"));
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="/contato" element={<ContatoPage />} />
               <Route path="/admin/login" element={<AdminLoginPage />} />
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/obrigado" element={<ObrigadoPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

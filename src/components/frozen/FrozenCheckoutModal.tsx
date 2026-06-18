@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, MessageCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
@@ -16,6 +17,7 @@ interface FormData {
 const WHATSAPP_NUMBER = "5551989173813";
 
 export default function FrozenCheckoutModal() {
+  const navigate = useNavigate();
   const { items, totalPrice, isCheckoutOpen, setCheckoutOpen, clearCart } = useFrozenCart();
   const [step, setStep] = useState<Step>("form");
   const [form, setForm] = useState<FormData>({
@@ -32,6 +34,10 @@ export default function FrozenCheckoutModal() {
   const handleReview = (e: React.FormEvent) => { e.preventDefault(); setStep("summary"); };
 
   const handleSend = () => {
+    const transactionId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const itemsCount = items.reduce((s, i) => s + i.quantity, 0);
+    const orderTotal = totalPrice;
+    const customerName = form.name.trim();
     const itemsList = items
       .map((i) => {
         const head = `▪️ *${i.flavor.name}* x${i.quantity} (${i.category.name} · ${i.size.label}) — R$ ${(i.unitPrice * i.quantity).toFixed(2).replace(".", ",")}`;
@@ -78,7 +84,7 @@ export default function FrozenCheckoutModal() {
     // Conversao Google Analytics (purchase)
     try {
       w.gtag?.("event", "purchase", {
-        transaction_id: `${Date.now()}`,
+        transaction_id: transactionId,
         value: totalPrice,
         currency: "BRL",
         items: items.map((i) => ({
@@ -103,7 +109,16 @@ export default function FrozenCheckoutModal() {
 
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
     clearCart();
-    handleClose();
+    setCheckoutOpen(false);
+    setStep("form");
+    navigate("/obrigado", {
+      state: {
+        customerName,
+        total: orderTotal,
+        itemsCount,
+        transactionId,
+      },
+    });
   };
 
   return (
