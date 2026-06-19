@@ -149,7 +149,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {!hasData && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-900">
+        <div className="bg-muted border border-border rounded-xl px-4 py-3 text-sm text-muted-foreground">
           Ainda não há dados. As métricas começam a ser coletadas conforme os visitantes acessam o site.
         </div>
       )}
@@ -271,9 +271,9 @@ interface StatCardProps {
 
 function StatCard({ icon, label, color, stats }: StatCardProps) {
   const colors = {
-    blue: "bg-blue-50 text-blue-700 border-blue-200",
-    green: "bg-green-50 text-green-700 border-green-200",
-    purple: "bg-purple-50 text-purple-700 border-purple-200",
+    blue: "bg-card text-blue-700 border-border",
+    green: "bg-card text-green-700 border-border",
+    purple: "bg-card text-purple-700 border-border",
   };
 
   return (
