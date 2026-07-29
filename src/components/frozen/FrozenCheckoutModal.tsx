@@ -26,6 +26,8 @@ export default function FrozenCheckoutModal() {
 
   if (!isCheckoutOpen) return null;
 
+  const totalItems = items.reduce((s, i) => s + i.quantity, 0);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -35,7 +37,7 @@ export default function FrozenCheckoutModal() {
 
   const handleSend = () => {
     const transactionId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const itemsCount = items.reduce((s, i) => s + i.quantity, 0);
+    const itemsCount = totalItems;
     const orderTotal = totalPrice;
     const customerName = form.name.trim();
     const itemsList = items
@@ -51,12 +53,13 @@ export default function FrozenCheckoutModal() {
       `👤 *Cliente:* ${form.name.trim()}\n📱 *Telefone:* ${form.phone.trim()}\n` +
       `📍 *Endereço:* ${form.address.trim()}\n🚚 Entrega\n\n` +
       `*━━━ Itens do Pedido ━━━*\n${itemsList}\n\n` +
+      `📦 *Total de itens: ${itemsCount} ${itemsCount === 1 ? "marmita" : "marmitas"}*\n` +
       `💰 *Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}*\n` +
       (form.notes.trim() ? `\n📝 *Observações:* ${form.notes.trim()}` : "");
 
     trackEvent("whatsapp_order", window.location.pathname, {
       total: totalPrice,
-      items_count: items.length,
+      items_count: itemsCount,
       delivery_mode: "delivery",
     });
 
@@ -133,7 +136,13 @@ export default function FrozenCheckoutModal() {
                     <span className="font-medium text-card-foreground shrink-0">R$ {(item.unitPrice * item.quantity).toFixed(2).replace(".", ",")}</span>
                   </div>
                 ))}
-                <div className="flex justify-between pt-2 border-t border-border font-bold">
+                <div className="flex justify-between pt-2 border-t border-border text-sm">
+                  <span className="text-muted-foreground">Total de itens</span>
+                  <span className="font-semibold text-card-foreground tabular-nums">
+                    {totalItems} {totalItems === 1 ? "marmita" : "marmitas"}
+                  </span>
+                </div>
+                <div className="flex justify-between font-bold">
                   <span className="text-card-foreground">Total</span>
                   <span className="text-primary text-lg">R$ {totalPrice.toFixed(2).replace(".", ",")}</span>
                 </div>
