@@ -4,6 +4,7 @@ import { X, MessageCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import { trackEvent } from "@/hooks/useAnalytics";
+import { DELIVERY_CITIES, OTHER_CITY } from "@/lib/deliveryCities";
 
 type Step = "form" | "summary";
 
@@ -11,6 +12,8 @@ interface FormData {
   name: string;
   phone: string;
   address: string;
+  city: string;
+  otherCity: string;
   notes: string;
 }
 
@@ -21,14 +24,17 @@ export default function FrozenCheckoutModal() {
   const { items, totalPrice, isCheckoutOpen, setCheckoutOpen, clearCart } = useFrozenCart();
   const [step, setStep] = useState<Step>("form");
   const [form, setForm] = useState<FormData>({
-    name: "", phone: "", address: "", notes: "",
+    name: "", phone: "", address: "", city: "", otherCity: "", notes: "",
   });
 
   if (!isCheckoutOpen) return null;
 
   const totalItems = items.reduce((s, i) => s + i.quantity, 0);
+  const cityLabel = (form.city === OTHER_CITY ? form.otherCity : form.city).trim();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -51,7 +57,7 @@ export default function FrozenCheckoutModal() {
     const message =
       `🍱 *PEDIDO SOLARIS — CONGELADOS*\n\n` +
       `👤 *Cliente:* ${form.name.trim()}\n📱 *Telefone:* ${form.phone.trim()}\n` +
-      `📍 *Endereço:* ${form.address.trim()}\n🚚 Entrega\n\n` +
+      `📍 *Endereço:* ${form.address.trim()}\n🏙️ *Cidade:* ${cityLabel}\n🚚 Entrega\n\n` +
       `*━━━ Itens do Pedido ━━━*\n${itemsList}\n\n` +
       `📦 *Total de itens: ${itemsCount} ${itemsCount === 1 ? "marmita" : "marmitas"}*\n` +
       `💰 *Total: R$ ${totalPrice.toFixed(2).replace(".", ",")}*\n` +
@@ -60,6 +66,7 @@ export default function FrozenCheckoutModal() {
     trackEvent("whatsapp_order", window.location.pathname, {
       total: totalPrice,
       items_count: itemsCount,
+      city: cityLabel,
       delivery_mode: "delivery",
     });
 
@@ -103,6 +110,21 @@ export default function FrozenCheckoutModal() {
                 <input name="name" type="text" required placeholder="Nome completo *" value={form.name} onChange={handleChange} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 <input name="phone" type="tel" required placeholder="Telefone / WhatsApp *" value={form.phone} onChange={handleChange} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 <input name="address" type="text" required placeholder="Endereço completo *" value={form.address} onChange={handleChange} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <select name="city" required value={form.city} onChange={handleChange} className={`w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 ${form.city ? "text-card-foreground" : "text-muted-foreground"}`}>
+                  <option value="" disabled>Cidade *</option>
+                  {DELIVERY_CITIES.map((c) => (
+                    <option key={c} value={c} className="text-card-foreground">{c}</option>
+                  ))}
+                  <option value={OTHER_CITY} className="text-card-foreground">{OTHER_CITY}</option>
+                </select>
+                {form.city === OTHER_CITY && (
+                  <>
+                    <input name="otherCity" type="text" required placeholder="Qual cidade? *" value={form.otherCity} onChange={handleChange} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <p className="text-xs text-muted-foreground bg-muted rounded-lg px-3 py-2">
+                      Fora das cidades com entrega regular a entrega é feita com agendamento — combinamos com você pelo WhatsApp.
+                    </p>
+                  </>
+                )}
                 <textarea name="notes" placeholder="Observações (opcional)" value={form.notes} onChange={handleChange} rows={3} className="w-full rounded-lg border border-border bg-muted px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
               </div>
               <p className="text-xs text-muted-foreground text-center bg-muted rounded-lg px-3 py-2">
@@ -117,6 +139,7 @@ export default function FrozenCheckoutModal() {
                 <p><span className="font-semibold">👤</span> {form.name}</p>
                 <p><span className="font-semibold">📱</span> {form.phone}</p>
                 <p><span className="font-semibold">📍</span> {form.address}</p>
+                <p><span className="font-semibold">🏙️</span> {cityLabel}</p>
                 <p><span className="font-semibold">🚚</span> Entrega</p>
                 {form.notes && <p><span className="font-semibold">📝</span> {form.notes}</p>}
               </div>

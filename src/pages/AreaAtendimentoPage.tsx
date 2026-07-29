@@ -6,24 +6,11 @@ import FrozenCartSidebar from "@/components/frozen/FrozenCartSidebar";
 import FrozenCheckoutModal from "@/components/frozen/FrozenCheckoutModal";
 import { ArrowLeft, MapPin, CheckCircle2, Truck, MessageCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DELIVERY_CITIES } from "@/lib/deliveryCities";
 
 const WHATSAPP_NUMBER = "5551989173813";
 
-const cities = [
-  "Porto Alegre",
-  "Gravataí",
-  "Cachoeirinha",
-  "Canoas",
-  "Sapucaia",
-  "Esteio",
-  "São Leopoldo",
-  "Novo Hamburgo",
-  "Nova Santa Rita",
-  "Alvorada",
-  "Viamão",
-  "Guaíba",
-  "Eldorado do Sul",
-];
+const cities = DELIVERY_CITIES;
 
 export default function AreaAtendimentoPage() {
   const navigate = useNavigate();
