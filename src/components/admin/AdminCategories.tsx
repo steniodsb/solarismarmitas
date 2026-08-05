@@ -25,6 +25,12 @@ export default function AdminCategories() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+  // Reordenacao (drag & drop)
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+  const [grabbedIndex, setGrabbedIndex] = useState<number | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
+
   const [form, setForm] = useState({ name: "", slug: "", description: "", active: true });
 
   const showMessage = (text: string, type: "success" | "error") => {
@@ -138,6 +144,44 @@ export default function AdminCategories() {
     fetchCategories();
   };
 
+  const persistOrder = async (list: Category[]) => {
+    setSavingOrder(true);
+    const results = await Promise.all(
+      list.map((cat, index) =>
+        supabase.from("frozen_categories").update({ sort_order: index }).eq("id", cat.id)
+      )
+    );
+    setSavingOrder(false);
+
+    const failed = results.find((r) => r.error);
+    if (failed?.error) {
+      showMessage("Erro ao salvar a ordem: " + failed.error.message, "error");
+      fetchCategories();
+    } else {
+      showMessage("Ordem atualizada!", "success");
+    }
+  };
+
+  const resetDrag = () => {
+    setDragIndex(null);
+    setOverIndex(null);
+    setGrabbedIndex(null);
+  };
+
+  const handleDrop = (targetIndex: number) => {
+    if (dragIndex === null || dragIndex === targetIndex) {
+      resetDrag();
+      return;
+    }
+    const next = [...categories];
+    const [moved] = next.splice(dragIndex, 1);
+    next.splice(targetIndex, 0, moved);
+    const reordered = next.map((cat, index) => ({ ...cat, sort_order: index }));
+    setCategories(reordered);
+    resetDrag();
+    persistOrder(reordered);
+  };
+
   const handleDelete = async (cat: Category) => {
     if (!confirm(`Tem certeza que deseja excluir "${cat.name}"? Isso vai excluir todos os sabores e tamanhos desta categoria.`)) return;
     if (cat.image_url) {
@@ -155,6 +199,9 @@ export default function AdminCategories() {
         <div>
           <h2 className="font-display font-bold text-foreground text-lg">Categorias</h2>
           <p className="text-muted-foreground text-sm">Gerencie as categorias de marmitas (Fitness, Caseira, etc.)</p>
+          <p className="text-muted-foreground text-xs flex items-center gap-1.5 mt-0.5">
+            {savingOrder ? <><Loader2 className="h-3 w-3 animate-spin" /> Salvando a ordem...</> : "Arraste pelo ícone ⠿ para definir a ordem que aparece no site."}
+          </p>
         </div>
         <Button variant="cta" size="sm" onClick={startCreate}>
           <Plus className="h-4 w-4" /> Nova categoria
@@ -239,9 +286,26 @@ export default function AdminCategories() {
         <div className="text-center py-12 text-muted-foreground text-sm">Nenhuma categoria cadastrada.</div>
       ) : (
         <div className="space-y-2">
-          {categories.map((cat) => (
-            <div key={cat.id} className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!cat.active ? "opacity-50" : ""}`}>
-              <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
+          {categories.map((cat, index) => (
+            <div
+              key={cat.id}
+              draggable={grabbedIndex === index}
+              onDragStart={() => setDragIndex(index)}
+              onDragOver={(e) => { e.preventDefault(); if (overIndex !== index) setOverIndex(index); }}
+              onDragLeave={() => setOverIndex((i) => (i === index ? null : i))}
+              onDrop={(e) => { e.preventDefault(); handleDrop(index); }}
+              onDragEnd={resetDrag}
+              className={`flex items-center gap-3 bg-card border rounded-xl px-4 py-3 transition-all ${!cat.active ? "opacity-50" : ""} ${dragIndex === index ? "opacity-40" : ""} ${overIndex === index && dragIndex !== null && dragIndex !== index ? "border-primary ring-2 ring-primary/30" : "border-border"}`}
+            >
+              <button
+                type="button"
+                title="Arraste para reordenar"
+                onPointerDown={() => setGrabbedIndex(index)}
+                onPointerUp={() => setGrabbedIndex(null)}
+                className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground touch-none"
+              >
+                <GripVertical className="h-4 w-4" />
+              </button>
               {cat.image_url ? (
                 <img src={cat.image_url} alt={cat.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
               ) : (
