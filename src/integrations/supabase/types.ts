@@ -14,6 +14,131 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          path: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          path?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          path?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          customer_name: string | null
+          customer_phone: string | null
+          delivery_mode: string
+          id: string
+          items_count: number
+          notes: string | null
+          source: string
+          total: number
+          transaction_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_mode?: string
+          id?: string
+          items_count?: number
+          notes?: string | null
+          source?: string
+          total?: number
+          transaction_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_mode?: string
+          id?: string
+          items_count?: number
+          notes?: string | null
+          source?: string
+          total?: number
+          transaction_id?: string | null
+        }
+        Relationships: []
+      }
+      order_items: {
+        Row: {
+          category_id: string | null
+          category_name: string
+          category_slug: string | null
+          created_at: string
+          flavor_id: string | null
+          flavor_name: string
+          id: string
+          order_id: string
+          quantity: number
+          size_id: string | null
+          size_label: string | null
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          category_id?: string | null
+          category_name: string
+          category_slug?: string | null
+          created_at?: string
+          flavor_id?: string | null
+          flavor_name: string
+          id?: string
+          order_id: string
+          quantity: number
+          size_id?: string | null
+          size_label?: string | null
+          subtotal?: number
+          unit_price?: number
+        }
+        Update: {
+          category_id?: string | null
+          category_name?: string
+          category_slug?: string | null
+          created_at?: string
+          flavor_id?: string | null
+          flavor_name?: string
+          id?: string
+          order_id?: string
+          quantity?: number
+          size_id?: string | null
+          size_label?: string | null
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       frozen_categories: {
         Row: {
           active: boolean

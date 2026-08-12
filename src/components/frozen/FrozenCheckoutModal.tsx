@@ -4,6 +4,7 @@ import { X, MessageCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFrozenCart } from "@/contexts/FrozenCartContext";
 import { trackEvent } from "@/hooks/useAnalytics";
+import { salvarPedido } from "@/lib/saveOrder";
 import { DELIVERY_CITIES, OTHER_CITY } from "@/lib/deliveryCities";
 
 type Step = "form" | "summary";
@@ -69,6 +70,23 @@ export default function FrozenCheckoutModal() {
       city: cityLabel,
       delivery_mode: "delivery",
     });
+
+    // Grava o pedido com os itens — é o que alimenta o relatório de
+    // mais/menos vendidos. Deliberadamente sem await: gravar não pode
+    // atrasar nem impedir a abertura do WhatsApp.
+    void salvarPedido(
+      {
+        transactionId,
+        customerName,
+        customerPhone: form.phone.trim(),
+        address: form.address.trim(),
+        city: cityLabel,
+        notes: form.notes.trim(),
+        itemsCount,
+        total: orderTotal,
+      },
+      items,
+    );
 
     // Eventos de conversao (Meta/GA/TikTok) sao disparados na /obrigado
     // para evitar contagem dupla no Events Manager.

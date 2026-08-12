@@ -7,6 +7,7 @@ import AdminCategories from "@/components/admin/AdminCategories";
 import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminReports from "@/components/admin/AdminReports";
 import { uploadMedia } from "@/lib/uploadMedia";
 
 interface GalleryImage {
@@ -34,7 +35,7 @@ const PROMO_LINES = [
   { slug: "low-carb", label: "Lowcarb" },
 ];
 
-type AdminTab = "dashboard" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
+type AdminTab = "dashboard" | "relatorios" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -355,6 +356,16 @@ export default function AdminPage() {
             Dashboard
           </button>
           <button
+            onClick={() => setActiveTab("relatorios")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "relatorios"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Relatórios
+          </button>
+          <button
             onClick={() => setActiveTab("categorias")}
             className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
               activeTab === "categorias"
@@ -431,6 +442,9 @@ export default function AdminPage() {
 
         {/* ─── Tab: Dashboard ─── */}
         {activeTab === "dashboard" && <AdminDashboard />}
+
+        {/* ─── Tab: Relatórios ─── */}
+        {activeTab === "relatorios" && <AdminReports />}
 
         {/* ─── Tab: Categorias ─── */}
         {activeTab === "categorias" && <AdminCategories />}
