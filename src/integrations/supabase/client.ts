@@ -2,8 +2,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://vwcfcyjfsbgfcoprcywc.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wLwJWB3s7r9f_hlQl4veaQ_6x_IFQhJ";
+// Lê das variáveis de ambiente do build (painel do host). Os valores fixos
+// são fallback para o caso de a env não estar definida — assim o build nunca
+// sai sem credencial, e trocar de projeto Supabase passa a ser só mexer no
+// painel, sem editar código.
+const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || "https://vwcfcyjfsbgfcoprcywc.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  "sb_publishable_wLwJWB3s7r9f_hlQl4veaQ_6x_IFQhJ";
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
