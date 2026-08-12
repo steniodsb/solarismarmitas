@@ -20,6 +20,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { registrarRotasR2 } from './server-r2.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST = path.join(__dirname, 'dist');
@@ -50,8 +51,13 @@ if (!fs.existsSync(path.join(DIST, 'index.html'))) {
 const app = express();
 app.disable('x-powered-by');
 app.use(compression());
+app.use(express.json({ limit: '1mb' })); // corpo dos endpoints de mídia
 
 app.get('/healthz', (_req, res) => res.status(200).json({ ok: true }));
+
+// Mídia no R2: presign de upload, delete e leitura. Precisa vir antes do
+// fallback de SPA, senão /midia/* e /api/* devolveriam o index.html.
+registrarRotasR2(app);
 
 // Assets com hash no nome nunca mudam de conteúdo — cache longo.
 app.use('/assets', express.static(path.join(DIST, 'assets'), {

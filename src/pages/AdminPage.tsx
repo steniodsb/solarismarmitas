@@ -7,7 +7,7 @@ import AdminCategories from "@/components/admin/AdminCategories";
 import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL } from "@/lib/optimizeImage";
+import { uploadMedia } from "@/lib/uploadMedia";
 
 interface GalleryImage {
   id: string;
@@ -181,30 +181,17 @@ export default function AdminPage() {
     let uploadedCount = 0;
 
     for (const rawFile of Array.from(files)) {
-      const file = await optimizeImage(rawFile, IMAGE_PRESETS.gallery).catch(() => rawFile);
-      const ext = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-      const { error: storageError } = await supabase.storage
-        .from("promo-gallery")
-        .upload(fileName, file, {
-          upsert: false,
-          contentType: file.type,
-          cacheControl: UPLOAD_CACHE_CONTROL,
-        });
-
-      if (storageError) {
-        showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
+      let imageUrl: string;
+      try {
+        ({ url: imageUrl } = await uploadMedia(rawFile, "promo-gallery"));
+      } catch (e) {
+        showMessage(`Erro ao enviar ${rawFile.name}: ${e instanceof Error ? e.message : e}`, "error");
         continue;
       }
 
-      const { data: urlData } = supabase.storage
-        .from("promo-gallery")
-        .getPublicUrl(fileName);
-
       const nextOrder = images.length + uploadedCount;
       const { error: dbError } = await supabase.from("promo_gallery").insert({
-        image_url: urlData.publicUrl,
+        image_url: imageUrl,
         alt_text: rawFile.name.replace(/\.[^.]+$/, ""),
         is_main: images.length === 0 && uploadedCount === 0,
         sort_order: nextOrder,
@@ -272,31 +259,18 @@ export default function AdminPage() {
     let uploadedCount = 0;
 
     for (const rawFile of Array.from(files)) {
-      const file = await optimizeImage(rawFile, IMAGE_PRESETS.gallery).catch(() => rawFile);
-      const ext = file.name.split(".").pop();
-      const fileName = `${activeLineSlug}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-      const { error: storageError } = await supabase.storage
-        .from("promo-line-gallery")
-        .upload(fileName, file, {
-          upsert: false,
-          contentType: file.type,
-          cacheControl: UPLOAD_CACHE_CONTROL,
-        });
-
-      if (storageError) {
-        showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
+      let imageUrl: string;
+      try {
+        ({ url: imageUrl } = await uploadMedia(rawFile, "promo-line-gallery", activeLineSlug));
+      } catch (e) {
+        showMessage(`Erro ao enviar ${rawFile.name}: ${e instanceof Error ? e.message : e}`, "error");
         continue;
       }
-
-      const { data: urlData } = supabase.storage
-        .from("promo-line-gallery")
-        .getPublicUrl(fileName);
 
       const nextOrder = lineImages.length + uploadedCount;
       const { error: dbError } = await supabase.from("promo_line_gallery").insert({
         line_slug: activeLineSlug,
-        image_url: urlData.publicUrl,
+        image_url: imageUrl,
         alt_text: rawFile.name.replace(/\.[^.]+$/, ""),
         sort_order: nextOrder,
         active: true,

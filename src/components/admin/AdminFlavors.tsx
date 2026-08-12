@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
-import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL } from "@/lib/optimizeImage";
+import { uploadMedia } from "@/lib/uploadMedia";
 
 interface Category { id: string; name: string; slug: string; }
 interface Flavor {
@@ -67,25 +67,13 @@ export default function AdminFlavors() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const optimized = await optimizeImage(file, IMAGE_PRESETS.card).catch(() => file);
-    const ext = optimized.name.split(".").pop();
-    const fileName = `flavors/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from("product-images")
-      .upload(fileName, optimized, {
-        upsert: false,
-        contentType: optimized.type,
-        cacheControl: UPLOAD_CACHE_CONTROL,
-      });
-
-    if (error) {
-      showMessage("Erro no upload: " + error.message, "error");
+    try {
+      const { url } = await uploadMedia(file, "flavors");
+      return url;
+    } catch (e) {
+      showMessage(e instanceof Error ? e.message : "Erro no upload", "error");
       return null;
     }
-
-    const { data: urlData } = supabase.storage.from("product-images").getPublicUrl(fileName);
-    return urlData.publicUrl;
   };
 
   const startCreate = () => {
