@@ -39,7 +39,9 @@ export default function CategoryPage() {
       <main className="pt-16">
         {/* Hero banner */}
         <div className="relative h-40 sm:h-64 overflow-hidden">
+          {/* hero acima da dobra: carrega imediato, sem lazy */}
           <img
+            decoding="async"
             src={category?.image_url || categoryImages[categorySlug || ""] || catFitness}
             alt={category?.name}
             className="absolute inset-0 w-full h-full object-cover"

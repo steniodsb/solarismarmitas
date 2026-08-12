@@ -172,6 +172,8 @@ function PromoCarousel({
               {img && (
                 <div className="h-36 sm:h-40 shrink-0 overflow-hidden">
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={img}
                     alt={promoCat.name}
                     className="w-full h-full object-cover group-hover/promo:scale-105 transition-transform duration-300"

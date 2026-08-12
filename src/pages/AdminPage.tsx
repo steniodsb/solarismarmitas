@@ -7,7 +7,7 @@ import AdminCategories from "@/components/admin/AdminCategories";
 import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import { optimizeImage } from "@/lib/optimizeImage";
+import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL } from "@/lib/optimizeImage";
 
 interface GalleryImage {
   id: string;
@@ -181,13 +181,17 @@ export default function AdminPage() {
     let uploadedCount = 0;
 
     for (const rawFile of Array.from(files)) {
-      const file = await optimizeImage(rawFile).catch(() => rawFile);
+      const file = await optimizeImage(rawFile, IMAGE_PRESETS.gallery).catch(() => rawFile);
       const ext = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: storageError } = await supabase.storage
         .from("promo-gallery")
-        .upload(fileName, file, { upsert: false, contentType: file.type });
+        .upload(fileName, file, {
+          upsert: false,
+          contentType: file.type,
+          cacheControl: UPLOAD_CACHE_CONTROL,
+        });
 
       if (storageError) {
         showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
@@ -268,13 +272,17 @@ export default function AdminPage() {
     let uploadedCount = 0;
 
     for (const rawFile of Array.from(files)) {
-      const file = await optimizeImage(rawFile).catch(() => rawFile);
+      const file = await optimizeImage(rawFile, IMAGE_PRESETS.gallery).catch(() => rawFile);
       const ext = file.name.split(".").pop();
       const fileName = `${activeLineSlug}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error: storageError } = await supabase.storage
         .from("promo-line-gallery")
-        .upload(fileName, file, { upsert: false, contentType: file.type });
+        .upload(fileName, file, {
+          upsert: false,
+          contentType: file.type,
+          cacheControl: UPLOAD_CACHE_CONTROL,
+        });
 
       if (storageError) {
         showMessage(`Erro ao enviar ${rawFile.name}: ${storageError.message}`, "error");
@@ -528,6 +536,8 @@ export default function AdminPage() {
                     )}
                     <div className="aspect-square">
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={img.image_url}
                         alt={img.alt_text ?? "foto"}
                         className="w-full h-full object-cover"
@@ -769,6 +779,8 @@ export default function AdminPage() {
                   >
                     <div className="aspect-square">
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={img.image_url}
                         alt={img.alt_text ?? "foto"}
                         className="w-full h-full object-cover"

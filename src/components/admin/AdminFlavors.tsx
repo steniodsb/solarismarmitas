@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload } from "lucide-react";
-import { optimizeImage } from "@/lib/optimizeImage";
+import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL } from "@/lib/optimizeImage";
 
 interface Category { id: string; name: string; slug: string; }
 interface Flavor {
@@ -67,13 +67,17 @@ export default function AdminFlavors() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const optimized = await optimizeImage(file).catch(() => file);
+    const optimized = await optimizeImage(file, IMAGE_PRESETS.card).catch(() => file);
     const ext = optimized.name.split(".").pop();
     const fileName = `flavors/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(fileName, optimized, { upsert: false, contentType: optimized.type });
+      .upload(fileName, optimized, {
+        upsert: false,
+        contentType: optimized.type,
+        cacheControl: UPLOAD_CACHE_CONTROL,
+      });
 
     if (error) {
       showMessage("Erro no upload: " + error.message, "error");
@@ -261,7 +265,7 @@ export default function AdminFlavors() {
           {flavors.map((f) => (
             <div key={f.id} className={`flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 transition-all ${!f.active ? "opacity-50" : ""}`}>
               {f.image_url ? (
-                <img src={f.image_url} alt={f.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                <img loading="lazy" decoding="async" src={f.image_url} alt={f.name} className="w-12 h-12 rounded-lg object-cover shrink-0" />
               ) : (
                 <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center shrink-0 text-2xl">🍱</div>
               )}

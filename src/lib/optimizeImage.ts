@@ -15,11 +15,35 @@ export interface OptimizeOptions {
 }
 
 const DEFAULTS: Required<OptimizeOptions> = {
-  maxWidth: 1600,
-  maxHeight: 1600,
-  quality: 0.82,
+  maxWidth: 1200,
+  maxHeight: 1200,
+  quality: 0.78,
   mimeType: "image/webp",
 };
+
+/**
+ * Presets por contexto de exibição. O alvo é ~2x o tamanho CSS real
+ * (suficiente para telas retina) — guardar mais que isso só gasta banda.
+ *
+ * Guardar tudo em 1600px era o que fazia cada sabor pesar ~250 KB para
+ * ser exibido num card de 400px.
+ */
+export const IMAGE_PRESETS = {
+  /** Cards de sabor/produto: ~400px CSS no maior breakpoint. */
+  card: { maxWidth: 800, maxHeight: 800, quality: 0.78 },
+  /** Categorias: aparecem no grid (400px) e como banner full-width. */
+  hero: { maxWidth: 1400, maxHeight: 1400, quality: 0.78 },
+  /** Galerias promocionais: imagem principal grande + thumbnails. */
+  gallery: { maxWidth: 1200, maxHeight: 1200, quality: 0.78 },
+} satisfies Record<string, OptimizeOptions>;
+
+/**
+ * Cache-Control usado em todo upload para o Storage: 1 ano.
+ * Os nomes de arquivo já são únicos (timestamp + random), então o
+ * conteúdo de uma URL nunca muda — cachear para sempre é seguro e
+ * evita revalidação desnecessária a cada visita.
+ */
+export const UPLOAD_CACHE_CONTROL = "31536000";
 
 export async function optimizeImage(
   file: File,

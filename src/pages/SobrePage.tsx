@@ -57,6 +57,8 @@ export default function SobrePage() {
             <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 lg:gap-16 items-center">
               <div className="rounded-2xl overflow-hidden shadow-xl">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={carinaPetersen}
                   alt="Carina Petersen, proprietária do Restaurante Solaris"
                   className="w-full h-full object-cover"

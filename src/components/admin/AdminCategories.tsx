@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Plus, Pencil, Trash2, Eye, EyeOff, Upload, GripVertical } from "lucide-react";
-import { optimizeImage } from "@/lib/optimizeImage";
+import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL } from "@/lib/optimizeImage";
 
 interface Category {
   id: string;
@@ -84,13 +84,17 @@ export default function AdminCategories() {
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const optimized = await optimizeImage(file).catch(() => file);
+    const optimized = await optimizeImage(file, IMAGE_PRESETS.hero).catch(() => file);
     const ext = optimized.name.split(".").pop();
     const fileName = `categories/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(fileName, optimized, { upsert: false, contentType: optimized.type });
+      .upload(fileName, optimized, {
+        upsert: false,
+        contentType: optimized.type,
+        cacheControl: UPLOAD_CACHE_CONTROL,
+      });
 
     if (error) {
       showMessage("Erro no upload: " + error.message, "error");
@@ -307,7 +311,7 @@ export default function AdminCategories() {
                 <GripVertical className="h-4 w-4" />
               </button>
               {cat.image_url ? (
-                <img src={cat.image_url} alt={cat.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                <img loading="lazy" decoding="async" src={cat.image_url} alt={cat.name} className="w-10 h-10 rounded-lg object-cover shrink-0" />
               ) : (
                 <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0 text-lg">🍱</div>
               )}

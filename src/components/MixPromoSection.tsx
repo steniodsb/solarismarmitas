@@ -124,6 +124,8 @@ export default function MixPromoSection() {
             {/* Main photo */}
             <div className="rounded-2xl overflow-hidden bg-card border border-border">
               <img
+                loading="lazy"
+                decoding="async"
                 src={mainImage.image_url}
                 alt={mainImage.alt_text ?? "Combo promocional Solaris"}
                 className="w-full h-auto object-contain"
@@ -138,6 +140,8 @@ export default function MixPromoSection() {
                     className="rounded-xl overflow-hidden aspect-square bg-card border border-border"
                   >
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={img.image_url}
                       alt={img.alt_text ?? "Amostra do combo"}
                       className="w-full h-full object-cover"
@@ -159,6 +163,8 @@ export default function MixPromoSection() {
             >
               <div className="h-40 shrink-0">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={line.img}
                   alt={`Linha ${line.name}`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

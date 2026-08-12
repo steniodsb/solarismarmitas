@@ -15,7 +15,7 @@ export default function Footer() {
       <div className="container">
         <div className="grid sm:grid-cols-3 gap-8">
           <div className="space-y-4">
-            <img src={logoSolaris} alt="Solaris Restaurante" className="h-12" />
+            <img loading="lazy" decoding="async" src={logoSolaris} alt="Solaris Restaurante" className="h-12" />
             <p className="text-primary-foreground/60 text-sm max-w-sm">
               Marmitas congeladas saudáveis e deliciosas para sua rotina.
             </p>

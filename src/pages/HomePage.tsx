@@ -74,13 +74,16 @@ export default function HomePage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-              {categories?.map((cat) => (
+              {categories?.map((cat, i) => (
                 <Link
                   key={cat.id}
                   to={cat.slug === "promocionais" ? "/montar/promocionais" : `/montar/${cat.slug}`}
                   className="group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary"
                 >
+                  {/* as 2 primeiras ficam acima da dobra; o resto só carrega ao rolar */}
                   <img
+                    loading={i < 2 ? "eager" : "lazy"}
+                    decoding="async"
                     src={cat.image_url || categoryImages[cat.slug] || catFitness}
                     alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
@@ -109,6 +112,8 @@ export default function HomePage() {
           <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
             <div className="rounded-2xl overflow-hidden shadow-lg">
               <img
+                loading="lazy"
+                decoding="async"
                 src={carinaPetersen}
                 alt="Carina Petersen, proprietária do Restaurante Solaris, com as marmitas"
                 className="w-full h-full object-cover"
@@ -187,6 +192,8 @@ export default function HomePage() {
                 className="bg-white border border-border rounded-xl p-2 sm:p-3 flex items-center justify-center aspect-[3/2] shadow-sm"
               >
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={card.logo}
                   alt={card.name}
                   className="max-h-8 sm:max-h-10 w-auto object-contain"

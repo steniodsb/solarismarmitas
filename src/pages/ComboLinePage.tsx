@@ -177,6 +177,8 @@ export default function ComboLinePage() {
                     className="snap-start shrink-0 w-56 sm:w-72 aspect-square rounded-2xl overflow-hidden bg-muted shadow-md"
                   >
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={img.image_url}
                       alt={img.alt_text || `${lineName} ${i + 1}`}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
