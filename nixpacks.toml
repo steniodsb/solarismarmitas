@@ -1,0 +1,15 @@
+# Pipeline explícito para o App Hosting (Dokploy/Nixpacks).
+#
+# Sem isto o build depende da autodetecção: se ela não roda "npm run build",
+# não existe dist/ (que está no .gitignore) e o app não sobe -> 502.
+#
+# A versão do Node vem de NIXPACKS_NODE_VERSION nas variáveis do painel.
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "node server.mjs"

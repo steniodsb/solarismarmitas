@@ -18,6 +18,7 @@ import express from 'express';
 import compression from 'compression';
 import path from 'node:path';
 import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -25,10 +26,25 @@ const DIST = path.join(__dirname, 'dist');
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0'; // dentro do container, precisa aceitar de fora do loopback
 
+console.log(`[boot] node=${process.version} PORT=${PORT} NODE_ENV=${process.env.NODE_ENV || '-'}`);
+console.log(`[boot] cwd=${process.cwd()} dist=${DIST}`);
+
+// dist/ está no .gitignore, então só existe se o build tiver rodado no host.
+// Se o builder não rodou "npm run build", construímos aqui — sem isso o
+// processo morreria e o proxy devolveria 502.
 if (!fs.existsSync(path.join(DIST, 'index.html'))) {
-  console.error(`[boot] dist/index.html não encontrado em ${DIST}.`);
-  console.error('[boot] O build não rodou. Verifique se "npm run build" executou antes do start.');
-  process.exit(1);
+  console.warn('[boot] dist/index.html não encontrado — rodando "npm run build" agora.');
+  try {
+    execSync('npm run build', { stdio: 'inherit', cwd: __dirname });
+  } catch (e) {
+    console.error('[boot] o build falhou:', e.message);
+    process.exit(1);
+  }
+  if (!fs.existsSync(path.join(DIST, 'index.html'))) {
+    console.error('[boot] build terminou mas dist/index.html continua ausente. Abortando.');
+    process.exit(1);
+  }
+  console.log('[boot] build concluído.');
 }
 
 const app = express();
