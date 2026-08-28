@@ -278,6 +278,33 @@ export type Database = {
         }
         Relationships: []
       }
+      testimonials: {
+        Row: {
+          id: string
+          image_url: string
+          alt_text: string | null
+          sort_order: number
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          image_url: string
+          alt_text?: string | null
+          sort_order?: number
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          image_url?: string
+          alt_text?: string | null
+          sort_order?: number
+          active?: boolean
+          created_at?: string
+        }
+        Relationships: []
+      }
       promo_gallery: {
         Row: {
           id: string

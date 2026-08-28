@@ -51,7 +51,7 @@ export function urlPublica(key) {
 const TIPOS_ACEITOS = new Set([
   'image/webp', 'image/jpeg', 'image/png', 'image/gif', 'image/avif', 'image/svg+xml',
 ]);
-const PASTAS_ACEITAS = new Set(['flavors', 'categories', 'promo-gallery', 'promo-line-gallery']);
+const PASTAS_ACEITAS = new Set(['flavors', 'categories', 'promo-gallery', 'promo-line-gallery', 'testimonials']);
 const TAMANHO_MAX = 15 * 1024 * 1024; // 15 MB — o browser já otimiza antes de subir
 
 /**

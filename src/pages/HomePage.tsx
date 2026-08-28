@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { useFrozenCategories } from "@/hooks/useFrozenData";
 import Header from "@/components/Header";
@@ -15,6 +16,9 @@ import catLowcarb from "@/assets/cat-lowcarb.webp";
 import catCaseira from "@/assets/cat-caseira.webp";
 import catVegetariana from "@/assets/cat-vegetariana.webp";
 import catSucos from "@/assets/cat-sucos.webp";
+
+// Abaixo da dobra e traz o carrossel junto — não precisa pesar o primeiro paint.
+const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
 
 const categoryImages: Record<string, string> = {
   fitness: catFitness,
@@ -105,6 +109,9 @@ export default function HomePage() {
 
       <SizesSection />
 
+      <Suspense fallback={null}>
+        <TestimonialsSection />
+      </Suspense>
 
       {/* Conheça nossa empresa — no clickable links */}
       <section className="py-16 bg-card">

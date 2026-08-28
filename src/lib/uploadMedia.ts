@@ -15,13 +15,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { optimizeImage, IMAGE_PRESETS, UPLOAD_CACHE_CONTROL, type OptimizeOptions } from "./optimizeImage";
 
 /** Pastas aceitas pelo servidor. O bucket do Supabase é derivado daqui. */
-export type PastaMidia = "flavors" | "categories" | "promo-gallery" | "promo-line-gallery";
+export type PastaMidia = "flavors" | "categories" | "promo-gallery" | "promo-line-gallery" | "testimonials";
 
 const BUCKET_SUPABASE: Record<PastaMidia, string> = {
   flavors: "product-images",
   categories: "product-images",
   "promo-gallery": "promo-gallery",
   "promo-line-gallery": "promo-line-gallery",
+  testimonials: "testimonials",
 };
 
 /** Preset de otimização por contexto de exibição. */
@@ -30,6 +31,7 @@ const PRESET_POR_PASTA: Record<PastaMidia, OptimizeOptions> = {
   categories: IMAGE_PRESETS.hero,
   "promo-gallery": IMAGE_PRESETS.gallery,
   "promo-line-gallery": IMAGE_PRESETS.gallery,
+  testimonials: IMAGE_PRESETS.gallery,
 };
 
 let _r2Ativo: boolean | null = null;

@@ -8,6 +8,7 @@ import AdminFlavors from "@/components/admin/AdminFlavors";
 import AdminSizes from "@/components/admin/AdminSizes";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import AdminReports from "@/components/admin/AdminReports";
+import AdminTestimonials from "@/components/admin/AdminTestimonials";
 import { uploadMedia } from "@/lib/uploadMedia";
 
 interface GalleryImage {
@@ -35,7 +36,7 @@ const PROMO_LINES = [
   { slug: "low-carb", label: "Lowcarb" },
 ];
 
-type AdminTab = "dashboard" | "relatorios" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "promocionais" | "pixels";
+type AdminTab = "dashboard" | "relatorios" | "categorias" | "sabores" | "tamanhos" | "galeria-geral" | "depoimentos" | "promocionais" | "pixels";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -406,6 +407,16 @@ export default function AdminPage() {
             Galeria
           </button>
           <button
+            onClick={() => setActiveTab("depoimentos")}
+            className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
+              activeTab === "depoimentos"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Depoimentos
+          </button>
+          <button
             onClick={() => setActiveTab("promocionais")}
             className={`px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
               activeTab === "promocionais"
@@ -564,6 +575,9 @@ export default function AdminPage() {
             )}
           </>
         )}
+
+        {/* ─── Tab: Depoimentos ─── */}
+        {activeTab === "depoimentos" && <AdminTestimonials />}
 
         {/* ─── Tab: Pixels & Tags ─── */}
         {activeTab === "pixels" && (

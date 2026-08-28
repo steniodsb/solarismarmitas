@@ -176,6 +176,30 @@ export function usePromoLineGallery(lineSlug: string | undefined) {
   });
 }
 
+export interface Testimonial {
+  id: string;
+  image_url: string;
+  alt_text: string | null;
+  sort_order: number;
+  active: boolean;
+}
+
+/** Depoimentos de clientes ("Quem prova, aprova") exibidos na home. */
+export function useTestimonials() {
+  return useQuery({
+    queryKey: ["testimonials"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("testimonials")
+        .select("*")
+        .eq("active", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data as Testimonial[];
+    },
+  });
+}
+
 export function useFrozenFlavorBySlug(categorySlug: string | undefined, flavorId: string | undefined) {
   const { data: categories } = useFrozenCategories();
   const category = categories?.find((c) => c.slug === categorySlug);
