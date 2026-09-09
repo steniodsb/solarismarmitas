@@ -28,27 +28,6 @@ const lineDescriptions: Record<string, string> = {
     "FOQUE NO SEU OBJETIVO. A GENTE CUIDA DAS MARMITAS! 💪\n\nEsse combo é para quem busca reduzir carboidratos e facilitar a rotina alimentar, sem perder tempo na cozinha. Nada de passar horas preparando marmitas ou começar a dieta e desistir por falta de praticidade.\n\nNossa equipe monta as combinações para você, sempre variadas, para facilitar sua rotina e ajudar você a manter a constância.\n\nÉ só aquecer 5 min no micro e seguir firme no seu objetivo!\n\nSeu combo Low Carb vai bem variado, como nas fotos! 😋\n\nMontamos diferentes combinações com legumes, refogados, seletas, frangos, carnes e peixes, variando bem os sabores entre as marmitas.\n\nNão come ou não gosta de algum item?\nÉ só informar nas observações do pedido que nossa equipe cuida disso para você. ❤️\n\nMenos carboidratos. Mais praticidade. Mais facilidade para manter o foco no seu objetivo. 💪",
 };
 
-const lineItems: Record<string, string[]> = {
-  tradicional: [
-    "Arroz branco", "Feijão", "Lentilha", "Purê / Massa", "Complementos",
-    "Seletas", "Legumes", "Refogados", "Frangos variados", "Carnes variadas", "Filé de peixe",
-  ],
-  vegetariana: [
-    "Arroz branco ou integral", "Feijão", "Lentilha", "Purê / Massa", "Aipim", "Batata", "Moranga",
-    "Complementos", "Seletas", "Legumes", "Refogados", "Yakisoba", "Lasanha de brócolis",
-    "Panquecas de legumes", "Omelete",
-  ],
-  fitness: [
-    "Abobrinha", "Berinjela", "Couve-flor", "Couve", "Cenoura", "Beterraba",
-    "Moranga", "Repolho", "Brócolis", "Seletas", "Legumes mix", "Refogados sortidos",
-    "Frangos sortidos", "Carnes variadas", "Filé de peixe", "Lombinho",
-  ],
-  "low-carb": [
-    "Abobrinha", "Berinjela", "Couve-flor", "Couve", "Cenoura", "Beterraba",
-    "Moranga", "Repolho", "Brócolis", "Seletas", "Legumes mix", "Refogados sortidos",
-    "Frangos sortidos", "Carnes variadas", "Filé de peixe", "Lombinho",
-  ],
-};
 
 interface ComboSize {
   id: string;
@@ -84,7 +63,6 @@ export default function ComboLinePage() {
 
   const lineName = lineNames[lineSlug || ""] || "Marmitas";
   const lineDescription = lineDescriptions[lineSlug || ""] || "";
-  const items = lineItems[lineSlug || ""] || [];
 
   const getPrice = () => {
     if (!selectedSize) return 0;
@@ -200,20 +178,9 @@ export default function ComboLinePage() {
 
         <div className="container px-4 py-6 sm:py-10">
           <div className="max-w-2xl mx-auto space-y-8">
-            {/* Description + items */}
+            {/* Description */}
             <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-4">
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{lineDescription}</p>
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-2">Ingredientes que podem compor seu combo:</p>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                  {items.map((item) => (
-                    <div key={item} className="flex items-center gap-2 text-muted-foreground text-xs sm:text-sm">
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                      {item}
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Size selection */}
