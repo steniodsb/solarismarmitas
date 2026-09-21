@@ -289,7 +289,7 @@ export default function AdminDashboard() {
               <TrendingUp className="h-5 w-5 text-primary" />
               <h3 className="font-bold text-foreground">Taxa de conversão · {range.label}</h3>
             </div>
-            <ConversionItem views={stats.pageviews} orders={stats.whatsappOrders} />
+            <ConversionItem visitors={stats.sessions} orders={stats.whatsappOrders} />
           </div>
 
           {/* Top pages */}
@@ -380,15 +380,15 @@ function StatCard({ icon, label, color, value }: StatCardProps) {
   );
 }
 
-function ConversionItem({ views, orders }: { views: number; orders: number }) {
-  const rate = views > 0 ? (orders / views) * 100 : 0;
+function ConversionItem({ visitors, orders }: { visitors: number; orders: number }) {
+  const rate = visitors > 0 ? (orders / visitors) * 100 : 0;
   return (
     <div className="text-center">
       <div className="font-display text-3xl font-black text-primary tabular-nums">
         {rate.toFixed(1)}%
       </div>
       <div className="text-xs text-muted-foreground tabular-nums mt-1">
-        {orders} pedidos / {views} acessos
+        {orders} pedidos / {visitors} visitantes únicos
       </div>
     </div>
   );
