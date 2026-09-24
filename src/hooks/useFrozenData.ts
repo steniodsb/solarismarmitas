@@ -37,7 +37,12 @@ export function useFrozenCategories() {
         .select("*")
         .order("sort_order");
       if (error) throw error;
-      return data as FrozenCategory[];
+      // Promoção sempre em primeiro
+      const categories = data as FrozenCategory[];
+      return [
+        ...categories.filter((c) => c.slug === "promocionais"),
+        ...categories.filter((c) => c.slug !== "promocionais"),
+      ];
     },
   });
 }
