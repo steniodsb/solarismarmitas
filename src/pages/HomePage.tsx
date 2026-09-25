@@ -16,6 +16,7 @@ import catLowcarb from "@/assets/cat-lowcarb.webp";
 import catCaseira from "@/assets/cat-caseira.webp";
 import catVegetariana from "@/assets/cat-vegetariana.webp";
 import catSucos from "@/assets/cat-sucos.webp";
+import catPromocionais from "@/assets/cat-promocionais.webp";
 
 // Abaixo da dobra e traz o carrossel junto — não precisa pesar o primeiro paint.
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
@@ -26,7 +27,7 @@ const categoryImages: Record<string, string> = {
   caseira: catCaseira,
   vegetariana: catVegetariana,
   sucos: catSucos,
-  promocionais: catFitness,
+  promocionais: catPromocionais,
 };
 
 export default function HomePage() {
@@ -88,7 +89,7 @@ export default function HomePage() {
                   <img
                     loading={i < 2 ? "eager" : "lazy"}
                     decoding="async"
-                    src={cat.image_url || categoryImages[cat.slug] || catFitness}
+                    src={cat.slug === "promocionais" ? catPromocionais : cat.image_url || categoryImages[cat.slug] || catFitness}
                     alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
                   />
