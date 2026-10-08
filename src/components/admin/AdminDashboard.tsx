@@ -120,17 +120,31 @@ export default function AdminDashboard() {
         countWhere("session_start"),
       ]);
 
+      // Supabase devolve no máximo 1000 linhas por consulta — pagina até trazer tudo
+      const fetchAll = async <T,>(columns: string, eventType: string): Promise<T[]> => {
+        const PAGE = 1000;
+        const rows: T[] = [];
+        for (let from = 0; ; from += PAGE) {
+          const { data, error } = await supabase
+            .from("analytics_events")
+            .select(columns)
+            .eq("event_type", eventType)
+            .gte("created_at", startISO)
+            .lte("created_at", endISO)
+            .order("created_at", { ascending: false })
+            .range(from, from + PAGE - 1);
+          if (error) throw error;
+          rows.push(...((data || []) as T[]));
+          if (!data || data.length < PAGE) break;
+        }
+        return rows;
+      };
+
       // Top páginas no período selecionado
-      const { data: pathRows } = await supabase
-        .from("analytics_events")
-        .select("path")
-        .eq("event_type", "pageview")
-        .gte("created_at", startISO)
-        .lte("created_at", endISO)
-        .limit(5000);
+      const pathRows = await fetchAll<{ path: string | null }>("path", "pageview");
 
       const pathCounts: Record<string, number> = {};
-      (pathRows || []).forEach((r: { path: string | null }) => {
+      pathRows.forEach((r) => {
         const p = r.path || "/";
         pathCounts[p] = (pathCounts[p] || 0) + 1;
       });
@@ -140,21 +154,14 @@ export default function AdminDashboard() {
         .map(([path, count]) => ({ path, count }));
 
       // Pedidos enviados no período selecionado
-      const { data: recent } = await supabase
-        .from("analytics_events")
-        .select("created_at, metadata")
-        .eq("event_type", "whatsapp_order")
-        .gte("created_at", startISO)
-        .lte("created_at", endISO)
-        .order("created_at", { ascending: false })
-        .limit(10);
+      const recent = await fetchAll<Stats["recentOrders"][number]>("created_at, metadata", "whatsapp_order");
 
       setStats({
         pageviews,
         whatsappOrders,
         sessions,
         topPaths,
-        recentOrders: (recent || []) as Stats["recentOrders"],
+        recentOrders: recent,
       });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -187,6 +194,14 @@ export default function AdminDashboard() {
   }
 
   const hasData = stats.pageviews > 0 || stats.whatsappOrders > 0;
+
+  const orderTotal = (m: Record<string, unknown> | null) => {
+    const t = Number((m as { total?: unknown } | null)?.total);
+    return Number.isFinite(t) ? t : 0;
+  };
+  const revenue = stats.recentOrders.reduce((sum, o) => sum + orderTotal(o.metadata), 0);
+  const avgTicket = stats.recentOrders.length > 0 ? revenue / stats.recentOrders.length : 0;
+  const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <div className="space-y-6">
@@ -326,10 +341,24 @@ export default function AdminDashboard() {
                 <CalendarIcon className="h-5 w-5 text-primary" />
                 <h3 className="font-bold text-foreground">Pedidos enviados · {range.label}</h3>
               </div>
-              <div className="space-y-2">
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                <div className="rounded-xl bg-muted px-3 py-2">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Total vendido</div>
+                  <div className="text-lg font-bold text-primary tabular-nums">{brl(revenue)}</div>
+                </div>
+                <div className="rounded-xl bg-muted px-3 py-2">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Pedidos</div>
+                  <div className="text-lg font-bold text-foreground tabular-nums">{stats.recentOrders.length}</div>
+                </div>
+                <div className="rounded-xl bg-muted px-3 py-2">
+                  <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Ticket médio</div>
+                  <div className="text-lg font-bold text-foreground tabular-nums">{brl(avgTicket)}</div>
+                </div>
+              </div>
+              <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
                 {stats.recentOrders.map((o, i) => {
                   const meta = o.metadata as { total?: number; items_count?: number; delivery_mode?: string } | null;
-                  const total = meta?.total ? `R$ ${meta.total.toFixed(2).replace(".", ",")}` : "—";
+                  const total = orderTotal(o.metadata) > 0 ? brl(orderTotal(o.metadata)) : "—";
                   const itemsCount = meta?.items_count ?? "?";
                   const mode = meta?.delivery_mode === "delivery" ? "🚚 Entrega" : meta?.delivery_mode === "pickup" ? "🏪 Retirada" : "";
                   return (
