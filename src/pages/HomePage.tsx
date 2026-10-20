@@ -81,33 +81,39 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {categories?.map((cat, i) => {
-                // banner da promoção é paisagem (16:9): no mobile ocupa a linha inteira para não cortar
                 const isPromo = cat.slug === "promocionais";
-                const promoCount = categories.filter((c) => c.slug === "promocionais").length;
-                const othersCount = categories.length - promoCount;
                 // se sobrar um card sozinho na última linha (abaixo de lg), centraliza
-                const isOrphan = !isPromo && othersCount % 2 === 1 && i === categories.length - 1;
+                const isOrphan = categories.length % 2 === 1 && i === categories.length - 1;
+                const imgSrc = isPromo ? catPromocionais : cat.image_url || categoryImages[cat.slug] || catFitness;
                 return (
                 <Link
                   key={cat.id}
                   to={isPromo ? "/montar/promocionais" : `/montar/${cat.slug}`}
                   className={cn(
-                    "group relative overflow-hidden rounded-xl sm:rounded-2xl text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary",
-                    isPromo
-                      ? "col-span-2 aspect-video lg:col-span-1 lg:aspect-auto lg:h-64"
-                      : "h-48 sm:h-64",
+                    "group relative overflow-hidden rounded-xl sm:rounded-2xl h-48 sm:h-64 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary",
                     isOrphan && "col-span-2 justify-self-center w-[calc(50%-0.375rem)] sm:w-[calc(50%-0.75rem)] lg:col-span-1 lg:w-full",
                   )}
                 >
+                  {/* banner da promoção é paisagem (16:9): abaixo de lg aparece inteiro no topo, sobre um fundo desfocado dele mesmo */}
+                  {isPromo && (
+                    <img
+                      aria-hidden
+                      loading={i < 2 ? "eager" : "lazy"}
+                      decoding="async"
+                      src={imgSrc}
+                      alt=""
+                      className="absolute inset-0 w-full h-full object-cover scale-125 blur-xl lg:hidden"
+                    />
+                  )}
                   {/* as 2 primeiras ficam acima da dobra; o resto só carrega ao rolar */}
                   <img
                     loading={i < 2 ? "eager" : "lazy"}
                     decoding="async"
-                    src={isPromo ? catPromocionais : cat.image_url || categoryImages[cat.slug] || catFitness}
+                    src={imgSrc}
                     alt={cat.name}
                     className={cn(
-                      "absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110",
-                      isPromo ? "object-center" : "object-top",
+                      "absolute inset-0 w-full h-full transition-transform duration-500 group-hover:scale-110",
+                      isPromo ? "object-contain object-top lg:object-cover lg:object-center" : "object-cover object-top",
                     )}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
